@@ -8,7 +8,7 @@ const app = express(),
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-app.use(express.static('views'));
+app.use(express.static('public'));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
