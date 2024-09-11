@@ -162,7 +162,7 @@
     })();
   </script>
   <head>
-    <title>Book Recommendations</title>
+    <title>SOPE Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://unpkg.com/htmx.org@1.5.0'></script>
     <style>
@@ -174,8 +174,9 @@
     </style>
   </head>
   <body>
-    
-
+    <h1>I see you looking</h1>
+    <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" hx-get="/test" hx-target="#dynamic-content">Load dyanmic content from another route</button>
+    <div id="dynamic-content"></div>
   </body>
 
   </html> 

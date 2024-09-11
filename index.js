@@ -8,6 +8,8 @@ const app = express(),
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
+app.use(express.static('views'));
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -16,6 +18,8 @@ app.use(function(req, res, next) {
 });
 
 app.use("/", index_routes);
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server listening on port::${port}`);

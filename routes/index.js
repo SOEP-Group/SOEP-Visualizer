@@ -4,5 +4,6 @@ const controller = require('../controllers/index');
 
 
 router.get('/', controller.Home);
+router.get('/test', controller.Dynamic);
 
 module.exports = router;
