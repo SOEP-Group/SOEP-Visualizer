@@ -93,6 +93,7 @@ function animate() {
     viewport_div.width
     renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
     renderer.clear();
+    renderer.setClearColor('#00031d');
     renderer.render( scene, camera );
 }
 renderer.setAnimationLoop( animate );
