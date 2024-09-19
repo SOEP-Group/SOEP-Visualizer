@@ -12,10 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static('public'));
 // app.use('/views', express.static(path.join(__dirname, 'views')));
 
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve static files from the "views" directory
 app.use('/views', express.static(path.join(__dirname, 'views')));
 
 app.use(function(req, res, next) {
