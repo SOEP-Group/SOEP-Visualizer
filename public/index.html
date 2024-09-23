@@ -1,34 +1,75 @@
-<doctype html>
+<!DOCTYPE html>
 <html lang='en'>
-  <head>
-    <title>SOPE Visualizer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src='https://unpkg.com/htmx.org@1.5.0'></script>
-    <style>
-      body {padding: 20px}
-      table {font-family: arial, sans-serif; border-collapse: collapse; width: 100%;}
-      tr.htmx-swapping td {opacity: 0; transition: opacity 0.5s ease-out;}
-      td, th {border: 1px solid #383737; text-align: left; padding: 8px;}
-      tr:nth-child(even) {background-color: #dddddd;}
-    </style>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
-        }
+
+<head>
+  <title>SOEP Visualizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src='https://unpkg.com/htmx.org@1.5.0'></script>
+
+  <link rel="stylesheet" href="./css/style.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
       }
-    </script>
-  </head>
-  <body class="p-0">
-    <!-- <h1>I see you looking</h1>
-    <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" hx-get="/test" hx-target="#dynamic-content">Load dyanmic content from another route</button>-->
-    <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white" id="dynamic-content"></div> 
+    }
+  </script>
+</head>
 
-    <div class="p-0" id="gl_viewport">
-    </div>
-  </body>
+<body class="p-0">
 
-  <script type="module" src="main.js"></script>
-  </html> 
-   
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav-container">
+
+      <!-- Logo -->
+      <div class="nav-left">
+        <a href="#" class="logo">SOEP Visualizer</a>
+
+        <!-- Navigation links -->
+        <ul class="nav-links">
+          <li><a href="home" class="nav-link">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+
+          <!-- Satellite search  -->
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="nav-link dropdown-trigger">Satellites ▼</a>
+
+            <div id="satellite-dropdown" class="dropdown-content">
+              <input type="text" placeholder="Search.." id="search-input">
+              <a href="#cosmo">Cosmos </a>
+              <a href="#starlite">Starlink</a>
+              <a href="#satellite3">Satellite3</a>
+              <a href="#satellite4">Satellite4</a>
+              <a href="#satellite5">Satellite5</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Dropdown burger -->
+      <div class="dropdown">
+        <button id="dropdownButton" class="dropdown-button">≡</button>
+
+        <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Collision prediction</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Pass prediction</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Re-entry prediction</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
+    id="dynamic-content"></div>
+
+  <div class="p-0" id="gl_viewport"></div>
+</body>
+
+<script type="module" src="main.js"></script>
+<script src="javascript/header.js"></script>
+
+</html>
