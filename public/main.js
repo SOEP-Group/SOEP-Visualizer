@@ -7,7 +7,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer();
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
-controls.minDistance = 0.65; 
+controls.minDistance = 0.6;
 const gltf_loader = new GLTFLoader();
 
 const raycaster = new THREE.Raycaster();
@@ -108,10 +108,10 @@ function addSatelliteToScene(satellite) {
     const geometry = new THREE.SphereGeometry(0.025, 8, 8);
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const satelliteMesh = new THREE.Mesh(geometry, material);
-    
+
     satelliteMesh.position.set(satellite.position.x, satellite.position.y, satellite.position.z);
     satelliteMesh.name = satellite.id;
-    
+
     scene.add(satelliteMesh);
 }
 
@@ -140,17 +140,17 @@ function onMouseClick(event) {
             console.log("Satellite clicked:", clickedObject.name);
 
             fetchSatelliteInfo(clickedObject.name)
-            .then(data => {
-                openPopup(data);
-            })
-            .catch(error => {
-                console.error('Error fetching satellite info:', error);
-                openPopup({
-                    name: 'Error',
-                    launchDate: 'Error'
+                .then(data => {
+                    openPopup(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching satellite info:', error);
+                    openPopup({
+                        name: 'Error',
+                        launchDate: 'Error'
+                    });
                 });
-            });
-            }
+        }
 
     } else {
         dynamicContentDiv.classList.add("hidden");
@@ -169,7 +169,7 @@ camera.position.z = 5;
 const light = new THREE.AmbientLight(0xffffff, 0.75);
 scene.add(light);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
 scene.add(directionalLight);
 
 window.addEventListener('resize', function () {
