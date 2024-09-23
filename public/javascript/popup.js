@@ -9,14 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const closeButton = document.getElementById('close-popup');
                 if (closeButton) {
                     closeButton.addEventListener('click', () => {
-                        const popup = document.getElementById('satellite-popup');
-                        if (popup) {
-                            popup.classList.add('hidden');
-                        }
+                        hidePopup();
                     });
                 } else {
                     console.error('Close button not found');
                 }
+
+                document.addEventListener('click', (event) => {
+                    const popup = document.getElementById('satellite-popup');
+                    const isClickInside = popup.contains(event.target) || popup === event.target;
+
+                    if (!isClickInside) {
+                        hidePopup(); // Hide the popup if the click is outside
+                    }
+                });
             } else {
                 console.error('Popup container not found');
             }
@@ -24,13 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error loading popup HTML:', error));
 });
 
+function hidePopup() {
+    const popup = document.getElementById('satellite-popup');
+    if (popup) {
+        popup.classList.add('hidden'); // Hide popup
+    }
+}
+
 function openPopup(data) {
     const nameElement = document.getElementById('satellite-name');
     const launchDateElement = document.getElementById('launch-date');
-
-    console.log('Opening popup with data:', data); // Log the data
-    console.log('Name element:', nameElement);
-    console.log('Launch date element:', launchDateElement);
 
     if (nameElement && launchDateElement) {
         nameElement.textContent = data.name || 'N/A';
