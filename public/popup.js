@@ -43,11 +43,3 @@ function openPopup(data) {
 function closePopup() {
     document.getElementById('satellite-popup').classList.add('hidden');
 }
-
-
-fetch('/views/popup.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('popup-container').innerHTML = html;
-    })
-    .catch(error => console.error('Error loading popup HTML:', error));

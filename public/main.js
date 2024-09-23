@@ -45,15 +45,21 @@ const mockSatelliteData = {
     },
 };
 
-function fetchSatelliteData() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(fakeSatelliteData);
-        }, 1000); // simulate some delay
-    });
+async function fetchSatelliteData() {
+    try {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(fakeSatelliteData);
+            }, 1000); // Simulate network delay
+            // reject("Network Error: Unable to fetch satellite data"); Have this reject in future
+        });
+    } catch (error) {
+        console.error("Error fetching satellite data:", error);
+        return [];
+    }
 }
 
-function fetchSatelliteInfo(id) {
+function fetchSatelliteInfo(id) {   // will remake and move this!
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (mockSatelliteData[id]) {
@@ -141,8 +147,7 @@ function onMouseClick(event) {
                 console.error('Error fetching satellite info:', error);
                 openPopup({
                     name: 'Error',
-                    launchDate: 'Error',
-                    longitude: 'Error'
+                    launchDate: 'Error'
                 });
             });
             }
