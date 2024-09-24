@@ -166,10 +166,10 @@ viewport_div.appendChild(renderer.domElement);
 
 camera.position.z = 5;
 
-const light = new THREE.AmbientLight(0xffffff, 0.75);
+const light = new THREE.AmbientLight(0xffffff, 2);
 scene.add(light);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
 scene.add(directionalLight);
 
 window.addEventListener('resize', function () {
