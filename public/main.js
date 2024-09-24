@@ -3,13 +3,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 3;
+
+// smoother visuals
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; // Tone mapping for better brightness
+renderer.toneMappingExposure = 1.25;  // Adjust exposure for brightness
+const viewport_div = document.getElementById("gl_viewport");
+viewport_div.appendChild(renderer.domElement);
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
 controls.minDistance = 0.6;
-const gltf_loader = new GLTFLoader();
 
+const gltf_loader = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const textureLoader = new THREE.TextureLoader();
@@ -159,34 +169,23 @@ function onMouseClick(event) {
 
 window.addEventListener('click', onMouseClick, false);
 
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-const viewport_div = document.getElementById("gl_viewport");
-viewport_div.appendChild(renderer.domElement);
-
-camera.position.z = 5;
-
 const light = new THREE.AmbientLight(0xffffff, 2);
 scene.add(light);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(-5, 2, 2);
 scene.add(directionalLight);
 
 window.addEventListener('resize', function () {
     let SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-
-    // Update camera aspect ratio to match new screen dimensions
     camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-    camera.updateProjectionMatrix();  // Recalculate projection matrix after aspect change
-
-    // Update renderer size to match new screen size
+    camera.updateProjectionMatrix();
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 });
 
-
 function animate() {
     let SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-    viewport_div.width
+    viewport_div.width;
     renderer.setViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     renderer.clear();
     // renderer.setClearColor('#00031d');
