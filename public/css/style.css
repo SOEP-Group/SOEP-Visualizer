@@ -4,11 +4,13 @@
     font-family: Arial, sans-serif;
 }
 
-/* Header */
+/* ########### HEADER ################ */
 .header {
     background-color: #000000;
     color: white;
-    padding: 1rem;
+    height: 70px;
+    display: flex;
+    align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
@@ -16,7 +18,8 @@
     border-bottom: 2px solid #374151;
 }
 
-/* Navigation */
+
+/* ########### NAV ################ */
 .nav-container {
     display: flex;
     justify-content: space-between;
@@ -88,13 +91,6 @@
     color: white;
 }
 
-#satellite-popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    color: white;
-}
-
 #search-input {
     box-sizing: border-box;
     background-color: #000000;
@@ -112,6 +108,14 @@
     outline: 2px solid #374151;
 }
 
+#satellite-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: white;
+}
+
+
 .show {
     display: block;
 }
@@ -119,3 +123,87 @@
 .hidden {
     display: none;
 }
+
+/* ########### BURGER ################ */
+
+#menu__toggle {
+    opacity: 0;
+}
+
+#menu__toggle:checked+.menu__btn>span {
+    transform: rotate(45deg);
+}
+
+#menu__toggle:checked+.menu__btn>span::before {
+    top: 0;
+    transform: rotate(0deg);
+}
+
+#menu__toggle:checked+.menu__btn>span::after {
+    top: 0;
+    transform: rotate(90deg);
+}
+
+#menu__toggle:checked~.menu__box {
+    right: 0 !important;
+}
+
+.menu__btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.menu__btn>span,
+.menu__btn>span::before,
+.menu__btn>span::after {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    transition-duration: .25s;
+}
+
+.menu__btn>span::before {
+    content: '';
+    top: -8px;
+}
+
+.menu__btn>span::after {
+    content: '';
+    top: 8px;
+}
+
+.menu__box {
+    display: block;
+    position: fixed;
+    top: 69px;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    margin: 0;
+    padding: 20px 0;
+    background-color: rgb(15, 14, 14);
+    border: 1px solid #374151;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition-duration: .25s;
+}
+
+.menu__item {
+    display: block;
+    padding: 12px 24px;
+    color: white;
+    font-size: 16px;
+    transition-duration: .25s;
+}
+
+.menu__item:hover {
+    background-color: #242527;
+}
+
+/* ########################### */

@@ -10,8 +10,8 @@ camera.position.z = 3;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping; // Tone mapping for better brightness
-renderer.toneMappingExposure = 1.25;  // Adjust exposure for brightness
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.25;
 const viewport_div = document.getElementById("gl_viewport");
 viewport_div.appendChild(renderer.domElement);
 

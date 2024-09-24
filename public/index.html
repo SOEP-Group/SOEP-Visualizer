@@ -49,22 +49,25 @@
       </div>
 
       <!-- Dropdown burger -->
-      <div class="dropdown">
-        <button id="dropdownButton" class="dropdown-button">≡</button>
+      <div class="hamburger-menu">
+        <input id="menu__toggle" type="checkbox" />
+        <label class="menu__btn" for="menu__toggle">
+          <span></span>
+        </label>
 
-        <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Collision prediction</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Pass prediction</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Re-entry prediction</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
-        </div>
+        <ul class="menu__box">
+          <li><a class="menu__item" href="#">Collision prediction</a></li>
+          <li><a class="menu__item" href="#">Pass prediction</a></li>
+          <li><a class="menu__item" href="#">Re-entry prediction</a></li>
+          <li><a class="menu__item" href="#">Settings</a></li>
+        </ul>
       </div>
     </nav>
   </header>
 
   <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
     id="dynamic-content"></div>
-    
+
   <div class="p-0" id="gl_viewport"></div>
   <div id="popup-container"></div>
 </body>
