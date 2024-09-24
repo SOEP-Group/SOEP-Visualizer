@@ -1,14 +1,21 @@
 const express = require('express');
 const index_routes = require('./routes/index');
+const path = require('path');
 
 const app = express(),
 	    bodyParser = require('body-parser'),
 	    port = 3000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.set('view engine', 'pug');
 
-app.use(express.static('public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// app.use(express.static('public'));
+// app.use('/views', express.static(path.join(__dirname, 'views')));
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/views', express.static(path.join(__dirname, 'views')));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

@@ -1,15 +1,36 @@
 <doctype html>
-<html lang='en'>
+  <html lang='en'>
+
   <head>
-    <title>SOPE Visualizer</title>
+    <title>SOEP Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://unpkg.com/htmx.org@1.5.0'></script>
     <style>
-      body {padding: 20px}
-      table {font-family: arial, sans-serif; border-collapse: collapse; width: 100%;}
-      tr.htmx-swapping td {opacity: 0; transition: opacity 0.5s ease-out;}
-      td, th {border: 1px solid #383737; text-align: left; padding: 8px;}
-      tr:nth-child(even) {background-color: #dddddd;}
+      body {
+        padding: 20px;
+      }
+
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      tr.htmx-swapping td {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+      }
+
+      td,
+      th {
+        border: 1px solid #383737;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
     </style>
     <script type="importmap">
       {
@@ -20,15 +41,20 @@
       }
     </script>
   </head>
+
   <body class="p-0">
     <!-- <h1>I see you looking</h1>
     <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" hx-get="/test" hx-target="#dynamic-content">Load dyanmic content from another route</button>-->
-    <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white" id="dynamic-content"></div> 
+    <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
+      id="dynamic-content"></div>
 
     <div class="p-0" id="gl_viewport">
     </div>
+    <div id="popup-container"></div>
+    <script src="/popup.js"></script>
   </body>
 
   <script type="module" src="main.js"></script>
-  </html> 
-   
+
+
+  </html>
