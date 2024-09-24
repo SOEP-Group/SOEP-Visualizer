@@ -19,7 +19,6 @@
 </head>
 
 <body class="p-0">
-  <!-- Header -->
   <header class="header">
     <nav class="nav-container">
 
@@ -27,22 +26,28 @@
       <div class="nav-left">
         <a href="#" class="logo">SOEP Visualizer</a>
 
-        <!-- Navigation links -->
         <ul class="nav-links">
-          <li><a href="home" class="nav-link">Home</a></li>
-          <li><a href="#about" class="nav-link">About</a></li>
 
-          <!-- Satellite search  -->
+          <!-- Prediction dropdown -->
           <li class="dropdown">
-            <a href="javascript:void(0);" class="nav-link dropdown-trigger">Satellites ▼</a>
+            <button class="prediction-dropdown-trigger">Prediction</button>
+            <div id="prediction-dropdown" class="dropdown-content">
+              <a href="#">Collision prediction</a>
+              <a href="#">Pass prediction</a>
+              <a href="#">Re-entry prediction</a>
+            </div>
+          </li>
 
+          <!-- Satellite dropdown -->
+          <li class="dropdown">
+            <button class="satellite-dropdown-trigger">Satellites</button>
             <div id="satellite-dropdown" class="dropdown-content">
-              <input type="text" placeholder="Search.." id="search-input">
-              <a href="#cosmo">Cosmos </a>
-              <a href="#starlite">Starlink</a>
-              <a href="#satellite3">Satellite3</a>
-              <a href="#satellite4">Satellite4</a>
-              <a href="#satellite5">Satellite5</a>
+              <input type="text" id="search-input" placeholder="Search..">
+              <a href="#">Cosmos</a>
+              <a href="#">Starlink</a>
+              <a href="#">Satellite3</a>
+              <a href="#">Satellite4</a>
+              <a href="#">Satellite5</a>
             </div>
           </li>
         </ul>
@@ -50,15 +55,13 @@
 
       <!-- Dropdown burger -->
       <div class="hamburger-menu">
-        <input id="menu__toggle" type="checkbox" />
-        <label class="menu__btn" for="menu__toggle">
+        <button id="menu__toggle" class="menu__btn">
           <span></span>
-        </label>
-
+        </button>
         <ul class="menu__box">
-          <li><a class="menu__item" href="#">Collision prediction</a></li>
-          <li><a class="menu__item" href="#">Pass prediction</a></li>
-          <li><a class="menu__item" href="#">Re-entry prediction</a></li>
+          <li><a class="menu__item" href="#">Home</a></li>
+          <li><a class="menu__item" href="#">About</a></li>
+          <li><a class="menu__item" href="#">How to use</a></li>
           <li><a class="menu__item" href="#">Settings</a></li>
         </ul>
       </div>

@@ -1,48 +1,71 @@
-// satellite dropdown 
 document.addEventListener('DOMContentLoaded', function () {
-    const satelliteDropdownToggle = document.querySelector('.dropdown-trigger');
-    const satelliteDropdown = document.getElementById("satellite-dropdown");
-    const searchInput = document.getElementById("search-input");
+    const predictionTrigger = document.querySelector('.prediction-dropdown-trigger');
+    const predictionDropdown = document.getElementById('prediction-dropdown');
 
-    satelliteDropdownToggle.addEventListener('click', function () {
-        satelliteDropdown.classList.toggle("show");
+    const satelliteTrigger = document.querySelector('.satellite-dropdown-trigger');
+    const satelliteDropdown = document.getElementById('satellite-dropdown');
+    const searchInput = document.getElementById('search-input');
+
+    // prediction dropdown
+    predictionTrigger.addEventListener('click', function () {
+        predictionDropdown.classList.toggle('show'); // open
+        satelliteDropdown.classList.remove('show'); // close
+    });
+
+    // satellite dropdown
+    satelliteTrigger.addEventListener('click', function () {
+        satelliteDropdown.classList.toggle('show');
+        predictionDropdown.classList.remove('show');
     });
 
     // filter satellite options based on search input
     searchInput.addEventListener('keyup', function () {
         const filter = searchInput.value.toUpperCase();
-        const a = satelliteDropdown.getElementsByTagName("a");
+        const satelliteLinks = satelliteDropdown.getElementsByTagName("a");
 
-        for (let i = 0; i < a.length; i++) {
-            const txtValue = a[i].textContent || a[i].innerText;
+        for (let i = 0; i < satelliteLinks.length; i++) {
+            const txtValue = satelliteLinks[i].textContent || satelliteLinks[i].innerText;
 
             if (txtValue.toUpperCase().startsWith(filter)) {
-                a[i].style.display = "";
+                satelliteLinks[i].style.display = ""; // show matching item
             } else {
-                a[i].style.display = "none";
+                satelliteLinks[i].style.display = "none"; // hide non-matching item
             }
         }
     });
 
-    // close satellite dropdown if clicked outside
-    document.addEventListener('click', function (event) {
-        if (!satelliteDropdown.contains(event.target) && !satelliteDropdownToggle.contains(event.target)) {
+    // close dropdown if clicked outside
+    window.addEventListener('click', function (event) {
+        if (!event.target.matches('.prediction-dropdown-trigger') &&
+            !event.target.matches('.satellite-dropdown-trigger') &&
+            !event.target.matches('#search-input')) {
+            predictionDropdown.classList.remove('show');
             satelliteDropdown.classList.remove('show');
         }
     });
+});
 
-    // burger menu
-    const dropdownButton = document.getElementById('dropdownButton');
-    const dropdownMenu = document.getElementById('dropdownMenu');
+// burger menu
+const dropdownButton = document.getElementById('menu__toggle');
+const dropdownMenu = document.querySelector('.menu__box');
+const menuItems = dropdownMenu.querySelectorAll('.menu__item');
 
-    dropdownButton.addEventListener('click', function () {
-        dropdownMenu.classList.toggle('hidden');
-    });
+dropdownButton.addEventListener('click', function () {
+    dropdownMenu.classList.toggle('active');
+    dropdownButton.classList.toggle('active');
+});
 
-    // close burger menu if clicked outside
-    document.addEventListener('click', function (event) {
-        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.classList.add('hidden');
-        }
+document.addEventListener('click', function (event) {
+    if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.classList.remove('active');
+        dropdownButton.classList.remove('active');
+    }
+});
+
+// close dropdown if clicked outside
+menuItems.forEach(item => {
+    item.addEventListener('click', function () {
+        dropdownMenu.classList.remove('active');
+        dropdownButton.classList.remove('active');
     });
 });
