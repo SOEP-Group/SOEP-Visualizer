@@ -115,7 +115,7 @@ function loadSatellites() {
 }
 
 function addSatelliteToScene(satellite) {
-    const geometry = new THREE.SphereGeometry(0.025, 8, 8);
+    const geometry = new THREE.SphereGeometry(0.025, 64, 64);
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const satelliteMesh = new THREE.Mesh(geometry, material);
 
