@@ -22,38 +22,12 @@ controls.minDistance = 0.6;
 const gltf_loader = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-const textureLoader = new THREE.TextureLoader();
-
-// Get current month and corresponding image name
-const date = new Date();
-const month = date.getMonth();
-const monthNames = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december"
-];
-const imageName = `meshes/earth/earth_${monthNames[month]}.jpg`;
-console.log("Selected image for the current month:", imageName);
 
 const fakeSatelliteData = [
     { id: 'satellite_1', position: { x: 0.5, y: -1, z: 0.1 } },
     { id: 'satellite_2', position: { x: -2, y: 0.2, z: 0.2 } },
     { id: 'satellite_3', position: { x: 0.3, y: 0.3, z: -1.5 } },
 ];
-
-const mockSatelliteData = {
-    'satellite_1': {
-        name: 'Satellite Alpha',
-        launchDate: '2020-01-01',
-    },
-    'satellite_2': {
-        name: 'Satellite Beta',
-        launchDate: '2021-05-15',
-    },
-    'satellite_3': {
-        name: 'Satellite C',
-        launchDate: '2022-12-15',
-    },
-};
 
 async function fetchSatelliteData() {
     try {
@@ -69,28 +43,24 @@ async function fetchSatelliteData() {
     }
 }
 
-function fetchSatelliteInfo(id) {   // will remake and move this!
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (mockSatelliteData[id]) {
-                resolve(mockSatelliteData[id]);
-            } else {
-                reject('Satellite not found');
+function fetchSatelliteInfo(id) {
+    return fetch(`/satellite_info/${id}`) 
+        .then(response => {
+            if (!response.ok) { 
+                throw new Error('Network response was not ok'); 
             }
-        }, 500); // Simulate network delay
-    });
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error fetching satellite info:', error);
+            throw error;
+        });
 }
 
 gltf_loader.load(
     'meshes/earth/earth.gltf',
     function (gltf) {
         const earthMesh = gltf.scene;
-        earthMesh.children[0].name = "earth";
-        textureLoader.load(imageName, function (texture) {
-            texture.flipY = false;
-            earthMesh.children[0].material.map = texture;
-            earthMesh.children[0].material.needsUpdate = true;
-        });
         scene.add(earthMesh);
 
         loadSatellites();
