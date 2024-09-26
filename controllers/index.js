@@ -8,8 +8,6 @@ exports.Dynamic = async function(req, res){
   // process.env.INIT_CWD is the root folder
   return res.sendFile(path.join(process.env.INIT_CWD, 'views/test.html')); 
 }
-<<<<<<< HEAD
-=======
 
 
 const mockSatelliteData = {
@@ -37,4 +35,3 @@ exports.getSatelliteInfo = (req, res) => {
     res.status(404).json({ error: 'Satellite not found' });
   }
 };
->>>>>>> interface
