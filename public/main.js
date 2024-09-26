@@ -18,6 +18,7 @@ viewport_div.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
 controls.minDistance = 0.6;
+controls.maxDistance = 10;
 
 const gltf_loader = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
@@ -44,10 +45,10 @@ async function fetchSatelliteData() {
 }
 
 function fetchSatelliteInfo(id) {
-    return fetch(`/satellite_info/${id}`) 
+    return fetch(`/satellite_info/${id}`)
         .then(response => {
-            if (!response.ok) { 
-                throw new Error('Network response was not ok'); 
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
             return response.json();
         })
