@@ -1,5 +1,9 @@
 const express = require('express');
 const index_routes = require('./routes/index');
+<<<<<<< HEAD
+=======
+const path = require('path');
+>>>>>>> interface
 
 const app = express(),
 	    bodyParser = require('body-parser'),
@@ -8,7 +12,12 @@ const app = express(),
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
+<<<<<<< HEAD
 app.use(express.static('public'));
+=======
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/views', express.static(path.join(__dirname, 'views')));
+>>>>>>> interface
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
