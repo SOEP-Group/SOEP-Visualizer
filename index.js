@@ -6,8 +6,6 @@ const app = express(),
 	    bodyParser = require('body-parser'),
 	    port = 3000;
 
-app.set('view engine', 'pug');
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
