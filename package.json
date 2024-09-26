@@ -4,8 +4,7 @@
   "description": "SOEP visualizer",
   "main": "index.js",
   "scripts": {
-    "start": "node server.bundle.js",
-    "build": "webpack",
+    "start": "node index.js",
     "dev": "nodemon ./app.js localhost 3000"
   },
   "author": "SOEP Team",
@@ -15,7 +14,6 @@
     "pug": "^3.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4",
-    "webpack": "^5.94.0"
+    "nodemon": "^3.1.4"
   }
 }

@@ -19,9 +19,50 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
 controls.minDistance = 0.6;
 
+
 const gltf_loader = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+const textureLoader = new THREE.TextureLoader();
+
+// Get current month and corresponding image name
+const date = new Date();
+const month = date.getMonth();
+const monthNames = [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
+];
+const imageName = `meshes/earth/earth_${monthNames[month]}.jpg`;
+console.log("Selected image for the current month:", imageName);
+
+const fakeSatelliteData = [
+    { id: 'satellite_1', position: { x: 0.5, y: -1, z: 0.1 } },
+    { id: 'satellite_2', position: { x: -2, y: 0.2, z: 0.2 } },
+    { id: 'satellite_3', position: { x: 0.3, y: 0.3, z: -1.5 } },
+];
+
+const mockSatelliteData = {
+    'satellite_1': {
+        name: 'Satellite Alpha',
+        launchDate: '2020-01-01',
+    },
+    'satellite_2': {
+        name: 'Satellite Beta',
+        launchDate: '2021-05-15',
+    },
+    'satellite_3': {
+        name: 'Satellite C',
+        launchDate: '2022-12-15',
+    },
+};
+
+function fetchSatelliteData() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(fakeSatelliteData);
+        }, 1000); // simulate some delay
+    });
+}
 
 const fakeSatelliteData = [
     { id: 'satellite_1', position: { x: 0.5, y: -1, z: 0.1 } },
@@ -115,8 +156,6 @@ function onMouseClick(event) {
                 target: '#dynamic-content'
             });
         }
-<<<<<<< HEAD
-=======
 
         if (clickedObject.name.startsWith("satellite_")) {
             console.log("Satellite clicked:", clickedObject.name);
@@ -134,49 +173,22 @@ function onMouseClick(event) {
                 });
         }
 
->>>>>>> interface
+
     } else {
         dynamicContentDiv.classList.add("hidden");
     }
 }
 
+
 window.addEventListener('click', onMouseClick, false);
 
-<<<<<<< HEAD
-
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize(window.innerWidth, window.innerHeight);
 const viewport_div = document.getElementById("gl_viewport");
-viewport_div.appendChild( renderer.domElement );
+viewport_div.appendChild(renderer.domElement);
 
 camera.position.z = 5;
 
-const light = new THREE.AmbientLight( 0xffffff, 1 );
-scene.add( light );
 
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-scene.add( directionalLight );
-
-window.addEventListener('resize', function() {
-    let SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-
-    // Update camera aspect ratio to match new screen dimensions
-    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-    camera.updateProjectionMatrix();  // Recalculate projection matrix after aspect change
-
-    // Update renderer size to match new screen size
-    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-});
-
-
-function animate() {
-    let SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-    viewport_div.width
-    renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-    renderer.clear();
-    renderer.render( scene, camera );
-}
-renderer.setAnimationLoop( animate );
-=======
 const light = new THREE.AmbientLight(0xffffff, 2);
 scene.add(light);
 
@@ -200,4 +212,3 @@ function animate() {
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
->>>>>>> interface
