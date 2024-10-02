@@ -1,3 +1,4 @@
+const { time } = require('console');
 const path = require('path');
 
 exports.Home = async function(req, res){
@@ -28,10 +29,24 @@ const mockSatelliteData = {
 exports.getSatelliteInfo = (req, res) => {
   const satelliteId = req.params.id;
   // Fetch real satellite data in future
-  const satelliteData = mockSatelliteData[satelliteId]
-  if (satelliteData) {
-      res.json(satelliteData);
-  } else {
-    res.status(404).json({ error: 'Satellite not found' });
-  }
+  // time.sleep
+  // const satelliteData = mockSatelliteData[satelliteId]
+  // if (satelliteData) {
+  //     res.json(satelliteData);
+  // } else {
+  //   res.status(404).json({ error: 'Satellite not found' });
+  // }
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  delay(2000).then(() => {
+    const satelliteData = mockSatelliteData[satelliteId];
+    if (satelliteData) {
+        res.json(satelliteData);
+    } else {
+        res.status(404).json({ error: 'Satellite not found' });
+    }
+  }).catch(error => {
+    console.error('Error in delay:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
 };
