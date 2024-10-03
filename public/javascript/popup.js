@@ -52,7 +52,3 @@ function openPopup(data) {
         console.error('Popup elements not found');
     }
 }
-
-function closePopup() {
-    document.getElementById('satellite-popup').classList.add('hidden');
-}

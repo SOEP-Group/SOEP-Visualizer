@@ -119,9 +119,11 @@ function onMouseClick(event) {
 
         if (clickedObject.name.startsWith("satellite_")) {
             console.log("Satellite clicked:", clickedObject.name);
+            document.getElementById('loading-skeleton').classList.remove('hidden');
 
             fetchSatelliteInfo(clickedObject.name)
                 .then(data => {
+                    document.getElementById('loading-skeleton').classList.add('hidden');
                     openPopup(data);
                 })
                 .catch(error => {

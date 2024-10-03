@@ -1,9 +1,23 @@
-<div id="satellite-popup" class="fixed bottom-0 right-0 m-4 bg-gray-800 text-white border border-gray-700 p-4 shadow-lg z-50 hidden max-w-sm w-full">
-    <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Satellite Information</h2>
-        <p><strong>Name:</strong> <span id="satellite-name"></span></p>
-        <p><strong>Launch Date:</strong> <span id="launch-date"></span></p>
-        <button id="close-popup" class="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">Close</button>
+<link rel="stylesheet" href="./css/style.css">
 
+<div id="popup-container" class="popup-container">
+    <!-- Loading Skeleton -->
+    <div id="loading-skeleton" class="loading-skeleton hidden">
+        <div class="space-y-4">
+            <h2 class="loading-title">Satellite Information</h2>
+            <p><strong>Name:</strong> <span class="skeleton"></span></p>
+            <p><strong>Launch Date:</strong> <span class="skeleton"></span></p>
+            <button id="close-popup" class="close-button">Close</button>
+        </div>
+    </div>
+
+    <!-- Popup --> 
+    <div id="satellite-popup" class="satellite-popup hidden">
+        <div class="space-y-4">
+            <h2 class="satellite-title">Satellite Information</h2>
+            <p><strong>Name:</strong> <span id="satellite-name"></span></p>
+            <p><strong>Launch Date:</strong> <span id="launch-date"></span></p>
+            <button id="close-popup" class="close-button">Close</button>
+        </div>
     </div>
 </div>
