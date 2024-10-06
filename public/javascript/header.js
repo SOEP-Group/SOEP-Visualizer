@@ -63,9 +63,16 @@ document.addEventListener('click', function (event) {
 });
 
 // close dropdown if clicked outside
-menuItems.forEach(item => {
-    item.addEventListener('click', function () {
+document.addEventListener('click', function (event) {
+    if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
         dropdownMenu.classList.remove('active');
         dropdownButton.classList.remove('active');
+    }
+});
+
+// prevent closing the menu when clicking on menu items
+menuItems.forEach(item => {
+    item.addEventListener('click', function () {
     });
 });
+
