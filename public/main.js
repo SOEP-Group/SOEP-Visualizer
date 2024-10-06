@@ -64,7 +64,7 @@ gltf_loader.load(
         const earthMesh = gltf.scene;
         scene.add(earthMesh);
 
-        loadSatellites();
+        loadAllSatellites();
     },
     // called while loading is progressing
     function (xhr) {
@@ -75,8 +75,8 @@ gltf_loader.load(
     }
 );
 
-function loadSatellites() {
-    fetchSatelliteData()
+function loadAllSatellites() {
+    fetchSatelliteData()    // fetch satellite_orbit_data for all satelite_id in satellite table, then getSatellitePosition(satelliteId), then add
         .then(data => {
             data.forEach(satellite => {
                 addSatelliteToScene(satellite);
@@ -85,16 +85,123 @@ function loadSatellites() {
         .catch(error => console.error('Error loading satellites:', error));
 }
 
+// const { Client } = require('pg'); // Import the PostgreSQL client
+// const moment = require('moment'); // For handling dates easily
+
+// async function getSatellitePosition(satelliteId) {
+//     const client = new Client({
+//         user: 'your_user',
+//         host: 'localhost',
+//         database: 'your_database',
+//         password: 'your_password',
+//         port: 5432, // Default PostgreSQL port
+//     });
+
+//     await client.connect();
+
+//     try {
+//         // Retrieve the latest position and velocity before now
+//         const latestQuery = `
+//             SELECT tsince, x, y, z, xdot, ydot, zdot, epoch_time
+//             FROM satellite_orbit_data
+//             WHERE satellite_id = $1 AND epoch_time <= NOW()
+//             ORDER BY epoch_time DESC
+//             LIMIT 1;
+//         `;
+//         const { rows: latestRows } = await client.query(latestQuery, [satelliteId]);
+//         const latestData = latestRows[0];
+
+//         // Retrieve the next position after now
+//         const nextQuery = `
+//             SELECT tsince, x, y, z, xdot, ydot, zdot, epoch_time
+//             FROM satellite_orbit_data
+//             WHERE satellite_id = $1 AND epoch_time > NOW()
+//             ORDER BY epoch_time ASC
+//             LIMIT 1;
+//         `;
+//         const { rows: nextRows } = await client.query(nextQuery, [satelliteId]);
+//         const nextData = nextRows[0];
+
+//         // Current time in epoch format
+//         const currentTime = moment();
+//         const epochTime = moment(latestData.epoch_time);
+
+//         // Calculate time elapsed in seconds since epoch
+//         const elapsedSeconds = currentTime.diff(epochTime, 'seconds');
+
+//         // Calculate new position using velocities if elapsed time is significant
+//         if (elapsedSeconds > 0) {
+//             const x = latestData.x + latestData.xdot * elapsedSeconds;
+//             const y = latestData.y + latestData.ydot * elapsedSeconds;
+//             const z = latestData.z + latestData.zdot * elapsedSeconds;
+
+//             return { x, y, z };
+//         } else {
+//             // If no significant time has elapsed, return the latest known position
+//             return { x: latestData.x, y: latestData.y, z: latestData.z };
+//         }
+//     } catch (err) {
+//         console.error('Error retrieving satellite position:', err);
+//     } finally {
+//         await client.end();
+//     }
+// }
+
+// // Example Usage
+// getSatellitePosition('25544U98067A')
+//     .then(position => {
+//         console.log('Current Position:', position);
+//     })
+//     .catch(err => {
+//         console.error(err);
+//     });
+
+
+// // Example Usage
+// getSatellitePosition('25544U98067A')
+//     .then(position => {
+//         console.log('Current Position:', position);
+//     })
+//     .catch(err => {
+//         console.error(err);
+//     });
+
 function addSatelliteToScene(satellite) {
     const geometry = new THREE.SphereGeometry(0.025, 64, 64);
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const satelliteMesh = new THREE.Mesh(geometry, material);
 
+    // call to fuction that re-maps real position with redered position
     satelliteMesh.position.set(satellite.position.x, satellite.position.y, satellite.position.z);
     satelliteMesh.name = satellite.id;
 
     scene.add(satelliteMesh);
 }
+
+function plotOrbit(orbitData) {
+    // Remove any existing orbit path, if needed
+    if (scene.getObjectByName('satelliteOrbitPath')) {
+        const oldOrbit = scene.getObjectByName('satelliteOrbitPath');
+        scene.remove(oldOrbit);
+    }
+
+    console.log(orbitData);
+    // Create a curve using orbit data points
+    const orbitPoints = orbitData.map(point => new THREE.Vector3(point.x, point.y, point.z));
+    const orbitCurve = new THREE.CatmullRomCurve3(orbitPoints);
+
+    // Create a geometry and material for the orbit path
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitCurve.getPoints(100)); // Higher number for smoother curve
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 }); // Set color of orbit path
+
+    // Create the orbit line and add it to the scene
+    const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
+    orbitLine.name = 'satelliteOrbitPath';  // Give it a name to manage later
+
+    // Add to scene
+    scene.add(orbitLine);
+}
+
 
 function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -125,6 +232,10 @@ function onMouseClick(event) {
                 .then(data => {
                     document.getElementById('loading-skeleton').classList.add('hidden');
                     openPopup(data);
+
+                    if (data.orbitData) {
+                        plotOrbit(data.orbitData);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching satellite info:', error);
