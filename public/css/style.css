@@ -66,7 +66,7 @@
 
 .prediction-dropdown-trigger option {
     background-color: rgb(15, 14, 14);
-    color: #d1d5db; 
+    color: #d1d5db;
 }
 
 .prediction-dropdown-trigger:hover,
@@ -146,9 +146,10 @@
     z-index: 1;
     transition: transform 0.25s ease;
 }
-.menu__btn > span,
-.menu__btn > span::before,
-.menu__btn > span::after {
+
+.menu__btn>span,
+.menu__btn>span::before,
+.menu__btn>span::after {
     display: block;
     position: absolute;
     width: 100%;
@@ -157,42 +158,42 @@
     transition: all 0.25s ease;
 }
 
-.menu__btn > span {
-    transition: color 0.3s ease; 
+.menu__btn>span {
+    transition: color 0.3s ease;
 }
 
-.menu__btn:hover > span,
-.menu__btn:hover > span::before,
-.menu__btn:hover > span::after {
+.menu__btn:hover>span,
+.menu__btn:hover>span::before,
+.menu__btn:hover>span::after {
     background-color: #d1d5db;
 }
 
-.menu__btn > span::before {
+.menu__btn>span::before {
     content: '';
     top: -8px;
 }
 
-.menu__btn > span::after {
+.menu__btn>span::after {
     content: '';
     top: 8px;
 }
 
-.menu__btn.active > span {
+.menu__btn.active>span {
     background-color: transparent;
 }
 
-.menu__btn.active > span::before {
+.menu__btn.active>span::before {
     transform: rotate(45deg);
     top: 0;
 }
 
-.menu__btn.active > span::after {
+.menu__btn.active>span::after {
     transform: rotate(-45deg);
     top: 0;
 }
 
 .menu__btn:hover {
-    color: #d1d5db; 
+    color: #d1d5db;
 }
 
 .menu__box {
@@ -226,13 +227,6 @@
     right: 0;
 }
 
-/* Will add this later when popup is fixed */
-/* ############ EARTH ############### */
-/*#gl_viewport {
-    position: fixed;
-    top: 40px;
-}*/
-
 /* ########### Left Window ################ */
 .side-window {
     position: fixed;
@@ -260,10 +254,10 @@
 
 h2 {
     font-size: 26px !important;
-    color: white; 
-    font-weight: bold !important; 
-    text-align: center; 
-    margin-bottom: 20px !important; 
+    color: white;
+    font-weight: bold !important;
+    text-align: center;
+    margin-bottom: 20px !important;
 }
 
 .form-container {
@@ -311,8 +305,15 @@ h2 {
 }
 
 .close-btn:hover {
-    color: #d1d5db; 
+    color: #d1d5db;
 }
+
+/* Will add this later when satellites is fixed */
+/* ############ EARTH ############### */
+/*.gl_viewport {
+    position: relative;
+    top: 50px;
+}*/
 
 /* ########### Popup Container ################ */
 
@@ -326,7 +327,8 @@ h2 {
     width: 100%;
 }
 
-.loading-skeleton, .satellite-popup {
+.loading-skeleton,
+.satellite-popup {
     background-color: #2d3748;
     color: white;
     border: 1px solid #4a5568;
@@ -339,7 +341,8 @@ h2 {
     position: relative;
 }
 
-.loading-title, .satellite-title {
+.loading-title,
+.satellite-title {
     font-size: 1.125rem;
     font-weight: 600;
 }
@@ -368,8 +371,17 @@ h2 {
 }
 
 @keyframes pulse {
-    0% { opacity: 0.7; }
-    50% { opacity: 1; }
-    100% { opacity: 0.7; }
+    0% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
 }
+
 /* ########################### */
