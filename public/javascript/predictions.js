@@ -63,5 +63,6 @@ closeWindowButton.addEventListener('click', () => {
 document.addEventListener('click', (event) => {
     if (!sideWindow.contains(event.target) && !dropdownContent.contains(event.target) && !dropdownTrigger.contains(event.target)) {
         sideWindow.classList.remove('open');
+        dropdownContent.style.display = 'none';
     }
 });
