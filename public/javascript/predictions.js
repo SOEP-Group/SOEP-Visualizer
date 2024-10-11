@@ -5,6 +5,9 @@ const windowContent = document.getElementById('window-content');
 const closeWindowButton = document.getElementById('close-window');
 const dropdownItems = document.querySelectorAll('.dropdown-item');
 
+const MIN_WIDTH = 150;
+let lastWidth = 300;
+
 function getContent(itemType) {
     switch (itemType) {
         case 'collision':
@@ -42,6 +45,7 @@ dropdownTrigger.addEventListener('click', (event) => {
     event.stopPropagation();
     dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
     sideWindow.classList.remove('open');
+    sideWindow.style.width = "0";
 });
 
 dropdownItems.forEach(item => {
@@ -50,7 +54,7 @@ dropdownItems.forEach(item => {
         const itemType = event.target.getAttribute('data-type');
 
         windowContent.innerHTML = getContent(itemType);
-
+        sideWindow.style.width = `${lastWidth}px`;
         sideWindow.classList.add('open');
         dropdownContent.style.display = 'none';
     });
@@ -58,11 +62,13 @@ dropdownItems.forEach(item => {
 
 closeWindowButton.addEventListener('click', () => {
     sideWindow.classList.remove('open');
+    sideWindow.style.width = "0";
 });
 
 document.addEventListener('click', (event) => {
     if (!sideWindow.contains(event.target) && !dropdownContent.contains(event.target) && !dropdownTrigger.contains(event.target)) {
         sideWindow.classList.remove('open');
         dropdownContent.style.display = 'none';
+        sideWindow.style.width = "0";
     }
 });

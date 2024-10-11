@@ -31,6 +31,7 @@
 .nav-left {
     display: flex;
     align-items: center;
+    padding: 20px;
 }
 
 .logo {
@@ -232,7 +233,7 @@
     position: fixed;
     left: -300px;
     top: 69px;
-    width: 300px;
+    width: auto; 
     height: 100%;
     padding: 20px 0;
     background-color: rgb(15, 14, 14);
@@ -382,6 +383,16 @@ h2 {
     100% {
         opacity: 0.7;
     }
+}
+
+/* ############ RESIZER ############### */
+.resizer {
+    width: 10px;
+    cursor: ew-resize;
+    height: 100%;
+    position: absolute;
+    right: 0; 
+    top: 0; 
 }
 
 /* ########################### */
