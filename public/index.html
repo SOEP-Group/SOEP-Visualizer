@@ -24,7 +24,7 @@
 
       <!-- Logo -->
       <div class="nav-left">
-        <a href="#" class="logo">SOEP Visualizer</a>
+        <a href="index.html" class="logo">SOEP Visualizer</a>
 
         <ul class="nav-links">
 
@@ -32,9 +32,9 @@
           <li class="dropdown">
             <button class="prediction-dropdown-trigger">Prediction</button>
             <div id="prediction-dropdown" class="dropdown-content">
-              <a href="#">Collision prediction</a>
-              <a href="#">Pass prediction</a>
-              <a href="#">Re-entry prediction</a>
+              <a href="#" class="dropdown-item" data-type="collision">Collision prediction</a>
+              <a href="#" class="dropdown-item" data-type="pass">Pass prediction</a>
+              <a href="#" class="dropdown-item" data-type="reentry">Re-entry prediction</a>
             </div>
           </li>
 
@@ -59,10 +59,12 @@
           <span></span>
         </button>
         <ul class="menu__box">
-          <li><a class="menu__item" href="#">Home</a></li>
-          <li><a class="menu__item" href="#">About</a></li>
-          <li><a class="menu__item" href="#">How to use</a></li>
-          <li><a class="menu__item" href="#">Settings</a></li>
+          <li><a class="menu__item" href="index.html">Home</a></li>
+          <li><a class="menu__item" href="#" data-type="about">About</a></li>
+          <li><a class="menu__item" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+              rel="noopener noreferrer">Blog</a></li>
+          <li><a class="menu__item" href="#" data-type="how">How to use</a></li>
+          <li><a class="menu__item" href="#" data-type="settings">Settings</a></li>
         </ul>
       </div>
     </nav>
@@ -71,12 +73,22 @@
   <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
     id="dynamic-content"></div>
 
-  <div class="p-0" id="gl_viewport"></div>
+  <!-- Sliding window left-->
+  <div id="side-window" class="side-window">
+    <span id="close-window" class="close-btn">&times;</span>
+    <div class="resizer"></div>
+    <div class="side-window-content" id="window-content">
+    </div>
+  </div>
+
+  <div class="gl_viewport" id="gl_viewport"></div>
   <div id="popup-container"></div>
 </body>
 
 <script type="module" src="main.js"></script>
 <script src="javascript/header.js"></script>
 <script src="javascript/popup.js"></script>
+<script src="javascript/predictions.js"></script>
+<script src="javascript/resizer.js"></script>
 
 </html>

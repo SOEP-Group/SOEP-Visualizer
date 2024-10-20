@@ -6,14 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (container) {
                 container.innerHTML = html;
 
-                const closeButton = document.getElementById('close-popup');
-                if (closeButton) {
-                    closeButton.addEventListener('click', () => {
+                const closeButtons = container.querySelectorAll('.close-btn');
+                closeButtons.forEach(button => {
+                    button.addEventListener('click', () => {
                         hidePopup();
                     });
-                } else {
-                    console.error('Close button not found');
-                }
+                });
 
                 document.addEventListener('click', (event) => {
                     const popup = document.getElementById('satellite-popup');
@@ -39,11 +37,16 @@ function hidePopup() {
 
 function openPopup(data) {
     const nameElement = document.getElementById('satellite-name');
+    const speedElement = document.getElementById('satellite-speed');
+    const coordinatesElement = document.getElementById('satellite-coordinates');
     const launchDateElement = document.getElementById('launch-date');
 
-    if (nameElement && launchDateElement) {
+    if (nameElement && launchDateElement && speedElement && coordinatesElement) {
         nameElement.textContent = data.name || 'N/A';
+        speedElement.textContent = data.speed || 'N/A';
+        coordinatesElement.textContent = data.position || 'N/A';
         launchDateElement.textContent = data.launchDate || 'N/A';
+
         const popup = document.getElementById('satellite-popup');
         if (popup) {
             popup.classList.remove('hidden'); // Show popup

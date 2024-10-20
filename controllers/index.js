@@ -23,19 +23,23 @@ exports.RenderSatellite = async function(req, res) {
   res.render('satellite', satelliteData); // Ensure 'satellite.ejs' is inside the 'views' folder
 }
 
-
-
 const mockSatelliteData = {
     'satellite_1': {
         name: 'Satellite Alpha',
+        speed: 'Super fast',
+        position: 'N 6504089, E 278978',
         launchDate: '2020-01-01',
     },
     'satellite_2': {
         name: 'Satellite Beta',
+        speed: 'Super fast',
+        position: 'N 5489223, E 854213',
         launchDate: '2021-05-15',
     },
     'satellite_3': {
         name: 'Satellite C',
+        speed: 'Super fast',
+        position: 'N 5648215, E 458512',
         launchDate: '2022-12-15',
     },
 };
