@@ -114,3 +114,20 @@ window.addEventListener("resize", function () {
   renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
   composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 });
+
+// Temp
+function fetchSatellites() {
+    fetch('/api/satellites')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Satellites:', data);
+        })
+        .catch(error => {
+            console.error('Error fetching satellites:', error);
+        });
+}
+
+// wait for the DOM to be loaded
+document.addEventListener('DOMContentLoaded', () => {
+    fetchSatellites();
+});
