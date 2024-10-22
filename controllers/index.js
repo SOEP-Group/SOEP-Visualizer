@@ -1,5 +1,6 @@
 const { time } = require('console');
 const path = require('path');
+const pool = require('../db');
 
 exports.Home = async function(req, res){
   return res.render("index"); 
@@ -221,3 +222,16 @@ const mockOrbitData = [{satelliteName: "satellite_4", orbit: [
   { tsince: 118, position: { x: -5365.013393024611, y: 8183.795560721751, z: -2073.931015604927 }, velocity: { xdot: -7.211948327408305, ydot: -2.156658360629609, zdot: 9.712579507434968 } },
   { tsince: 119, position: { x: -5691.994494220167, y: 8299.24951036787, z: -1871.0064489008162 }, velocity: { xdot: -7.166298486679641, ydot: -2.605718496360357, zdot: 10.172926505121607 } },
 ]}];
+
+// Temp
+exports.getAllSatellites = function (req, res) {
+  pool.query('SELECT * FROM satellites')
+    .then(result => {
+      res.json(result.rows);
+    })
+    .catch(err => {
+      console.error('Error fetching satellites:', err);
+      res.status(500).send('Error fetching satellites.');
+    });
+};
+

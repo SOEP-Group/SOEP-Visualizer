@@ -9,5 +9,6 @@ router.get('/orbit_data/:id', controller.getOrbitData);
 
 // New route to render the EJS template with data
 router.get('/satellite', controller.RenderSatellite);
+router.get('/api/satellites', controller.getAllSatellites);
 
 module.exports = router;
