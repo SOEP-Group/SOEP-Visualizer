@@ -165,3 +165,20 @@ function animate() {
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+
+// Temp
+function fetchSatellites() {
+    fetch('/api/satellites')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Satellites:', data);
+        })
+        .catch(error => {
+            console.error('Error fetching satellites:', error);
+        });
+}
+
+// wait for the DOM to be loaded
+document.addEventListener('DOMContentLoaded', () => {
+    fetchSatellites();
+});
