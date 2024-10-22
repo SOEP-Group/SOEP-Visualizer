@@ -1,16 +1,17 @@
 const express = require('express');
 const index_routes = require('./routes/index');
 const path = require('path');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express(),
 	    bodyParser = require('body-parser'),
-	    port = 3000;
+	    port = process.env.PORT || 3000;
 
-// Set EJS as the templating engine
 app.set('view engine', 'ejs');
-
-// Set the directory where your EJS files are located
 app.set('views', './views');
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // It's recommended to pass `{ extended: true }`
