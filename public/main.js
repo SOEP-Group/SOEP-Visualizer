@@ -18,16 +18,19 @@ viewport_div.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
 controls.minDistance = 0.6;
-controls.maxDistance = 10;
+controls.maxDistance = 20;
 
 const gltf_loader = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+let currentOrbitLine = null;
+
 const fakeSatelliteData = [
-    { id: 'satellite_1', position: { x: 0.5, y: -1, z: 0.1 } },
-    { id: 'satellite_2', position: { x: -2, y: 0.2, z: 0.2 } },
-    { id: 'satellite_3', position: { x: 0.3, y: 0.3, z: -1.5 } },
+    { id: 'satellite_1', position: { x: 2.5, y: -1, z: 1 } },
+    { id: 'satellite_2', position: { x: -2, y: 2, z: 2 } },
+    { id: 'satellite_3', position: { x: 3, y: 3, z: -1.5 } },
+    { id: 'satellite_4', position: { x: 3.789, y: 2.012, z: -5.277 } },
 ];
 
 async function fetchSatelliteData() {
@@ -57,6 +60,29 @@ function fetchSatelliteInfo(id) {
             throw error;
         });
 }
+
+function fetchOrbitData(id) {
+    return fetch(`/orbit_data/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error fetching orbit data:', error);
+            throw error;
+        });
+}
+
+async function getOrbitData(id) {
+    try {
+      const orbitData = await fetchOrbitData(id);
+      return orbitData;
+    } catch (error) {
+      console.error('Error retrieving orbit data:', error);
+    }
+  }
 
 gltf_loader.load(
     'meshes/earth/earth.gltf',
@@ -96,6 +122,72 @@ function addSatelliteToScene(satellite) {
     scene.add(satelliteMesh);
 }
 
+
+async function displayOrbit(satellite){
+    console.log(satellite)
+    stopDisplayingOrbit()
+
+    // get data for this satellite from db
+    const data = await getOrbitData(satellite)
+
+    // Ensure satellite data exists
+    if (!data || data.length === 0) {
+        console.error("No satellite data available.");
+        return;
+    }
+
+    const orbitPathGeometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const tolerance = 50;  // might have to update and scale according to startposition
+    const loopPosition = {
+        x: data[0].position.x,
+        y: data[0].position.y,
+        z: data[0].position.z
+    };
+
+    
+    for (const entry of data) {
+        if (entry.tsince > 30) {    // go 30 steps forward before looking for the closing of the loop REDO THIS MECHANISM
+            if (
+                (entry.position.x >= loopPosition.x - tolerance && entry.position.x <= loopPosition.x + tolerance) &&
+                (entry.position.y >= loopPosition.y - tolerance && entry.position.y <= loopPosition.y + tolerance) &&
+                (entry.position.z >= loopPosition.z - tolerance && entry.position.z <= loopPosition.z + tolerance)
+            ) {
+                console.log("Loop completed")
+                break; // Exit the loop entirely
+            }
+        }
+        
+        vertices.push(
+            scalePosition(entry.position.x), // X coordinate
+            scalePosition(entry.position.y), // Y coordinate
+            scalePosition(entry.position.z)  // Z coordinate
+        );
+    }
+
+    // To close the loop
+    vertices.push(scalePosition(loopPosition.x), scalePosition(loopPosition.y), scalePosition(loopPosition.z))   
+
+    orbitPathGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green
+    const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
+
+    currentOrbitLine = orbitLine
+    scene.add(orbitLine);
+
+}
+
+function stopDisplayingOrbit() {
+    if (currentOrbitLine){
+        scene.remove(currentOrbitLine);
+    }
+}
+
+// Update this so it follows the right scale compared to the earth
+function scalePosition(satellitePosition){
+    return satellitePosition/1000
+}
+
 function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -120,6 +212,7 @@ function onMouseClick(event) {
         if (clickedObject.name.startsWith("satellite_")) {
             console.log("Satellite clicked:", clickedObject.name);
             document.getElementById('loading-skeleton').classList.remove('hidden');
+            displayOrbit(clickedObject.name)
 
             fetchSatelliteInfo(clickedObject.name)
                 .then(data => {
