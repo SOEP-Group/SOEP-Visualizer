@@ -71,12 +71,13 @@ exports.getSatelliteInfo = (req, res) => {
 };
 
 // Temp
-exports.getAllSatellites = async function (req, res) {
-  try {
-    const result = await pool.query('SELECT * FROM satellites');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching satellites:', err);
-    res.status(500).send('Error fetching satellites.');
-  }
+exports.getAllSatellites = function (req, res) {
+  pool.query('SELECT * FROM satellites')
+    .then(result => {
+      res.json(result.rows);
+    })
+    .catch(err => {
+      console.error('Error fetching satellites:', err);
+      res.status(500).send('Error fetching satellites.');
+    });
 };
