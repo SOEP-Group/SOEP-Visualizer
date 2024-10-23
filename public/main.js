@@ -81,23 +81,6 @@ async function getOrbitData(id) {
     }
   }
 
-gltf_loader.load(
-    'meshes/earth/earth.gltf',
-    function (gltf) {
-        const earthMesh = gltf.scene;
-        scene.add(earthMesh);
-
-        loadSatellites();
-    },
-    // called while loading is progressing
-    function (xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    },
-    function (error) {
-        console.log('An error happened', error);
-    }
-);
-
 function loadSatellites() {
   fetchSatelliteData()
     .then((data) => {
@@ -170,7 +153,7 @@ async function displayOrbit(satellite){
     const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
 
     currentOrbitLine = orbitLine
-    scene.add(orbitLine);
+    earth.add(orbitLine);
 
 }
 
@@ -228,37 +211,8 @@ function onMouseClick(event) {
     } else {
         dynamicContentDiv.classList.add("hidden");
     }
-}
-
-
-  const intersects = raycaster.intersectObjects(scene.children, true);
-
-  const dynamicContentDiv = document.getElementById("dynamic-content");
-
-  if (intersects.length > 0) {
-    const clickedObject = intersects[0].object;
-
-    if (clickedObject.name.startsWith("satellite_")) {
-      console.log("Satellite clicked:", clickedObject.name);
-      document.getElementById("loading-skeleton").classList.remove("hidden");
-
-      fetchSatelliteInfo(clickedObject.name)
-        .then((data) => {
-          document.getElementById("loading-skeleton").classList.add("hidden");
-          openPopup(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching satellite info:", error);
-          openPopup({
-            name: "Error",
-            launchDate: "Error",
-          });
-        });
-    }
-  } else {
-    dynamicContentDiv.classList.add("hidden");
   }
-}
+
 
 window.addEventListener("click", onMouseClick, false);
 
