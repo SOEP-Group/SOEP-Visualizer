@@ -4,6 +4,7 @@ const pool = require('../db');
 const { mockSatelliteData, mockOrbitData } = require('../mockData.js');
 
 
+
 exports.Home = async function(req, res){
   return res.render("index"); 
 }
