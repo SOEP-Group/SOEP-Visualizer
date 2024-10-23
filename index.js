@@ -1,17 +1,18 @@
 const express = require("express");
 const index_routes = require("./routes/index");
-const util_routes = require("./routes/utils");
+const api_routes = require("./routes/api");
 const path = require("path");
+const cors = require("cors");
+const fs = require("fs");
 
 const app = express(),
-  bodyParser = require("body-parser"),
-  port = 3000;
+  bodyParser = require("body-parser");
 
-// Set EJS as the templating engine
 app.set("view engine", "ejs");
 
-// Set the directory where your EJS files are located
 app.set("views", "./views");
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // It's recommended to pass `{ extended: true }`
@@ -32,10 +33,10 @@ app.use(function (req, res, next) {
 
 // Use the routes defined in index_routes
 app.use("/", index_routes);
-app.use("/utils/", util_routes);
+app.use("/api/", api_routes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port::${port}`);
+  console.log(`Server listening on port::${PORT}`);
 });

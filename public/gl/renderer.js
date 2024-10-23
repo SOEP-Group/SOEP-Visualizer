@@ -13,19 +13,42 @@ export const clock = new THREE.Clock();
 clock.start();
 export let composer; // Use this to add render passes for different post processing effects
 
+let cameraFocus;
+
+export function updateCameraFocus(focusTarget) {
+  cameraFocus = focusTarget;
+  const distance = camera.position.distanceTo(controls.target);
+  let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
+  controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
+  const direction = new THREE.Vector3()
+    .subVectors(camera.position, controls.target)
+    .normalize();
+  const newPosition = new THREE.Vector3()
+    .copy(controls.target)
+    .add(direction.multiplyScalar(distance));
+  camera.position.copy(newPosition);
+  controls.update();
+}
+
+function updateControlsPos() {
+  let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
+  controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
+  controls.update();
+}
+
 function animate() {
   composer.render();
   requestAnimationFrame(animate);
+  updateControlsPos();
 }
 
-export function InitRenderer() {
+export function InitRenderer(focusObject) {
   camera = new THREE.PerspectiveCamera(
     60,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
   );
-  camera.position.z = 3;
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -39,6 +62,9 @@ export function InitRenderer() {
   controls.enablePan = false;
   controls.minDistance = 0.6;
   controls.maxDistance = 10;
+  camera.position.set(0, 0, 3);
+
+  updateCameraFocus(focusObject);
 
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);

@@ -8,6 +8,18 @@ import { Earth } from "./gl/earth.js";
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+// Create sun
+const sun = new Sun().getSun();
+
+// Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
+const earth = new Earth({
+  planetSize: 0.5,
+  planetAngle: (-23.4 * Math.PI) / 180,
+  planetRotationDirection: "counterclockwise",
+  rotationSpeedMultiplier: 1,
+  orbitalSpeedMultiplier: 1,
+}).getPlanet();
+
 const fakeSatelliteData = [
   { id: "satellite_1", position: { x: 0.5, y: -1, z: 0.1 } },
   { id: "satellite_2", position: { x: -2, y: 0.2, z: 0.2 } },
@@ -64,7 +76,8 @@ function addSatelliteToScene(satellite) {
   );
   satelliteMesh.name = satellite.id;
 
-  scene.add(satelliteMesh);
+  // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
+  earth.add(satelliteMesh);
 }
 
 function onMouseClick(event) {
@@ -112,30 +125,24 @@ window.addEventListener("resize", function () {
   composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 });
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const sunPosition = await fetch("/utils/get_suns_position")
-    .then((res) => {
-      return res.json();
+// Temp
+function fetchSatellites() {
+  fetch("/api/satellites")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Satellites:", data);
     })
-    .catch((err) => {
-      console.error(err);
-      return null;
+    .catch((error) => {
+      console.error("Error fetching satellites:", error);
     });
+}
 
+document.addEventListener("DOMContentLoaded", async () => {
   InitScene();
-  // Create sun
-  const sun = new Sun(sunPosition).getSun();
+
   scene.add(sun);
-
-  // Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
-  const earth = new Earth({
-    planetSize: 0.5,
-    planetAngle: (-23.4 * Math.PI) / 180,
-    planetRotationDirection: "counterclockwise",
-    sunStartingPosition: sunPosition,
-  }).getPlanet();
-
   scene.add(earth);
-  InitRenderer();
+  InitRenderer(earth);
   loadSatellites();
+  //fetchSatellites();
 });

@@ -15,6 +15,6 @@ export function InitScene() {
     "nz.png",
   ]);
   scene.background = texture;
-  const light = new THREE.AmbientLight(0xffffff, 0.5);
+  const light = new THREE.AmbientLight(0xffffff, 0.3);
   scene.add(light);
 }
