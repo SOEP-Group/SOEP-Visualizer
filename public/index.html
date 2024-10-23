@@ -1,94 +1,108 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
+  <head>
+    <title>SOEP Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
 
-<head>
-  <title>SOEP Visualizer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src='https://unpkg.com/htmx.org@1.5.0'></script>
+    <link rel="stylesheet" href="./css/style.css" />
 
-  <link rel="stylesheet" href="./css/style.css">
-
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
+        }
       }
-    }
-  </script>
-</head>
+    </script>
+  </head>
 
-<body class="p-0">
-  <header class="header">
-    <nav class="nav-container">
+  <body class="p-0">
+    <header class="header">
+      <nav class="nav-container">
+        <!-- Logo -->
+        <div class="nav-left">
+          <a href="index.html" class="logo">SOEP Visualizer</a>
 
-      <!-- Logo -->
-      <div class="nav-left">
-        <a href="index.html" class="logo">SOEP Visualizer</a>
+          <ul class="nav-links">
+            <!-- Prediction dropdown -->
+            <li class="dropdown">
+              <button class="prediction-dropdown-trigger">Prediction</button>
+              <div id="prediction-dropdown" class="dropdown-content">
+                <a href="#" class="dropdown-item" data-type="collision"
+                  >Collision prediction</a
+                >
+                <a href="#" class="dropdown-item" data-type="pass"
+                  >Pass prediction</a
+                >
+                <a href="#" class="dropdown-item" data-type="reentry"
+                  >Re-entry prediction</a
+                >
+              </div>
+            </li>
 
-        <ul class="nav-links">
+            <!-- Satellite dropdown -->
+            <li class="dropdown">
+              <button class="satellite-dropdown-trigger">Satellites</button>
+              <div id="satellite-dropdown" class="dropdown-content">
+                <input type="text" id="search-input" placeholder="Search.." />
+                <a href="#">Cosmos</a>
+                <a href="#">Starlink</a>
+                <a href="#">Satellite3</a>
+                <a href="#">Satellite4</a>
+                <a href="#">Satellite5</a>
+              </div>
+            </li>
+          </ul>
+        </div>
 
-          <!-- Prediction dropdown -->
-          <li class="dropdown">
-            <button class="prediction-dropdown-trigger">Prediction</button>
-            <div id="prediction-dropdown" class="dropdown-content">
-              <a href="#" class="dropdown-item" data-type="collision">Collision prediction</a>
-              <a href="#" class="dropdown-item" data-type="pass">Pass prediction</a>
-              <a href="#" class="dropdown-item" data-type="reentry">Re-entry prediction</a>
-            </div>
-          </li>
+        <!-- Dropdown burger -->
+        <div class="hamburger-menu">
+          <button id="menu__toggle" class="menu__btn">
+            <span></span>
+          </button>
+          <ul class="menu__box">
+            <li><a class="menu__item" href="index.html">Home</a></li>
+            <li><a class="menu__item" href="#" data-type="about">About</a></li>
+            <li>
+              <a
+                class="menu__item"
+                href="https://soep-group.github.io/soep-weekly-blog/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Blog</a
+              >
+            </li>
+            <li>
+              <a class="menu__item" href="#" data-type="how">How to use</a>
+            </li>
+            <li>
+              <a class="menu__item" href="#" data-type="settings">Settings</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
 
-          <!-- Satellite dropdown -->
-          <li class="dropdown">
-            <button class="satellite-dropdown-trigger">Satellites</button>
-            <div id="satellite-dropdown" class="dropdown-content">
-              <input type="text" id="search-input" placeholder="Search..">
-              <a href="#">Cosmos</a>
-              <a href="#">Starlink</a>
-              <a href="#">Satellite3</a>
-              <a href="#">Satellite4</a>
-              <a href="#">Satellite5</a>
-            </div>
-          </li>
-        </ul>
-      </div>
+    <div
+      class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
+      id="dynamic-content"
+    ></div>
 
-      <!-- Dropdown burger -->
-      <div class="hamburger-menu">
-        <button id="menu__toggle" class="menu__btn">
-          <span></span>
-        </button>
-        <ul class="menu__box">
-          <li><a class="menu__item" href="index.html">Home</a></li>
-          <li><a class="menu__item" href="#" data-type="about">About</a></li>
-          <li><a class="menu__item" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
-              rel="noopener noreferrer">Blog</a></li>
-          <li><a class="menu__item" href="#" data-type="how">How to use</a></li>
-          <li><a class="menu__item" href="#" data-type="settings">Settings</a></li>
-        </ul>
-      </div>
-    </nav>
-  </header>
-
-  <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
-    id="dynamic-content"></div>
-
-  <!-- Sliding window left-->
-  <div id="side-window" class="side-window">
-    <span id="close-window" class="close-btn">&times;</span>
-    <div class="resizer"></div>
-    <div class="side-window-content" id="window-content">
+    <!-- Sliding window left-->
+    <div id="side-window" class="side-window">
+      <span id="close-window" class="close-btn">&times;</span>
+      <div class="resizer"></div>
+      <div class="side-window-content" id="window-content"></div>
     </div>
-  </div>
 
-  <div class="gl_viewport" id="gl_viewport"></div>
-  <div id="popup-container"></div>
-</body>
+    <div class="gl_viewport" id="gl_viewport"></div>
+    <div id="popup-container"></div>
+  </body>
 
-<script type="module" src="main.js"></script>
-<script src="javascript/header.js"></script>
-<script src="javascript/popup.js"></script>
-<script src="javascript/predictions.js"></script>
-<script src="javascript/resizer.js"></script>
-
+  <script type="module" src="main.js"></script>
+  <script src="javascript/header.js"></script>
+  <script src="javascript/popup.js"></script>
+  <script src="javascript/predictions.js"></script>
+  <script src="javascript/resizer.js"></script>
 </html>
