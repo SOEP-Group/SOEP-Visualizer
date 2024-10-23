@@ -35,8 +35,12 @@ app.use(function (req, res, next) {
 app.use("/", index_routes);
 app.use("/api/", api_routes);
 
+module.exports = app;
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port::${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port::${PORT}`);
+  });
+}
