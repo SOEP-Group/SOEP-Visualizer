@@ -27,10 +27,10 @@ const mouse = new THREE.Vector2();
 let currentOrbitLine = null;
 
 const fakeSatelliteData = [
-    { id: 'satellite_1', position: { x: 2.5, y: -1, z: 1 } },
-    { id: 'satellite_2', position: { x: -2, y: 2, z: 2 } },
-    { id: 'satellite_3', position: { x: 3, y: 3, z: -1.5 } },
-    { id: 'satellite_4', position: { x: 3.789, y: 2.012, z: -5.277 } },
+    { id: 'satellite_1', position: { x: 2500, y: -1000, z: 1000 } }, 
+    { id: 'satellite_2', position: { x: -2000, y: 2000, z: 2000 } },
+    { id: 'satellite_3', position: { x: 3000, y: 3000, z: -1500 } },
+    { id: 'satellite_4', position: { x: 3789, y: 2012, z: -5277 } },
 ];
 
 async function fetchSatelliteData() {
@@ -116,7 +116,7 @@ function addSatelliteToScene(satellite) {
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const satelliteMesh = new THREE.Mesh(geometry, material);
 
-    satelliteMesh.position.set(satellite.position.x, satellite.position.y, satellite.position.z);
+    satelliteMesh.position.set(scalePosition(satellite.position.x), scalePosition(satellite.position.y), scalePosition(satellite.position.z));
     satelliteMesh.name = satellite.id;
 
     scene.add(satelliteMesh);
@@ -124,7 +124,6 @@ function addSatelliteToScene(satellite) {
 
 
 async function displayOrbit(satellite){
-    console.log(satellite)
     stopDisplayingOrbit()
 
     // get data for this satellite from db
@@ -144,10 +143,9 @@ async function displayOrbit(satellite){
         y: data[0].position.y,
         z: data[0].position.z
     };
-
     
     for (const entry of data) {
-        if (entry.tsince > 30) {    // go 30 steps forward before looking for the closing of the loop REDO THIS MECHANISM
+        if (entry.tsince > 30) {    // go 30 steps forward before looking for the closing of the loop, could REDO THIS MECHANISM
             if (
                 (entry.position.x >= loopPosition.x - tolerance && entry.position.x <= loopPosition.x + tolerance) &&
                 (entry.position.y >= loopPosition.y - tolerance && entry.position.y <= loopPosition.y + tolerance) &&
@@ -183,9 +181,9 @@ function stopDisplayingOrbit() {
     }
 }
 
-// Update this so it follows the right scale compared to the earth
 function scalePosition(satellitePosition){
-    return satellitePosition/1000
+    const scaleFactor = 1.0000000298/(6,378*2)  // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
+    return satellitePosition*scaleFactor
 }
 
 function onMouseClick(event) {
