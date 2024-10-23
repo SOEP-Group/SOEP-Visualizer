@@ -1,5 +1,9 @@
 const { time } = require('console');
 const path = require('path');
+const pool = require('../db');
+const { mockSatelliteData, mockOrbitData } = require('../mockData.js');
+
+
 
 exports.Home = async function(req, res){
   return res.render("index"); 
@@ -23,40 +27,12 @@ exports.RenderSatellite = async function(req, res) {
   res.render('satellite', satelliteData); // Ensure 'satellite.ejs' is inside the 'views' folder
 }
 
-const mockSatelliteData = {
-    'satellite_1': {
-        name: 'Satellite Alpha',
-        speed: 'Super fast',
-        position: 'N 6504089, E 278978',
-        launchDate: '2020-01-01',
-    },
-    'satellite_2': {
-        name: 'Satellite Beta',
-        speed: 'Super fast',
-        position: 'N 5489223, E 854213',
-        launchDate: '2021-05-15',
-    },
-    'satellite_3': {
-        name: 'Satellite C',
-        speed: 'Super fast',
-        position: 'N 5648215, E 458512',
-        launchDate: '2022-12-15',
-    },
-};
-
 exports.getSatelliteInfo = (req, res) => {
   const satelliteId = req.params.id;
   // Fetch real satellite data in future
-  // time.sleep
-  // const satelliteData = mockSatelliteData[satelliteId]
-  // if (satelliteData) {
-  //     res.json(satelliteData);
-  // } else {
-  //   res.status(404).json({ error: 'Satellite not found' });
-  // }
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  delay(2000).then(() => {
+  delay(1000).then(() => {
     const satelliteData = mockSatelliteData[satelliteId];
     if (satelliteData) {
         res.json(satelliteData);
@@ -68,3 +44,38 @@ exports.getSatelliteInfo = (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   });
 };
+
+exports.getOrbitData = (req, res) => {
+  const satelliteId = req.params.id;
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  delay(200).then(() => {
+    let orbitData = null
+    mockOrbitData.forEach((satelliteData) => {
+      if (satelliteData.satelliteName === satelliteId) {
+        orbitData = satelliteData.orbit;
+      }
+  });
+    if (orbitData) {
+        res.json(orbitData);
+    } else {
+        res.status(404).json({ error: 'Satellite not found' });
+    }
+  }).catch(error => {
+    console.error('Error in delay:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
+};
+
+// Temp
+exports.getAllSatellites = function (req, res) {
+  pool.query('SELECT * FROM satellites')
+    .then(result => {
+      res.json(result.rows);
+    })
+    .catch(err => {
+      console.error('Error fetching satellites:', err);
+      res.status(500).send('Error fetching satellites.');
+    });
+};
+
