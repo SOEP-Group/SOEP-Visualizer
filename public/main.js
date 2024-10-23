@@ -20,15 +20,12 @@ const earth = new Earth({
   orbitalSpeedMultiplier: 1,
 }).getPlanet();
 
-let currentOrbitLine = null;
-
 const fakeSatelliteData = [
-    { id: 'satellite_1', position: { x: 2500, y: -1000, z: 1000 } }, 
-    { id: 'satellite_2', position: { x: -2000, y: 2000, z: 2000 } },
-    { id: 'satellite_3', position: { x: 3000, y: 3000, z: -1500 } },
-    { id: 'satellite_4', position: { x: 3789, y: 2012, z: -5277 } },
-  ]
-  
+  { id: "satellite_1", position: { x: 0.5, y: -1, z: 0.1 } },
+  { id: "satellite_2", position: { x: -2, y: 0.2, z: 0.2 } },
+  { id: "satellite_3", position: { x: 0.3, y: 0.3, z: -1.5 } },
+];
+
 async function fetchSatelliteData() {
   try {
     return new Promise((resolve, reject) => {
@@ -58,6 +55,7 @@ function fetchSatelliteInfo(id) {
 }
 
 
+
 function fetchOrbitData(id) {
     return fetch(`/orbit_data/${id}`)
         .then(response => {
@@ -81,6 +79,7 @@ async function getOrbitData(id) {
     }
   }
 
+
 function loadSatellites() {
   fetchSatelliteData()
     .then((data) => {
@@ -92,15 +91,20 @@ function loadSatellites() {
 }
 
 function addSatelliteToScene(satellite) {
-    const geometry = new THREE.SphereGeometry(0.025, 64, 64);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const satelliteMesh = new THREE.Mesh(geometry, material);
+  const geometry = new THREE.SphereGeometry(0.025, 64, 64);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const satelliteMesh = new THREE.Mesh(geometry, material);
 
-    satelliteMesh.position.set(scalePosition(satellite.position.x), scalePosition(satellite.position.y), scalePosition(satellite.position.z));
-    satelliteMesh.name = satellite.id;
+  satelliteMesh.position.set(
+    satellite.position.x,
+    satellite.position.y,
+    satellite.position.z
+  );
+  satelliteMesh.name = satellite.id;
 
-    // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
+  // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
   earth.add(satelliteMesh);
+
 
 }
 
@@ -211,6 +215,7 @@ function onMouseClick(event) {
     } else {
         dynamicContentDiv.classList.add("hidden");
     }
+
   }
 
 
