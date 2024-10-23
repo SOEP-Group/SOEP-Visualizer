@@ -1,9 +1,8 @@
 import * as THREE from "three";
 import { scene, InitScene } from "./gl/scene.js";
 import { composer, camera, renderer, InitRenderer } from "./gl/renderer.js";
-
-InitScene();
-InitRenderer();
+import { Sun } from "./gl/sun.js";
+import { Earth } from "./gl/earth.js";
 
 // Should be in it own file later when we start getting more serious data in
 const raycaster = new THREE.Raycaster();
@@ -52,8 +51,6 @@ function loadSatellites() {
     })
     .catch((error) => console.error("Error loading satellites:", error));
 }
-
-loadSatellites();
 
 function addSatelliteToScene(satellite) {
   const geometry = new THREE.SphereGeometry(0.025, 64, 64);
@@ -113,4 +110,32 @@ window.addEventListener("resize", function () {
   camera.updateProjectionMatrix();
   renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
   composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const sunPosition = await fetch("/utils/get_suns_position")
+    .then((res) => {
+      return res.json();
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
+
+  InitScene();
+  // Create sun
+  const sun = new Sun(sunPosition).getSun();
+  scene.add(sun);
+
+  // Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
+  const earth = new Earth({
+    planetSize: 0.5,
+    planetAngle: (-23.4 * Math.PI) / 180,
+    planetRotationDirection: "counterclockwise",
+    sunStartingPosition: sunPosition,
+  }).getPlanet();
+
+  scene.add(earth);
+  InitRenderer();
+  loadSatellites();
 });

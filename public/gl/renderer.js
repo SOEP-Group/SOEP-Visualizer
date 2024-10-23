@@ -9,7 +9,8 @@ import { scene } from "./scene.js";
 export let renderer;
 export let controls;
 export let camera;
-
+export const clock = new THREE.Clock();
+clock.start();
 export let composer; // Use this to add render passes for different post processing effects
 
 function animate() {

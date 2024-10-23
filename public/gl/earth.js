@@ -12,25 +12,31 @@ import {
   MeshStandardMaterial,
 } from "three";
 
+import { clock } from "./renderer.js";
+
 export class Earth {
   group;
   loader;
   animate;
   planetGroup;
   planetGeometry;
+  currRotation;
 
   constructor({
     planetSize = 1,
     planetAngle = 0,
-    planetRotationSpeed = 1,
     planetRotationDirection = "clockwise",
     planetTexture = "/images/earth/earth_color.jpg",
+    sunStartingPosition,
+    rotationSpeedMultiplier = 1.0, // Used for debugging, leave it at 1 to properly simulate
   } = {}) {
     this.planetSize = planetSize;
     this.planetAngle = planetAngle;
     this.planetTexture = planetTexture;
-    this.planetRotationSpeed = planetRotationSpeed;
+    this.planetRotationSpeed =
+      ((2 * Math.PI) / 86400) * rotationSpeedMultiplier;
     this.planetRotationDirection = planetRotationDirection;
+    this.currRotation = -sunStartingPosition.azimuth;
 
     this.group = new Group();
     this.planetGroup = new Group();
@@ -53,7 +59,8 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     const planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(planetMesh);
-    this.planetGroup.rotation.z = -this.planetAngle;
+    this.planetGroup.rotation.y = this.currRotation;
+    this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
   }
 
@@ -102,18 +109,18 @@ export class Earth {
     this.group.add(this.planetGroup);
   }
 
-  updatePlanetRotation() {
+  updatePlanetRotation(dt) {
     if (this.planetRotationDirection === "clockwise") {
-      this.planetGroup.rotation.y -= this.planetRotationSpeed;
+      this.planetGroup.rotation.y -= this.planetRotationSpeed * dt;
     } else if (this.planetRotationDirection === "counterclockwise") {
-      this.planetGroup.rotation.y += this.planetRotationSpeed;
+      this.planetGroup.rotation.y += this.planetRotationSpeed * dt;
     }
   }
 
   createAnimateFunction() {
     return () => {
       requestAnimationFrame(this.animate);
-      this.updatePlanetRotation();
+      this.updatePlanetRotation(clock.getDelta());
     };
   }
 

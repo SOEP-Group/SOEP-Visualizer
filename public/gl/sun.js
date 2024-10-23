@@ -13,6 +13,7 @@ import {
   IcosahedronGeometry,
 } from "three";
 import { ImprovedNoise } from "three/addons/math/ImprovedNoise.js";
+import { clock } from "./renderer.js";
 
 export class Sun {
   group;
@@ -22,14 +23,22 @@ export class Sun {
   sunRim;
   glow;
   sunScene;
+  distance = 100;
+  angularSpeed; // Approx. radians per second for Earth's rotation
+  currentAngle;
+  inclination = 0.4091; // Earth's axial tilt (approx 23.4° in radians)
 
-  constructor() {
+  constructor(sunStartingPosition, rotationSpeedMultiplier = 1.0) {
     this.sunTexture = "images/sun/sunmap.jpg";
+    const orbitalPeriodInSeconds = 365.25 * 24 * 60 * 60; // Earth's orbital period in seconds
+    this.angularSpeed =
+      ((2 * Math.PI) / orbitalPeriodInSeconds) * rotationSpeedMultiplier;
+
+    this.currentAngle = sunStartingPosition.azimuth;
 
     this.group = new Group();
     this.loader = new TextureLoader();
-
-    this.group.position.set(100, 0, 0);
+    this.group.position.set(this.distance, 0, 0);
 
     this.createCorona();
     this.createRim();
@@ -210,13 +219,23 @@ export class Sun {
   }
 
   addLighting() {
-    const sunLight = new DirectionalLight(0xffffff, 3);
+    const sunLight = new DirectionalLight(0xffffff, 2.5);
     sunLight.position.set(0, 0, 0);
     this.group.add(sunLight);
   }
 
+  animatePosition(dt) {
+    this.currentAngle += this.angularSpeed * dt;
+    const x = this.distance * Math.cos(this.currentAngle);
+    const z = this.distance * Math.sin(this.currentAngle);
+    const y =
+      this.distance * Math.sin(this.currentAngle) * Math.sin(this.inclination);
+    this.group.position.set(x, y, z);
+  }
+
   createAnimateFunction() {
     return (t = 0) => {
+      this.animatePosition(clock.getDelta());
       const time = t * 0.00051;
       requestAnimationFrame(this.animate);
       this.group.userData.update(time);
