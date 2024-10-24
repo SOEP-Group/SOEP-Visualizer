@@ -12,10 +12,13 @@ import {
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+let currentOrbitLine = null;
+
 const fakeSatelliteData = [
-  { id: "satellite_1", position: { x: 0.5, y: -1, z: 0.1 } },
-  { id: "satellite_2", position: { x: -2, y: 0.2, z: 0.2 } },
-  { id: "satellite_3", position: { x: 0.3, y: 0.3, z: -1.5 } },
+  { id: "satellite_1", position: { x: 2500, y: -1000, z: 1000 } },
+  { id: "satellite_2", position: { x: -2000, y: 2000, z: 2000 } },
+  { id: "satellite_3", position: { x: 3000, y: 3000, z: -1500 } },
+  { id: "satellite_4", position: { x: 3789, y: 2012, z: -5277 } },
 ];
 
 async function fetchSatelliteData() {
@@ -46,6 +49,29 @@ function fetchSatelliteInfo(id) {
     });
 }
 
+function fetchOrbitData(id) {
+  return fetch(`/orbit_data/${id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching orbit data:", error);
+      throw error;
+    });
+}
+
+async function getOrbitData(id) {
+  try {
+    const orbitData = await fetchOrbitData(id);
+    return orbitData;
+  } catch (error) {
+    console.error("Error retrieving orbit data:", error);
+  }
+}
+
 function loadSatellites() {
   fetchSatelliteData()
     .then((data) => {
@@ -62,14 +88,87 @@ function addSatelliteToScene(satellite) {
   const satelliteMesh = new THREE.Mesh(geometry, material);
 
   satelliteMesh.position.set(
-    satellite.position.x,
-    satellite.position.y,
-    satellite.position.z
+    scalePosition(satellite.position.x),
+    scalePosition(satellite.position.y),
+    scalePosition(satellite.position.z)
   );
   satelliteMesh.name = satellite.id;
 
   // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
   earth.getPlanet().add(satelliteMesh);
+}
+
+async function displayOrbit(satellite) {
+  stopDisplayingOrbit();
+
+  // get data for this satellite from db
+  const data = await getOrbitData(satellite);
+
+  // Ensure satellite data exists
+  if (!data || data.length === 0) {
+    console.error("No satellite data available.");
+    return;
+  }
+
+  const orbitPathGeometry = new THREE.BufferGeometry();
+  const vertices = [];
+  const tolerance = 50; // might have to update and scale according to startposition
+  const loopPosition = {
+    x: data[0].position.x,
+    y: data[0].position.y,
+    z: data[0].position.z,
+  };
+
+  for (const entry of data) {
+    if (entry.tsince > 30) {
+      // go 30 steps forward before looking for the closing of the loop, could REDO THIS MECHANISM
+      if (
+        entry.position.x >= loopPosition.x - tolerance &&
+        entry.position.x <= loopPosition.x + tolerance &&
+        entry.position.y >= loopPosition.y - tolerance &&
+        entry.position.y <= loopPosition.y + tolerance &&
+        entry.position.z >= loopPosition.z - tolerance &&
+        entry.position.z <= loopPosition.z + tolerance
+      ) {
+        console.log("Loop completed");
+        break; // Exit the loop entirely
+      }
+    }
+
+    vertices.push(
+      scalePosition(entry.position.x), // X coordinate
+      scalePosition(entry.position.y), // Y coordinate
+      scalePosition(entry.position.z) // Z coordinate
+    );
+  }
+
+  // To close the loop
+  vertices.push(
+    scalePosition(loopPosition.x),
+    scalePosition(loopPosition.y),
+    scalePosition(loopPosition.z)
+  );
+
+  orbitPathGeometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3)
+  );
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green
+  const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
+
+  currentOrbitLine = orbitLine;
+  earth.add(orbitLine);
+}
+
+function stopDisplayingOrbit() {
+  if (currentOrbitLine) {
+    scene.remove(currentOrbitLine);
+  }
+}
+
+function scalePosition(satellitePosition) {
+  const scaleFactor = 1.0000000298 / (6, 378 * 2); // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
+  return satellitePosition * scaleFactor;
 }
 
 function onMouseClick(event) {
@@ -84,9 +183,19 @@ function onMouseClick(event) {
   if (intersects.length > 0) {
     const clickedObject = intersects[0].object;
 
+    if (clickedObject.name === "earth") {
+      console.log("Earth mesh clicked!");
+
+      dynamicContentDiv.classList.remove("hidden");
+      htmx.ajax("GET", "/test", {
+        target: "#dynamic-content",
+      });
+    }
+
     if (clickedObject.name.startsWith("satellite_")) {
       console.log("Satellite clicked:", clickedObject.name);
       document.getElementById("loading-skeleton").classList.remove("hidden");
+      displayOrbit(clickedObject.name);
 
       fetchSatelliteInfo(clickedObject.name)
         .then((data) => {
