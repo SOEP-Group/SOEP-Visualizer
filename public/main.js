@@ -142,7 +142,7 @@ async function displayOrbit(satellite) {
   const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
 
   currentOrbitLine = orbitLine;
-  earth.add(orbitLine);
+  earth.getPlanet().add(orbitLine);
 }
 
 function stopDisplayingOrbit() {
@@ -171,6 +171,7 @@ function onMouseClick(event) {
       console.log("Satellite clicked:", clickedObject.name);
       document.getElementById("loading-skeleton").classList.remove("hidden");
       displayOrbit(clickedObject.name);
+      updateCameraFocus(clickedObject);
 
       fetchSatelliteInfo(clickedObject.name)
         .then((data) => {

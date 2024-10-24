@@ -60,6 +60,10 @@ export function updateCameraFocus(focusTarget) {
   cameraFocus = focusTarget;
   const distance = camera.position.distanceTo(controls.target);
   let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
+  if(cameraFocus.parent.type === "Group"){
+    focusPosition = focusPosition.add(cameraFocus.parent.position);
+  }
+  console.log(focusPosition);
   controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
   const direction = new THREE.Vector3()
     .subVectors(camera.position, controls.target)
@@ -74,6 +78,9 @@ export function updateCameraFocus(focusTarget) {
 function updateControlsPos() {
   if (cameraFocus !== undefined) {
     let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
+    if(cameraFocus.parent.type === "Group"){
+      focusPosition = focusPosition.add(cameraFocus.parent.position);
+    }
     controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
   }
 
