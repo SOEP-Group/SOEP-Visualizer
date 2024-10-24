@@ -139,7 +139,10 @@ function detectIdealSettings() {
     ) || "Unknown Manufacturer";
   const integrated = manufacturer === "Intel" || manufacturer === "Apple";
 
-  if (card === "Unknown GPU") {
+  let isHardwareAccelerated =
+    card !== "Unknown GPU" && manufacturer !== "Unknown Manufacturer";
+
+  if (!isHardwareAccelerated) {
     console.warn(
       "Unknown GPU detected, chances are no hardware acceleration is enabled. The app will not run smooth without that turned on"
     );
@@ -170,6 +173,7 @@ function detectIdealSettings() {
     maxTextureSize,
     score,
     graphicalPreset,
+    isHardwareAccelerated,
   };
   return graphicalSettings[graphicalPreset];
 }
