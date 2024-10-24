@@ -42,8 +42,8 @@ export const graphicalSettings = {
   },
 };
 
-export let currentGraphics = graphicalSettings.low;
-
+export let currentGraphics = graphicalSettings.ultra_low;
+export let gpuContextInfo;
 export let renderer;
 export let controls;
 export let camera;
@@ -123,25 +123,27 @@ function extractGPUContextValue(reg, str) {
 function detectIdealSettings() {
   const canvas = document.createElement("canvas");
   const gl = canvas.getContext("webgl");
-  const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
 
-  if (!debugInfo) {
-    console.log("Unable to get WebGL debug info");
-    return;
-  }
+  let vendor = gl.getParameter(gl.VENDOR) || "Unknown Vendor";
+  let renderer = gl.getParameter(gl.RENDERER) || "Unknown Renderer";
 
-  const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-  const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-
-  const card = extractGPUContextValue(
-    /((NVIDIA|AMD|Intel|Adreno|Mali|Apple|PowerVR)[^\d]*[^\s]+)/,
-    renderer
-  );
-  const manufacturer = extractGPUContextValue(
-    /(NVIDIA|AMD|Intel|Adreno|Mali|Apple|PowerVR)/g,
-    card
-  );
+  const card =
+    extractGPUContextValue(
+      /((NVIDIA|AMD|Intel|Adreno|Mali|Apple|PowerVR)[^\d]*[^\s]+)/,
+      renderer
+    ) || "Unknown GPU";
+  const manufacturer =
+    extractGPUContextValue(
+      /(NVIDIA|AMD|Intel|Adreno|Mali|Apple|PowerVR)/g,
+      card
+    ) || "Unknown Manufacturer";
   const integrated = manufacturer === "Intel" || manufacturer === "Apple";
+
+  if (card === "Unknown GPU") {
+    console.warn(
+      "Unknown GPU detected, chances are no hardware acceleration is enabled. The app will not run smooth without that turned on"
+    );
+  }
 
   let score = 0;
 
@@ -159,7 +161,7 @@ function detectIdealSettings() {
   score += scoreForMaxTextureSize(maxTextureSize);
   const graphicalPreset = determinePreset(score);
 
-  console.log({
+  gpuContextInfo = {
     card,
     manufacturer,
     integrated,
@@ -168,9 +170,8 @@ function detectIdealSettings() {
     maxTextureSize,
     score,
     graphicalPreset,
-  });
-
-  return graphicalPreset;
+  };
+  return graphicalSettings[graphicalPreset];
 }
 function scoreForMaxTextureSize(size) {
   if (size >= 8192) return 30; // High-end GPUs
@@ -250,8 +251,8 @@ export function InitRenderer() {
   controls.dynamicDampingFactor = 0.05;
   controls.zoomSpeed = 0.3;
   camera.position.set(0, 0, 3);
-  let ideal_settings = detectIdealSettings();
-  currentGraphics = graphicalSettings[ideal_settings];
+  currentGraphics = detectIdealSettings();
+  console.log(gpuContextInfo);
   InitEffectComposer();
   animate();
 }

@@ -215,17 +215,6 @@ function onMouseClick(event) {
   }
 }
 
-window.addEventListener("click", onMouseClick, false);
-
-window.addEventListener("resize", function () {
-  let SCREEN_WIDTH = window.innerWidth,
-    SCREEN_HEIGHT = window.innerHeight;
-  camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-  camera.updateProjectionMatrix();
-  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-  composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-});
-
 // Temp
 function fetchSatellites() {
   fetch("/api/satellites")
@@ -243,5 +232,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   InitScene();
   updateCameraFocus(earth.getPlanet());
   loadSatellites();
+
+  // Let everything load before adding events, otherwise you can get hit by undefined errors
+
+  window.addEventListener("click", onMouseClick, false);
+
+  window.addEventListener("resize", function () {
+    let SCREEN_WIDTH = window.innerWidth,
+      SCREEN_HEIGHT = window.innerHeight;
+    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+    camera.updateProjectionMatrix();
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  });
   //fetchSatellites();
 });
