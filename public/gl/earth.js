@@ -13,7 +13,7 @@ import {
   IcosahedronGeometry,
   MeshStandardMaterial,
 } from "three";
-import { clock } from "./renderer.js";
+import { clock, currentGraphics } from "./renderer.js";
 
 function loadShader(url) {
   const loader = new FileLoader();
@@ -37,7 +37,7 @@ export class Earth {
     planetSize = 1,
     planetAngle = 0,
     planetRotationDirection = "clockwise",
-    planetTexture = "/images/earth/Albedo.jpg",
+    planetTexture = "Albedo.jpg",
     orbitalDistance = 100, // Arbitrary distance from the sun
     rotationSpeedMultiplier = 1.0, // Used for debugging, leave it at 1 to properly simulate
     orbitalSpeedMultiplier = 1.0, // For speeding up orbit during testing
@@ -58,6 +58,7 @@ export class Earth {
     this.group.position.set(this.orbitalDistance, 0, 0);
     this.planetGroup = new Group();
     this.loader = new TextureLoader();
+    this.loader.setPath(currentGraphics.textures.earth);
     this.planetGeometry = new IcosahedronGeometry(this.planetSize, 12);
 
     this.createPlanet();
@@ -89,7 +90,7 @@ export class Earth {
   }
 
   createPlanet() {
-    const cloudsMap = this.loader.load("images/earth/Clouds.png");
+    const cloudsMap = this.loader.load("Clouds.png");
     const planetCloudsMaterial = new MeshStandardMaterial({
       alphaMap: cloudsMap,
       transparent: true,
@@ -101,15 +102,15 @@ export class Earth {
     planetCloudsMesh.scale.setScalar(1.01);
     this.planetGroup.add(planetCloudsMesh);
 
-    const oceanMap = this.loader.load("/images/earth/Ocean.png");
+    const oceanMap = this.loader.load("Ocean.png");
     const planetMaterial = new MeshStandardMaterial({
       map: this.loader.load(this.planetTexture),
-      bumpMap: this.loader.load("/images/earth/Bump.jpg"),
+      bumpMap: this.loader.load("Bump.jpg"),
       bumpScale: 0.03,
       roughnessMap: oceanMap,
       metalness: 0.1,
       metalnessMap: oceanMap,
-      emissiveMap: this.loader.load("/images/earth/Lights.png"),
+      emissiveMap: this.loader.load("Lights.png"),
       emissive: new Color(0xffff88),
     });
     planetMaterial.onBeforeCompile = function (shader) {
@@ -157,16 +158,16 @@ export class Earth {
         "#include <roughnessmap_fragment>",
         `
           float roughnessFactor = roughness;
-  
+
           #ifdef USE_ROUGHNESSMAP
-  
+
             vec4 texelRoughness = texture2D( roughnessMap, vRoughnessMapUv );
             // reversing the black and white values because we provide the ocean map
             texelRoughness = vec4(1.0) - texelRoughness;
-  
+
             // reads channel G, compatible with a combined OcclusionRoughnessMetallic (RGB) texture
             roughnessFactor *= clamp(texelRoughness.g, 0.5, 1.0);
-  
+
           #endif
         `
       );
@@ -175,7 +176,7 @@ export class Earth {
         `
         #include <emissivemap_fragment>
         #ifdef USE_EMISSIVEMAP
-          
+
         for (int i = 0; i < NUM_POINT_LIGHTS; i++) {
             vec3 lightDirection = normalize(pointLights[i].position - vWorldPosition);
             float dotProduct = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
@@ -190,13 +191,13 @@ export class Earth {
         #endif
         float fresnel = fresnelEffect(normalize(vNormal), normalize(vViewDirection));
         float cloudsMapValue = texture2D(tClouds, vec2(vMapUv.x - uv_xOffset, vMapUv.y)).r;
-        
+
         diffuseColor.rgb *= max(1.0 - cloudsMapValue, 0.2 );
         diffuseColor.rgb += fresnel * vec3(0.3, 0.6, 1.0);
 
         float intensity = 1.4 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );
         vec3 atmosphere = vec3( 0.3, 0.6, 1.0 ) * pow(intensity, 5.0);
-        
+
         diffuseColor.rgb += atmosphere;
       `
       );
@@ -240,5 +241,9 @@ export class Earth {
 
   getPlanet() {
     return this.group;
+  }
+
+  reload() {
+    this.createPlanet();
   }
 }

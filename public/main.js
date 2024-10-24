@@ -1,24 +1,16 @@
 import * as THREE from "three";
-import { scene, InitScene } from "./gl/scene.js";
-import { composer, camera, renderer, InitRenderer } from "./gl/renderer.js";
-import { Sun } from "./gl/sun.js";
-import { Earth } from "./gl/earth.js";
+import { scene, InitScene, earth } from "./gl/scene.js";
+import {
+  composer,
+  camera,
+  renderer,
+  InitRenderer,
+  updateCameraFocus,
+} from "./gl/renderer.js";
 
 // Should be in it own file later when we start getting more serious data in
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-
-// Create sun
-const sun = new Sun().getSun();
-
-// Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
-const earth = new Earth({
-  planetSize: 0.5,
-  planetAngle: (-23.4 * Math.PI) / 180,
-  planetRotationDirection: "counterclockwise",
-  rotationSpeedMultiplier: 1,
-  orbitalSpeedMultiplier: 1,
-}).getPlanet();
 
 const fakeSatelliteData = [
   { id: "satellite_1", position: { x: 0.5, y: -1, z: 0.1 } },
@@ -77,7 +69,7 @@ function addSatelliteToScene(satellite) {
   satelliteMesh.name = satellite.id;
 
   // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
-  earth.add(satelliteMesh);
+  earth.getPlanet().add(satelliteMesh);
 }
 
 function onMouseClick(event) {
@@ -138,11 +130,9 @@ function fetchSatellites() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  InitRenderer();
   InitScene();
-
-  scene.add(sun);
-  scene.add(earth);
-  InitRenderer(earth);
+  updateCameraFocus(earth.getPlanet());
   loadSatellites();
   //fetchSatellites();
 });
