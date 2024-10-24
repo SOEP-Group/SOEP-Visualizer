@@ -72,15 +72,6 @@ function fetchOrbitData(id) {
         });
 }
 
-async function getOrbitData(id) {
-    try {
-      const orbitData = await fetchOrbitData(id);
-      return orbitData;
-    } catch (error) {
-      console.error('Error retrieving orbit data:', error);
-    }
-  }
-
 function loadSatellites() {
   fetchSatelliteData()
     .then((data) => {
@@ -109,7 +100,7 @@ async function displayOrbit(satellite){
     stopDisplayingOrbit()
 
     // get data for this satellite from db
-    const data = await getOrbitData(satellite)
+    const data = await fetchOrbitData(satellite)
 
     // Ensure satellite data exists
     if (!data || data.length === 0) {
@@ -154,12 +145,11 @@ async function displayOrbit(satellite){
 
     currentOrbitLine = orbitLine
     earth.add(orbitLine);
-
 }
 
 function stopDisplayingOrbit() {
     if (currentOrbitLine){
-        scene.remove(currentOrbitLine);
+        earth.remove(currentOrbitLine);
     }
 }
 
@@ -179,15 +169,6 @@ function onMouseClick(event) {
 
     if (intersects.length > 0) {
         const clickedObject = intersects[0].object;
-
-        if (clickedObject.name === "earth") {
-            console.log("Earth mesh clicked!");
-
-            dynamicContentDiv.classList.remove("hidden");
-            htmx.ajax('GET', '/test', {
-                target: '#dynamic-content'
-            });
-        }
 
         if (clickedObject.name.startsWith("satellite_")) {
             console.log("Satellite clicked:", clickedObject.name);
