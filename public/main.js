@@ -1,34 +1,26 @@
 import * as THREE from "three";
-import { scene, InitScene } from "./gl/scene.js";
-import { composer, camera, renderer, InitRenderer } from "./gl/renderer.js";
-import { Sun } from "./gl/sun.js";
-import { Earth } from "./gl/earth.js";
+import { scene, InitScene, earth } from "./gl/scene.js";
+import {
+  composer,
+  camera,
+  renderer,
+  InitRenderer,
+  updateCameraFocus,
+} from "./gl/renderer.js";
 
 // Should be in it own file later when we start getting more serious data in
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Create sun
-const sun = new Sun().getSun();
-
-// Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
-const earth = new Earth({
-  planetSize: 0.5,
-  planetAngle: (-23.4 * Math.PI) / 180,
-  planetRotationDirection: "counterclockwise",
-  rotationSpeedMultiplier: 1,
-  orbitalSpeedMultiplier: 1,
-}).getPlanet();
-
 let currentOrbitLine = null;
 
 const fakeSatelliteData = [
-    { id: 'satellite_1', position: { x: 2500, y: -1000, z: 1000 } }, 
-    { id: 'satellite_2', position: { x: -2000, y: 2000, z: 2000 } },
-    { id: 'satellite_3', position: { x: 3000, y: 3000, z: -1500 } },
-    { id: 'satellite_4', position: { x: 3789, y: 2012, z: -5277 } },
-  ]
-  
+  { id: "satellite_1", position: { x: 2500, y: -1000, z: 1000 } },
+  { id: "satellite_2", position: { x: -2000, y: 2000, z: 2000 } },
+  { id: "satellite_3", position: { x: 3000, y: 3000, z: -1500 } },
+  { id: "satellite_4", position: { x: 3789, y: 2012, z: -5277 } },
+];
+
 async function fetchSatelliteData() {
   try {
     return new Promise((resolve, reject) => {
@@ -57,19 +49,18 @@ function fetchSatelliteInfo(id) {
     });
 }
 
-
 function fetchOrbitData(id) {
-    return fetch(`/orbit_data/${id}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error fetching orbit data:', error);
-            throw error;
-        });
+  return fetch(`/orbit_data/${id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching orbit data:", error);
+      throw error;
+    });
 }
 
 function loadSatellites() {
@@ -83,128 +74,121 @@ function loadSatellites() {
 }
 
 function addSatelliteToScene(satellite) {
-    const geometry = new THREE.SphereGeometry(0.025, 64, 64);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const satelliteMesh = new THREE.Mesh(geometry, material);
+  const geometry = new THREE.SphereGeometry(0.025, 64, 64);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const satelliteMesh = new THREE.Mesh(geometry, material);
 
-    satelliteMesh.position.set(scalePosition(satellite.position.x), scalePosition(satellite.position.y), scalePosition(satellite.position.z));
-    satelliteMesh.name = satellite.id;
+  satelliteMesh.position.set(
+    scalePosition(satellite.position.x),
+    scalePosition(satellite.position.y),
+    scalePosition(satellite.position.z)
+  );
+  satelliteMesh.name = satellite.id;
 
-    // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
-  earth.add(satelliteMesh);
-
+  // Note Ivan: Add now stuff to earth, that way if we update the earths position, we also update the satelites
+  earth.getPlanet().add(satelliteMesh);
 }
 
+async function displayOrbit(satellite) {
+  stopDisplayingOrbit();
 
-async function displayOrbit(satellite){
-    stopDisplayingOrbit()
+  // get data for this satellite from db
+  const data = await fetchOrbitData(satellite);
 
-    // get data for this satellite from db
-    const data = await fetchOrbitData(satellite)
+  const orbitPathGeometry = new THREE.BufferGeometry();
+  const vertices = [];
+  const tolerance = 50; // might have to update and scale according to startposition
+  const loopPosition = {
+    x: data[0].position.x,
+    y: data[0].position.y,
+    z: data[0].position.z,
+  };
 
-    // Ensure satellite data exists
-    if (!data || data.length === 0) {
-        console.error("No satellite data available.");
-        return;
+  for (const entry of data) {
+    if (entry.tsince > 30) {
+      // go 30 steps forward before looking for the closing of the loop, could REDO THIS MECHANISM
+      if (
+        entry.position.x >= loopPosition.x - tolerance &&
+        entry.position.x <= loopPosition.x + tolerance &&
+        entry.position.y >= loopPosition.y - tolerance &&
+        entry.position.y <= loopPosition.y + tolerance &&
+        entry.position.z >= loopPosition.z - tolerance &&
+        entry.position.z <= loopPosition.z + tolerance
+      ) {
+        console.log("Loop completed");
+        break; // Exit the loop entirely
+      }
     }
 
-    const orbitPathGeometry = new THREE.BufferGeometry();
-    const vertices = [];
-    const tolerance = 50;  // might have to update and scale according to startposition
-    const loopPosition = {
-        x: data[0].position.x,
-        y: data[0].position.y,
-        z: data[0].position.z
-    };
-    
-    for (const entry of data) {
-        if (entry.tsince > 30) {    // go 30 steps forward before looking for the closing of the loop, could REDO THIS MECHANISM
-            if (
-                (entry.position.x >= loopPosition.x - tolerance && entry.position.x <= loopPosition.x + tolerance) &&
-                (entry.position.y >= loopPosition.y - tolerance && entry.position.y <= loopPosition.y + tolerance) &&
-                (entry.position.z >= loopPosition.z - tolerance && entry.position.z <= loopPosition.z + tolerance)
-            ) {
-                console.log("Loop completed")
-                break; // Exit the loop entirely
-            }
-        }
-        
-        vertices.push(
-            scalePosition(entry.position.x), // X coordinate
-            scalePosition(entry.position.y), // Y coordinate
-            scalePosition(entry.position.z)  // Z coordinate
-        );
-    }
+    vertices.push(
+      scalePosition(entry.position.x), // X coordinate
+      scalePosition(entry.position.y), // Y coordinate
+      scalePosition(entry.position.z) // Z coordinate
+    );
+  }
 
-    // To close the loop
-    vertices.push(scalePosition(loopPosition.x), scalePosition(loopPosition.y), scalePosition(loopPosition.z))   
+  // To close the loop
+  vertices.push(
+    scalePosition(loopPosition.x),
+    scalePosition(loopPosition.y),
+    scalePosition(loopPosition.z)
+  );
 
-    orbitPathGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green
-    const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
+  orbitPathGeometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3)
+  );
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green
+  const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
 
-    currentOrbitLine = orbitLine
-    earth.add(orbitLine);
+  currentOrbitLine = orbitLine;
+  earth.add(orbitLine);
 }
 
 function stopDisplayingOrbit() {
-    if (currentOrbitLine){
-        earth.remove(currentOrbitLine);
-    }
+  if (currentOrbitLine) {
+    earth.getPlanet().remove(currentOrbitLine);
+  }
 }
 
-function scalePosition(satellitePosition){
-    const scaleFactor = 1.0000000298/(6,378*2)  // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
-    return satellitePosition*scaleFactor
+function scalePosition(satellitePosition) {
+  const scaleFactor = 1.0000000298 / (6, 378 * 2); // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
+  return satellitePosition * scaleFactor;
 }
 
 function onMouseClick(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
 
-    const intersects = raycaster.intersectObjects(scene.children, true);
+  const intersects = raycaster.intersectObjects(scene.children, true);
 
-    const dynamicContentDiv = document.getElementById("dynamic-content");
+  const dynamicContentDiv = document.getElementById("dynamic-content");
 
-    if (intersects.length > 0) {
-        const clickedObject = intersects[0].object;
+  if (intersects.length > 0) {
+    const clickedObject = intersects[0].object;
+    if (clickedObject.name.startsWith("satellite_")) {
+      console.log("Satellite clicked:", clickedObject.name);
+      document.getElementById("loading-skeleton").classList.remove("hidden");
+      displayOrbit(clickedObject.name);
 
-        if (clickedObject.name.startsWith("satellite_")) {
-            console.log("Satellite clicked:", clickedObject.name);
-            document.getElementById('loading-skeleton').classList.remove('hidden');
-            displayOrbit(clickedObject.name)
-
-            fetchSatelliteInfo(clickedObject.name)
-                .then(data => {
-                    document.getElementById('loading-skeleton').classList.add('hidden');
-                    openPopup(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching satellite info:', error);
-                    openPopup({
-                        name: 'Error',
-                        launchDate: 'Error'
-                    });
-                });
-        }
-
-    } else {
-        dynamicContentDiv.classList.add("hidden");
+      fetchSatelliteInfo(clickedObject.name)
+        .then((data) => {
+          document.getElementById("loading-skeleton").classList.add("hidden");
+          openPopup(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching satellite info:", error);
+          openPopup({
+            name: "Error",
+            launchDate: "Error",
+          });
+        });
     }
+  } else {
+    dynamicContentDiv.classList.add("hidden");
   }
-
-
-window.addEventListener("click", onMouseClick, false);
-
-window.addEventListener("resize", function () {
-  let SCREEN_WIDTH = window.innerWidth,
-    SCREEN_HEIGHT = window.innerHeight;
-  camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-  camera.updateProjectionMatrix();
-  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-  composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-});
+}
 
 // Temp
 function fetchSatellites() {
@@ -219,11 +203,22 @@ function fetchSatellites() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  InitRenderer();
   InitScene();
-
-  scene.add(sun);
-  scene.add(earth);
-  InitRenderer(earth);
+  updateCameraFocus(earth.getPlanet());
   loadSatellites();
+
+  // Let everything load before adding events, otherwise you can get hit by undefined errors
+
+  window.addEventListener("click", onMouseClick, false);
+
+  window.addEventListener("resize", function () {
+    let SCREEN_WIDTH = window.innerWidth,
+      SCREEN_HEIGHT = window.innerHeight;
+    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+    camera.updateProjectionMatrix();
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  });
   //fetchSatellites();
 });

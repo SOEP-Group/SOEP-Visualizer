@@ -208,7 +208,7 @@ export class Sun {
   }
 
   addLighting() {
-    const sunLight = new PointLight(0xffffff, 25000);
+    const sunLight = new PointLight(0xffffff, 10000);
     sunLight.position.set(0, 0, 0);
     this.group.add(sunLight);
   }
