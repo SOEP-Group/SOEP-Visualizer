@@ -5,6 +5,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { SSAARenderPass } from "three/addons/postprocessing/SSAARenderPass.js";
 import { scene, reloadScene } from "./scene.js";
+import { updateDebugMenu } from "./debug.js";
 
 export const graphicalSettings = {
   ultra_low: {
@@ -43,7 +44,7 @@ export const graphicalSettings = {
 };
 
 export let currentGraphics = graphicalSettings.ultra_low;
-export let gpuContextInfo;
+export let rendererInfo = {frames: 0, fps: 0};
 export let renderer;
 export let controls;
 export let camera;
@@ -80,9 +81,24 @@ function updateControlsPos() {
   controls.update();
 }
 
+let prevTime = performance.now();
+
 function animate() {
   composer.render();
   updateControlsPos();
+  updateDebugMenu();
+
+  rendererInfo.frames++;
+  const time = performance.now();
+  
+  if ( time >= prevTime + 1000 ) {
+  
+    rendererInfo.fps = Math.round( ( rendererInfo.frames * 1000 ) / ( time - prevTime ) );
+    
+    rendererInfo.frames = 0;
+    prevTime = time;
+    
+  }
   requestAnimationFrame(animate);
 }
 
@@ -122,11 +138,15 @@ function extractGPUContextValue(reg, str) {
 
 function detectIdealSettings() {
   const canvas = document.createElement("canvas");
-  const gl = canvas.getContext("webgl");
+  const gl = canvas.getContext('webgl', { powerPreference: "high-performance" }) || canvas.getContext('experimental-webgl', { powerPreference: "high-performance" })
 
   let vendor = gl.getParameter(gl.VENDOR) || "Unknown Vendor";
   let renderer = gl.getParameter(gl.RENDERER) || "Unknown Renderer";
-
+  if(vendor === "Unknown Vendor" || renderer === "Unknown Renderer"){
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+    renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+  }
   const card =
     extractGPUContextValue(
       /((NVIDIA|AMD|Intel|Adreno|Mali|Apple|PowerVR)[^\d]*[^\s]+)/,
@@ -164,7 +184,7 @@ function detectIdealSettings() {
   score += scoreForMaxTextureSize(maxTextureSize);
   const graphicalPreset = determinePreset(score);
 
-  gpuContextInfo = {
+  rendererInfo.gpuContext = {
     card,
     manufacturer,
     integrated,
@@ -256,7 +276,7 @@ export function InitRenderer() {
   controls.zoomSpeed = 0.3;
   camera.position.set(0, 0, 3);
   currentGraphics = detectIdealSettings();
-  console.log(gpuContextInfo);
+  console.log(rendererInfo.gpuContext)
   InitEffectComposer();
   animate();
 }

@@ -5,6 +5,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.5.0"></script>
 
+    <link href="./lib/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="./lib/fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="./lib/fontawesome/css/solid.css" rel="stylesheet" />
     <link rel="stylesheet" href="./css/style.css" />
 
     <script type="importmap">
@@ -95,8 +98,18 @@
       <div class="resizer"></div>
       <div class="side-window-content" id="window-content"></div>
     </div>
-
-    <div class="gl_viewport" id="gl_viewport"></div>
+    <div class="gl_viewport" id="gl_viewport">
+      
+    </div>
+    <div id="debug-ui" class="debug-ui-closed">
+      <h4 id="debug-ui-fps-counter"></h4>
+      <h4>GPU info:</h4>
+      <p id="debug-ui-gpu-info"></p>
+    </div>
+    <button id="toggle-debug-ui" class="toggle-button">
+      <i id="debug-ui-arrow" class="fa-solid fa-caret-down fa-lg fa-fw"></i>
+      <i class="fa-solid fa-sliders fa-lg"></i>
+    </button>
     <div id="popup-container"></div>
   </body>
 
