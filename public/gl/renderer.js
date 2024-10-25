@@ -44,7 +44,7 @@ export const graphicalSettings = {
 };
 
 export let currentGraphics = graphicalSettings.ultra_low;
-export let rendererInfo = {frames: 0, fps: 0};
+export let rendererInfo = { frames: 0, fps: 0 };
 export let renderer;
 export let controls;
 export let camera;
@@ -90,14 +90,14 @@ function animate() {
 
   rendererInfo.frames++;
   const time = performance.now();
-  
-  if ( time >= prevTime + 1000 ) {
-  
-    rendererInfo.fps = Math.round( ( rendererInfo.frames * 1000 ) / ( time - prevTime ) );
-    
+
+  if (time >= prevTime + 1000) {
+    rendererInfo.fps = Math.round(
+      (rendererInfo.frames * 1000) / (time - prevTime)
+    );
+
     rendererInfo.frames = 0;
     prevTime = time;
-    
   }
   requestAnimationFrame(animate);
 }
@@ -138,12 +138,16 @@ function extractGPUContextValue(reg, str) {
 
 function detectIdealSettings() {
   const canvas = document.createElement("canvas");
-  const gl = canvas.getContext('webgl', { powerPreference: "high-performance" }) || canvas.getContext('experimental-webgl', { powerPreference: "high-performance" })
+  const gl =
+    canvas.getContext("webgl", { powerPreference: "high-performance" }) ||
+    canvas.getContext("experimental-webgl", {
+      powerPreference: "high-performance",
+    });
 
   let vendor = gl.getParameter(gl.VENDOR) || "Unknown Vendor";
   let renderer = gl.getParameter(gl.RENDERER) || "Unknown Renderer";
-  if(vendor === "Unknown Vendor" || renderer === "Unknown Renderer"){
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  if (vendor === "Unknown Vendor" || renderer === "Unknown Renderer") {
+    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
     vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
     renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
   }
@@ -197,6 +201,7 @@ function detectIdealSettings() {
   };
   return graphicalSettings[graphicalPreset];
 }
+
 function scoreForMaxTextureSize(size) {
   if (size >= 8192) return 30; // High-end GPUs
   if (size >= 4096) return 20; // Mid-range GPUs
@@ -276,7 +281,7 @@ export function InitRenderer() {
   controls.zoomSpeed = 0.3;
   camera.position.set(0, 0, 3);
   currentGraphics = detectIdealSettings();
-  console.log(rendererInfo.gpuContext)
+  console.log(rendererInfo.gpuContext);
   InitEffectComposer();
   animate();
 }
