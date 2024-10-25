@@ -6,7 +6,11 @@ import {
   renderer,
   InitRenderer,
   updateCameraFocus,
+  controls,
 } from "./gl/renderer.js";
+
+let initialCameraOffset;
+let initialControlsTargetOffset;
 
 // Should be in it own file later when we start getting more serious data in
 const raycaster = new THREE.Raycaster();
@@ -208,7 +212,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateCameraFocus(earth.getPlanet());
   loadSatellites();
 
+  initialCameraOffset = new THREE.Vector3().subVectors(
+    camera.position.clone(),
+    earth.getPlanet().position.clone()
+  );
+  initialControlsTargetOffset = new THREE.Vector3().subVectors(
+    controls.target.clone(),
+    earth.getPlanet().position.clone()
+  );
+
   // Let everything load before adding events, otherwise you can get hit by undefined errors
+
+  document.getElementById('reset-to-north').addEventListener('click', resetCameraToNorth);
 
   window.addEventListener("click", onMouseClick, false);
 
@@ -222,3 +237,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   //fetchSatellites();
 });
+
+function resetCameraToNorth() {
+  const currentEarthPosition = earth.getPlanet().position.clone();
+
+  const newCameraPosition = currentEarthPosition.clone().add(initialCameraOffset);
+  const newControlsTarget = currentEarthPosition.clone().add(initialControlsTargetOffset);
+
+  gsap.to(camera.position, {
+    duration: 1,
+    x: newCameraPosition.x,
+    y: newCameraPosition.y,
+    z: newCameraPosition.z,
+    onUpdate: () => {
+      controls.update();
+    }
+  });
+
+  gsap.to(controls.target, {
+    duration: 1,
+    x: newControlsTarget.x,
+    y: newControlsTarget.y,
+    z: newControlsTarget.z,
+    onUpdate: () => {
+      controls.update();
+    }
+  });
+}

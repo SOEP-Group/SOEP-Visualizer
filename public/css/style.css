@@ -385,6 +385,29 @@ h2 {
     }
 }
 
+/* ############ Reset Position (Compass) ############### */
+
+.reset-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.reset-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
 /* ############ RESIZER ############### */
 .resizer {
     width: 10px;
