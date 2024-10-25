@@ -4,7 +4,9 @@
     font-family: Arial, sans-serif;
 } */
 
+
 /* ########### HEADER ################ */
+
 .header {
     background-color: #000000;
     color: white;
@@ -18,7 +20,9 @@
     border-bottom: 2px solid #374151;
 }
 
+
 /* ########### NAV ################ */
+
 .nav-container {
     display: flex;
     justify-content: space-between;
@@ -136,7 +140,9 @@
     display: none;
 }
 
+
 /* ########### BURGER ################ */
+
 .menu__btn {
     position: fixed;
     top: 20px;
@@ -228,12 +234,14 @@
     right: 0;
 }
 
+
 /* ########### Left Window ################ */
+
 .side-window {
     position: fixed;
     left: -300px;
     top: 69px;
-    width: auto; 
+    width: auto;
     height: 100%;
     padding: 20px 0;
     background-color: rgb(15, 14, 14);
@@ -309,12 +317,18 @@ h2 {
     color: #d1d5db;
 }
 
+
 /* Will add this later when satellites is fixed */
+
+
 /* ############ EARTH ############### */
+
+
 /*.gl_viewport {
     position: relative;
     top: 50px;
 }*/
+
 
 /* ########### Popup Container ################ */
 
@@ -375,24 +389,77 @@ h2 {
     0% {
         opacity: 0.7;
     }
-
     50% {
         opacity: 1;
     }
-
     100% {
         opacity: 0.7;
     }
 }
 
+
+/* ############ Loading Screen ############### */
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/background/earth-from-space.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+    color: #ffffff;
+}
+
+.loading-title {
+    font-size: 4em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+    margin: 0 auto;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #ffffff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+
+/* Spinner Animation */
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
 /* ############ RESIZER ############### */
+
 .resizer {
     width: 10px;
     cursor: ew-resize;
     height: 100%;
     position: absolute;
-    right: 0; 
-    top: 0; 
+    right: 0;
+    top: 0;
 }
+
 
 /* ########################### */
