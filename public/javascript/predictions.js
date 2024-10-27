@@ -36,6 +36,14 @@ function getContent(itemType) {
                     <button id="calculate-button" class="calculate-button">Calculate</button>
                 </div>
             `;
+        case 'trackBox':
+            return `
+                <h2>Track Box</h2>
+                <div class="form-container">
+                <input type="text" id="satelliteName" placeholder="Satellite Name" class="input-box">
+                <button id="calculate-button" class="track-button">Track</button>
+            </div>
+                `;        
         default:
             return '';
     }

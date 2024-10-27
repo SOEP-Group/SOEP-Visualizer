@@ -176,6 +176,28 @@ function scalePosition(satellitePosition) {
     const scaleFactor = 1.0000000298 / (6, 378 * 2); // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
     return satellitePosition * scaleFactor;
 }
+let currentTrackBox = null; // Store the current track box so it can be removed
+
+function addTrackBox(satellitePosition) {
+    // Remove existing track box if any
+    if (currentTrackBox) {
+        earth.getPlanet().remove(currentTrackBox);
+    }
+    
+    // Adjust box size to closely fit the satellite
+    const boxSize = 0.05; // Slightly larger than satellite size of 0.025
+    const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+    const boxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    
+    // Create the box and position it at the satellite's location
+    const trackBox = new THREE.Mesh(boxGeometry, boxMaterial);
+    trackBox.position.set(satellitePosition.x, satellitePosition.y, satellitePosition.z);
+    
+    // Add box to the earth object and save reference
+    earth.getPlanet().add(trackBox);
+    currentTrackBox = trackBox;
+}
+
 
 function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -191,7 +213,11 @@ function onMouseClick(event) {
         if (clickedObject.name.startsWith("satellite_")) {
             console.log("Satellite clicked:", clickedObject.name);
             document.getElementById("loading-skeleton").classList.remove("hidden");
+            
+            // Display the orbit and add a track box around the satellite
             displayOrbit(clickedObject.name);
+            addTrackBox(clickedObject.position); // Pass the satellite’s position to addTrackBox
+
 
             fetchSatelliteInfo(clickedObject.name)
                 .then((data) => {
@@ -222,6 +248,12 @@ function fetchSatellites() {
             console.error("Error fetching satellites:", error);
         });
 }
+
+function trackSelectedSatellite() {
+    const satellite = fakeSatelliteData[0]; // Select or fetch a satellite
+    addTrackBox(satellite.position);
+}
+
 
 document.addEventListener("DOMContentLoaded", async() => {
     InitRenderer();
