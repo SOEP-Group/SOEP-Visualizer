@@ -45,26 +45,53 @@ exports.getSatelliteInfo = (req, res) => {
   });
 };
 
+
+// Use this when using mockdata
+// exports.getOrbitData = (req, res) => {
+//   const satelliteId = req.params.id;
+//   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+//   delay(200).then(() => {
+//     let orbitData = null
+//     mockOrbitData.forEach((satelliteData) => {
+//       if (satelliteData.satelliteName === satelliteId) {
+//         orbitData = satelliteData.orbit;
+//       }
+//   });
+//     if (orbitData) {
+//         res.json(orbitData);
+//     } else {
+//         res.status(404).json({ error: 'Satellite not found' });
+//     }
+//   }).catch(error => {
+//     console.error('Error in delay:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   });
+// };
+
+
+// Use this when using data in db
 exports.getOrbitData = (req, res) => {
   const satelliteId = req.params.id;
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const query = `
+    SELECT tsince, x, y, z 
+    FROM satelliteposition 
+    WHERE name = $1 
+    ORDER BY tsince ASC
+  `;
 
-  delay(200).then(() => {
-    let orbitData = null
-    mockOrbitData.forEach((satelliteData) => {
-      if (satelliteData.satelliteName === satelliteId) {
-        orbitData = satelliteData.orbit;
-      }
-  });
-    if (orbitData) {
-        res.json(orbitData);
-    } else {
+  pool.query(query, [satelliteId])
+    .then(result => {
+      if (result.rows.length > 0) {
+        res.json(result.rows);
+      } else {
         res.status(404).json({ error: 'Satellite not found' });
-    }
-  }).catch(error => {
-    console.error('Error in delay:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  });
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching orbit data:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
 };
 
 // Temp

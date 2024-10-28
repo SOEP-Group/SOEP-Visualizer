@@ -118,33 +118,36 @@ async function displayOrbit(satellite) {
 
     // get data for this satellite from db
     const data = await fetchOrbitData(satellite);
+    console.log(data)
 
     const orbitPathGeometry = new THREE.BufferGeometry();
     const vertices = [];
     const tolerance = 50; // might have to update and scale according to startposition
     const loopPosition = {
-        x: data[0].position.x,
-        y: data[0].position.y,
-        z: data[0].position.z,
+        x: data[0].x,
+        y: data[0].y,
+        z: data[0].z,
     };
+    let loopCompleted = false
 
     for (const entry of data) {
         if (entry.tsince > 30) {
             // go 30 steps forward before looking for the closing of the loop, could REDO THIS MECHANISM
             if (
-                entry.position.x >= loopPosition.x - tolerance &&
-                entry.position.x <= loopPosition.x + tolerance &&
-                entry.position.y >= loopPosition.y - tolerance &&
-                entry.position.y <= loopPosition.y + tolerance &&
-                entry.position.z >= loopPosition.z - tolerance &&
-                entry.position.z <= loopPosition.z + tolerance
+                entry.x >= loopPosition.x - tolerance &&
+                entry.x <= loopPosition.x + tolerance &&
+                entry.y >= loopPosition.y - tolerance &&
+                entry.y <= loopPosition.y + tolerance &&
+                entry.z >= loopPosition.z - tolerance &&
+                entry.z <= loopPosition.z + tolerance
             ) {
                 console.log("Loop completed");
+                loopCompleted = true
                 break; // Exit the loop entirely
             }
         }
 
-      const scaledEntryPosition = scalePosition(entry.position)
+      const scaledEntryPosition = scalePosition(entry)
       vertices.push(
         scaledEntryPosition.x,
         scaledEntryPosition.y,
@@ -153,12 +156,14 @@ async function displayOrbit(satellite) {
     }
 
   // To close the loop
+  if (loopCompleted){
   const scaledLoopPosition = scalePosition(loopPosition)
   vertices.push(
     scaledLoopPosition.x,
     scaledLoopPosition.y,
     scaledLoopPosition.z
   );
+}
 
   orbitPathGeometry.setAttribute(
     "position",
