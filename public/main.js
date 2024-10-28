@@ -15,10 +15,12 @@ const mouse = new THREE.Vector2();
 let currentOrbitLine = null;
 
 const fakeSatelliteData = [
-  { id: "satellite_1", position: { x: 2500, y: -1000, z: 1000 } },
-  { id: "satellite_2", position: { x: -2000, y: 2000, z: 2000 } },
-  { id: "satellite_3", position: { x: 3000, y: 3000, z: -1500 } },
+  { id: "satellite_1", position: { x: -6000, y: -3000, z: 1000 } },
+  { id: "satellite_2", position: { x: 3000, y: 5000, z: 3000 } },
+  { id: "satellite_3", position: { x: -3000, y: -5000, z: -4000 } },
   { id: "satellite_4", position: { x: 3789, y: 2012, z: -5277 } },
+  { id: "satellite_5", position: { x: 3000, y: -1500, z: 1000 } }, 
+  { id: "satellite_6", position: { x: 35000, y: 0, z: 0 } },  // High Earth orbit
 ];
 
 async function fetchSatelliteData() {
@@ -74,14 +76,14 @@ function loadSatellites() {
 }
 
 function addSatelliteToScene(satellite) {
-  const geometry = new THREE.SphereGeometry(0.025, 64, 64);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const geometry = new THREE.SphereGeometry(0.01, 64, 64);
+  const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red
   const satelliteMesh = new THREE.Mesh(geometry, material);
-
+  const scaledPosition = scalePosition(satellite.position)
   satelliteMesh.position.set(
-    scalePosition(satellite.position.x),
-    scalePosition(satellite.position.y),
-    scalePosition(satellite.position.z)
+    scaledPosition.x,
+    scaledPosition.y,
+    scaledPosition.z
   );
   satelliteMesh.name = satellite.id;
 
@@ -119,19 +121,20 @@ async function displayOrbit(satellite) {
         break; // Exit the loop entirely
       }
     }
-
+    const scaledEntryPosition = scalePosition(entry.position)
     vertices.push(
-      scalePosition(entry.position.x), // X coordinate
-      scalePosition(entry.position.y), // Y coordinate
-      scalePosition(entry.position.z) // Z coordinate
+      scaledEntryPosition.x,
+      scaledEntryPosition.y,
+      scaledEntryPosition.z
     );
   }
 
   // To close the loop
+  const scaledLoopPosition = scalePosition(loopPosition)
   vertices.push(
-    scalePosition(loopPosition.x),
-    scalePosition(loopPosition.y),
-    scalePosition(loopPosition.z)
+    scaledLoopPosition.x,
+    scaledLoopPosition.y,
+    scaledLoopPosition.z
   );
 
   orbitPathGeometry.setAttribute(
@@ -142,7 +145,7 @@ async function displayOrbit(satellite) {
   const orbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
 
   currentOrbitLine = orbitLine;
-  earth.add(orbitLine);
+  earth.getPlanet().add(orbitLine);
 }
 
 function stopDisplayingOrbit() {
@@ -152,8 +155,29 @@ function stopDisplayingOrbit() {
 }
 
 function scalePosition(satellitePosition) {
-  const scaleFactor = 1.0000000298 / (6, 378 * 2); // 1.0000000298 units is 6,378 (earth equatorial radius) *2 km
-  return satellitePosition * scaleFactor;
+  const scaleFactor = 1 / (6378 * 2); // 1 unit is 6,378 (earth equatorial radius) *2 km
+  const scaledPosition = {
+    x: satellitePosition.x * scaleFactor,
+    y: satellitePosition.y * scaleFactor,
+    z: satellitePosition.z * scaleFactor
+  };
+
+  // Calculate absolut distance from center
+  let distanceFromCenter = Math.sqrt(
+    scaledPosition.x ** 2 +
+    scaledPosition.y ** 2 +
+    scaledPosition.z ** 2
+  );
+
+  // Sets minimal distance if too close
+  if (distanceFromCenter < 0.52) {
+    const scalingAdjustment = 0.52 / distanceFromCenter;
+    scaledPosition.x *= scalingAdjustment;
+    scaledPosition.y *= scalingAdjustment;
+    scaledPosition.z *= scalingAdjustment;
+  }
+
+  return scaledPosition;
 }
 
 function onMouseClick(event) {

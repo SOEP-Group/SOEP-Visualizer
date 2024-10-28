@@ -23,6 +23,18 @@ const mockSatelliteData = {
       position: 'N 7345643, E 548223',
       launchDate: '2015-12-15',
   },
+  'satellite_5': {
+    name: 'Satellite Epsilon',
+    speed: 'Kinda slow',
+    position: 'N 1645643, E 569123',
+    launchDate: '2008-02-11',
+},
+'satellite_6': {
+    name: 'Satellite Far away',
+    speed: 'Fast',
+    position: 'N 1645643, E 569123',
+    launchDate: '2000-01-01',
+},
 };
 
 const mockOrbitData = [{satelliteName: "satellite_4", orbit: [
