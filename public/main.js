@@ -144,14 +144,13 @@ async function displayOrbit(satellite) {
             }
         }
 
-        vertices.push(
-            scalePosition(entry.position.x), // X coordinate
-            scalePosition(entry.position.y), // Y coordinate
-            scalePosition(entry.position.z) // Z coordinate
-        );
+      const scaledEntryPosition = scalePosition(entry.position)
+      vertices.push(
+        scaledEntryPosition.x,
+        scaledEntryPosition.y,
+        scaledEntryPosition.z
+      );
     }
-
-    const scaledEntryPosition = scalePosition(entry.position)
 
   // To close the loop
   const scaledLoopPosition = scalePosition(loopPosition)
