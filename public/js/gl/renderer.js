@@ -4,8 +4,9 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { SSAARenderPass } from "three/addons/postprocessing/SSAARenderPass.js";
-import { scene, reloadScene } from "./scene.js";
-import { updateDebugMenu } from "./debug.js";
+import { scene, reloadScene, satellites } from "./scene.js";
+import { glState } from "./index.js";
+import { subscribe } from "../eventBuss.js";
 
 export const graphicalSettings = {
   ultra_low: {
@@ -18,6 +19,7 @@ export const graphicalSettings = {
     optional_render_passes: { SSAA: false, Bloom: true }, // Post processing really messes the fps on mobile
   },
   low: {
+    tag: "Low",
     textures: {
       skybox: "/images/skybox/1k/",
       earth: "/images/earth/1k/",
@@ -26,6 +28,7 @@ export const graphicalSettings = {
     optional_render_passes: { SSAA: false, Bloom: true },
   },
   medium: {
+    tag: "Medium",
     textures: {
       skybox: "/images/skybox/2k/",
       earth: "/images/earth/2k/",
@@ -34,6 +37,7 @@ export const graphicalSettings = {
     optional_render_passes: { SSAA: true, Bloom: true },
   },
   high: {
+    tag: "High",
     textures: {
       skybox: "/images/skybox/2k/",
       earth: "/images/earth/4k/",
@@ -42,34 +46,99 @@ export const graphicalSettings = {
     optional_render_passes: { SSAA: true, Bloom: true },
   },
 };
-
-export let currentGraphics = graphicalSettings.ultra_low;
-export let rendererInfo = { frames: 0, fps: 0 };
-export let renderer;
-export let controls;
-export let camera;
 export const clock = new THREE.Clock();
+let loadedImages = false;
+
+export function finishedLoadingImages() {
+  loadedImages = true;
+}
+
+let renderer;
+export let camera;
+let composer; // Use this to add render passes for different post processing effects
+let controls;
 clock.start();
-export let composer; // Use this to add render passes for different post processing effects
 
 let cameraFocus;
 
-export function updateCameraFocus(focusTarget) {
-  if (focusTarget === null) {
+function updateCameraFocus(focusTarget) {
+  const { target, instanceIndex } = focusTarget;
+  const targetGroup = scene.getObjectById(target);
+
+  if (!targetGroup) {
+    const newPosition = new THREE.Vector3(0, 0, 0);
+    camera.position.copy(newPosition);
+    controls.target.set(0, 0, 0);
+    controls.update();
     return;
   }
-  cameraFocus = focusTarget;
-  const distance = camera.position.distanceTo(controls.target);
-  let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
-  controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
+
+  const cameraFocus = scene.getObjectById(target);
+  const focusPosition = new THREE.Vector3();
+  let distance;
+  if (!cameraFocus) return;
+  if (instanceIndex !== undefined) {
+    const groupWorldPosition = new THREE.Vector3();
+    targetGroup.getWorldPosition(groupWorldPosition);
+    let totalPosition = new THREE.Vector3();
+    let meshCount = 0;
+
+    targetGroup.children.forEach((child) => {
+      if (child.isInstancedMesh) {
+        const instanceMatrix = new THREE.Matrix4();
+        const instancePosition = new THREE.Vector3();
+
+        if (instanceIndex < child.count) {
+          child.getMatrixAt(instanceIndex, instanceMatrix);
+          instanceMatrix.decompose(
+            instancePosition,
+            new THREE.Quaternion(),
+            new THREE.Vector3()
+          );
+          instancePosition.add(groupWorldPosition);
+          totalPosition.add(instancePosition);
+          meshCount++;
+        }
+      }
+    });
+
+    if (meshCount > 0) {
+      totalPosition.divideScalar(meshCount);
+    }
+
+    focusPosition.copy(totalPosition);
+    distance = camera.position.distanceTo(controls.target);
+  } else {
+    cameraFocus.getWorldPosition(focusPosition);
+    distance = camera.position.distanceTo(controls.target);
+  }
+
   const direction = new THREE.Vector3()
     .subVectors(camera.position, controls.target)
     .normalize();
   const newPosition = new THREE.Vector3()
-    .copy(controls.target)
+    .copy(focusPosition)
     .add(direction.multiplyScalar(distance));
-  camera.position.copy(newPosition);
-  controls.update();
+
+  gsap.to(camera.position, {
+    duration: 1,
+    x: newPosition.x,
+    y: newPosition.y,
+    z: newPosition.z,
+    onUpdate: () => {
+      controls.update();
+    },
+  });
+
+  gsap.to(controls.target, {
+    duration: 1,
+    x: focusPosition.x,
+    y: focusPosition.y,
+    z: focusPosition.z,
+    onUpdate: () => {
+      controls.update();
+    },
+  });
 }
 
 function updateControlsPos() {
@@ -86,27 +155,47 @@ let prevTime = performance.now();
 function animate() {
   composer.render();
   updateControlsPos();
-  updateDebugMenu();
-
-  rendererInfo.frames++;
+  let renderer_info = glState.get("rendererInfo");
+  renderer_info.frames++;
   const time = performance.now();
 
   if (time >= prevTime + 1000) {
-    rendererInfo.fps = Math.round(
-      (rendererInfo.frames * 1000) / (time - prevTime)
+    renderer_info.fps = Math.round(
+      (renderer_info.frames * 1000) / (time - prevTime)
     );
 
-    rendererInfo.frames = 0;
+    renderer_info.frames = 0;
     prevTime = time;
   }
+  glState.set({ rendererInfo: renderer_info, realTimeDump: renderer.info });
   requestAnimationFrame(animate);
+
+  if (loadedImages) {
+    /*
+    Now before anyone complains, some of the images are so big they 
+    freeze the main thread waaay too much, I tried figuring out ways
+    we could load images more efficiently, all the way down to creating a new format
+    nothing worked since it seems to be an issue with threejs and how they load images.
+    This timeout is there for the thread to cooldown and regain itself so that we can
+    have a smooth fadeout on the loading screen
+    */
+    setTimeout(() => {
+      const loadingScreen = document.getElementById("loading-screen");
+
+      loadingScreen.classList.replace("opacity-100", "opacity-0");
+
+      setTimeout(() => {
+        loadingScreen.classList.add("hidden");
+      }, 500);
+    }, 1000);
+  }
 }
 
-function InitEffectComposer() {
+function initEffectComposer() {
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
-  if (currentGraphics.optional_render_passes.SSAA) {
+  if (glState.get("currentGraphics").optional_render_passes.SSAA) {
     const SSAAPass = new SSAARenderPass(
       scene,
       camera,
@@ -116,13 +205,14 @@ function InitEffectComposer() {
 
     composer.addPass(SSAAPass);
   }
+  const gl_viewport = document.getElementById("gl_viewport");
   composer.setSize(
-    window.innerWidth / currentGraphics.resolution_divider,
-    window.innerHeight / currentGraphics.resolution_divider
+    gl_viewport.clientWidth / glState.get("currentGraphics").resolution_divider,
+    gl_viewport.clientHeight / glState.get("currentGraphics").resolution_divider
   );
-  if (currentGraphics.optional_render_passes.Bloom) {
+  if (glState.get("currentGraphics").optional_render_passes.Bloom) {
     const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      new THREE.Vector2(gl_viewport.clientWidth, gl_viewport.clientHeight),
       1.5,
       0.4,
       1.1 // Everything that goes outside of this rgb threadhold will glow
@@ -188,7 +278,8 @@ function detectIdealSettings() {
   score += scoreForMaxTextureSize(maxTextureSize);
   const graphicalPreset = determinePreset(score);
 
-  rendererInfo.gpuContext = {
+  let renderer_info = glState.get("rendererInfo") || {};
+  renderer_info.gpuContext = {
     card,
     manufacturer,
     integrated,
@@ -199,6 +290,7 @@ function detectIdealSettings() {
     graphicalPreset,
     isHardwareAccelerated,
   };
+  glState.set({ rendererInfo: renderer_info });
   return graphicalSettings[graphicalPreset];
 }
 
@@ -256,38 +348,61 @@ function determinePreset(score) {
   return "ultra_low";
 }
 
-export function InitRenderer() {
+export function initRenderer() {
+  initEventListeners();
+  subscribe("glStateChanged", onStateChanged);
+  const gl_viewport = document.getElementById("gl_viewport");
   camera = new THREE.PerspectiveCamera(
     60,
-    window.innerWidth / window.innerHeight,
+    gl_viewport.clientWidth / gl_viewport.clientHeight,
     0.1,
     1000
   );
 
   renderer = new THREE.WebGLRenderer();
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(gl_viewport.clientWidth, gl_viewport.clientHeight);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.25;
   const viewport_div = document.getElementById("gl_viewport");
   viewport_div.appendChild(renderer.domElement);
 
   controls = new TrackballControls(camera, renderer.domElement);
-  controls.enablePan = false;
+  controls.noPan = true;
   controls.minDistance = 1.3;
   controls.maxDistance = 5;
   controls.enableDamping = true;
-  controls.dynamicDampingFactor = 0.05;
+  controls.dynamicDampingFactor = 0.15;
   controls.zoomSpeed = 0.3;
+  controls.update();
   camera.position.set(0, 0, 3);
-  currentGraphics = detectIdealSettings();
-  console.log(rendererInfo.gpuContext);
-  InitEffectComposer();
+  let graphics_preset = detectIdealSettings();
+  glState.set({ currentGraphics: graphics_preset });
+  initEffectComposer();
   animate();
 }
 
-// Run this if you have changed some crucial settings such as graphical settings
-export function updateRenderer() {
-  InitEffectComposer();
+function initEventListeners() {
+  const gl_viewport = document.getElementById("gl_viewport");
+  window.addEventListener("resize", function () {
+    let SCREEN_WIDTH = gl_viewport.clientWidth,
+      SCREEN_HEIGHT = gl_viewport.clientHeight;
+    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+    camera.updateProjectionMatrix();
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  });
+}
+
+function updateRenderer() {
+  initEffectComposer();
   reloadScene();
+}
+
+function onStateChanged(changedStates) {
+  if (changedStates["currentGraphics"]) {
+    updateRenderer();
+  } else if (changedStates["focusedTarget"]) {
+    updateCameraFocus(glState.get("focusedTarget"));
+  }
 }
