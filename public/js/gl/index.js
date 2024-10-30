@@ -79,23 +79,20 @@ function onStart() {
     },
     false
   );
-  gl_viewport.addEventListener(
-    "click",
-    (event) => {
-      const mouse = new Vector2();
-      const rect = gl_viewport.getBoundingClientRect(); // Get viewport bounds
-      mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
-      mouse.y =
-        -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
-      let clicked_satellite = satellites.checkForClick(mouse, camera);
-      if (clicked_satellite !== null) {
-        glState.set({
-          clickedSatellite: clicked_satellite,
-        });
-      }
-    },
-    false
-  );
+  gl_viewport.addEventListener("click", onViewportClick, false);
+}
+
+function onViewportClick(event) {
+  const mouse = new Vector2();
+  const rect = gl_viewport.getBoundingClientRect(); // Get viewport bounds
+  mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
+  let clicked_satellite = satellites.checkForClick(mouse, camera);
+  if (clicked_satellite !== null) {
+    glState.set({
+      clickedSatellite: clicked_satellite,
+    });
+  }
 }
 
 function onLoadFinished() {

@@ -27,6 +27,7 @@ export class Satellites {
     this.group = new Group();
     this.group.position.set(0, 0, 0);
     this.raycaster = new Raycaster();
+    this.raycaster.precision = 0.2;
 
     this.createNewInstancedMesh();
     data.forEach((satellite) => {

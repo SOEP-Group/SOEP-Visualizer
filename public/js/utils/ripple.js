@@ -6,6 +6,11 @@ document.addEventListener("click", function (event) {
 });
 
 function createRipple(event, button) {
+  const existingRipples = button.getElementsByClassName("ripple");
+  while (existingRipples.length > 0) {
+    existingRipples[0].remove();
+  }
+
   const circle = document.createElement("span");
   const diameter = Math.max(button.clientWidth, button.clientHeight);
   const radius = diameter / 2;
