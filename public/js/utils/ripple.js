@@ -6,7 +6,7 @@ document.addEventListener("click", function (event) {
 });
 
 function createRipple(event, button) {
-  const existingRipples = button.getElementsByClassName("ripple");
+  const existingRipples = document.getElementsByClassName("ripple");
   while (existingRipples.length > 0) {
     existingRipples[0].remove();
   }
