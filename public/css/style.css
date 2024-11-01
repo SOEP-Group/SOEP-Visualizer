@@ -17,6 +17,14 @@ body {
   width: 100%;
 }
 
+.header_menu {
+  --aug-border-y: 1px;
+  --aug-border-x: 1px;
+  --aug-br2: 25px;
+  --aug-br-extend1: 60%;
+  --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
+}
+
 .mobile-close {
   --aug-border-y: 1px;
   --aug-border-x: 1px;

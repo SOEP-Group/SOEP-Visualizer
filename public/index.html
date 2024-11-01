@@ -10,9 +10,6 @@
     <!-- <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">  -->
     <link href="./css/output.css" rel="stylesheet" />
 
-    <link href="./lib/fontawesome/css/fontawesome.css" rel="stylesheet" />
-    <link href="./lib/fontawesome/css/brands.css" rel="stylesheet" />
-    <link href="./lib/fontawesome/css/solid.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
     <link rel="stylesheet" href="./css/style.css" />
 
@@ -40,9 +37,9 @@
     </div>
 
     <header
-      class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-gray-700 sticky top-0"
+    data-augmented-ui="border br-clip-x" class="absolute top-0 header_menu bg-sky-950 z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-gray-700 sticky top-0"
     >
-      <nav class="flex justify-between items-center max-w-full relative px-4 w-full">
+      <nav  class="flex justify-between items-center max-w-full relative px-4 w-full">
         <!-- Logo -->
         <div class="flex items-center py-5">
           <a href="#" class="text-lg md:text-xl font-bold text-white">SOEP</a>
@@ -245,21 +242,21 @@
           
         </div>
         <!-- Note Ivan: This is just a proof of concept on how we could potentially rebuild the ui -->
-        <div id="popup-container" class="z-10 pb-4
-         rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out hidden md:flex md:flex-col w-4/5 h-2/4 md:w-1/5 md:h-1/4">
-          <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full" data-augmented-ui="border tr-2-clip-x br-clip">
-            <div class="flex flex-row justify-start">
-              <button id="close-popup" class="bg-transparent ">
-                <svg  class="h-8 w-8 text-teal-300 hover:text-teal-200"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-                  <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="18" y1="6" x2="6" y2="18" />  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+         <div id="popup-container" class="z-10 absolute bottom-0 left-0 w-4/5 h-2/4 md:w-1/5 md:h-1/4 p-4 translate-y-full transform transition-transform duration-500 ease-in-out hidden md:flex md:flex-col">
+          <div class="pb-4 rounded-lg h-full w-full">
+            <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 h-full w-full" data-augmented-ui="border tr-2-clip-x br-clip">
+              <div class="flex flex-row justify-start p-2">
+                <button id="close-popup" class="bg-transparent ">
+                  <svg  class="h-8 w-8 text-teal-300 hover:text-teal-200"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
+                    <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="18" y1="6" x2="6" y2="18" />  <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
+                <p class="loading-text">Loading</p>
+              </div>
+              <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
             </div>
-            <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
-              <p class="loading-text">Loading</p>
-            </div>
-            <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
-          </div>
         </div>
       </div>
       <div id="mobile-popup-revert" class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
