@@ -65,7 +65,7 @@ export class Earth {
   }
 
   onClick(event, renderer, camera) {
-    console.log("Click event triggered"); // Add this line
+    console.log("Click event triggered"); 
 
     this.mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
