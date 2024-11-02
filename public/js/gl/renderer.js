@@ -53,7 +53,7 @@ export function finishedLoadingImages() {
   loadedImages = true;
 }
 
-let renderer;
+export let renderer; // Exporting renderer
 export let camera;
 let composer; // Use this to add render passes for different post processing effects
 let controls;

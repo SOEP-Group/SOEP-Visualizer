@@ -7,6 +7,8 @@ import {
   RepeatWrapping,
   IcosahedronGeometry,
   MeshStandardMaterial,
+  Raycaster,
+  Vector2,
 } from "three";
 import { clock } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
@@ -52,6 +54,37 @@ export class Earth {
     this.animate = this.createAnimateFunction();
     this.animate();
   }
+  initializeRaycasting(renderer, camera) {
+    this.raycaster = new Raycaster();
+    this.mouse = new Vector2();
+
+    // Add click event listener once renderer and camera are ready
+    renderer.domElement.addEventListener("click", (event) => {
+      this.onClick(event, renderer, camera);
+    });
+  }
+
+  onClick(event, renderer, camera) {
+    console.log("Click event triggered"); // Add this line
+
+    this.mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, camera);
+
+    const intersects = this.raycaster.intersectObject(this.planetGroup.children[0]);
+
+    if (intersects.length > 0) {
+      const intersectPoint = intersects[0].point;
+      const radius = this.planetGeometry.parameters.radius;
+
+      const latitude = Math.asin(intersectPoint.y / radius) * (180 / Math.PI);
+      const longitude = Math.atan2(intersectPoint.z, intersectPoint.x) * (180 / Math.PI);
+
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    }
+  }
+
   calculateEarthRotationInRadians() {
     const now = new Date();
     const referenceTime = new Date(

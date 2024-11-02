@@ -16,6 +16,9 @@ import {
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites } from "./scene.js";
 import { initViewer } from "./model-viewer.js";
+import { renderer } from "./renderer.js";
+
+
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -49,17 +52,22 @@ function onStart() {
   loadingManager.onLoad = onLoadFinished;
   loadingManager.onProgress = onLoadProgress;
   loadingManager.onError = onLoadError;
+
   initRenderer();
   initScene();
   initDebug();
   loadAllModels();
   initViewer();
 
+  // Initialize raycasting for Earth
+  earth.initializeRaycasting(renderer, camera); // Ensure Earth handles click events
+
   glState.set({
     focusedTarget: { target: earth.getGroup().id },
   });
 
   const gl_viewport = document.getElementById("gl_viewport");
+
   gl_viewport.addEventListener(
     "mousemove",
     (event) => {
@@ -79,8 +87,10 @@ function onStart() {
     },
     false
   );
+
   gl_viewport.addEventListener("click", onViewportClick, false);
 }
+
 
 function onViewportClick(event) {
   const mouse = new Vector2();
@@ -96,6 +106,8 @@ function onViewportClick(event) {
 }
 
 function onLoadFinished() {
+  console.log("All resources loaded successfully.");
+
   finishedLoadingImages();
   publish("initalLoadingDone");
 }
