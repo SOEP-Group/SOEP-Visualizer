@@ -1,12 +1,17 @@
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import { SSAARenderPass } from "three/addons/postprocessing/SSAARenderPass.js";
-import { scene, reloadScene, satellites } from "./scene.js";
+import {
+  BloomEffect,
+  EffectComposer,
+  EffectPass,
+  RenderPass,
+  SMAAEffect,
+  SMAAPreset,
+} from "postprocessing";
+import { scene, reloadScene, sun } from "./scene.js";
 import { glState } from "./index.js";
 import { subscribe } from "../eventBuss.js";
+import { LensFlarePass } from "./lensflare.js";
 
 export const graphicalSettings = {
   ultra_low: {
@@ -192,32 +197,28 @@ function animate() {
 }
 
 function initEffectComposer() {
-  composer = new EffectComposer(renderer);
+  composer = new EffectComposer(renderer, {
+    stencilBuffer: true,
+    depthBuffer: true,
+    frameBufferType: THREE.HalfFloatType,
+  });
   const renderPass = new RenderPass(scene, camera);
+  renderPass.clearPass.setClearFlags(true, true, true);
   composer.addPass(renderPass);
-  if (glState.get("currentGraphics").optional_render_passes.SSAA) {
-    const SSAAPass = new SSAARenderPass(
-      scene,
-      camera,
-      new THREE.Vector3(1, 1, 1),
-      1
-    ); // Better than FXAA, remember all the homies hate FXAA
 
-    composer.addPass(SSAAPass);
+  const lensFlarePass = new LensFlarePass(scene, camera, [sun.getFlare()], {
+    coverageScale: 2.0,
+  });
+  lensFlarePass.doTransparency = false;
+  composer.addPass(lensFlarePass);
+
+  if (glState.get("currentGraphics").optional_render_passes.SSAA) {
+    composer.addPass(new EffectPass(camera, new SMAAEffect(SMAAPreset.ULTRA))); // Better than FXAA, remember all the homies hate FXAA
   }
   const gl_viewport = document.getElementById("gl_viewport");
-  composer.setSize(
-    gl_viewport.clientWidth / glState.get("currentGraphics").resolution_divider,
-    gl_viewport.clientHeight / glState.get("currentGraphics").resolution_divider
-  );
+  composer.setSize(gl_viewport.clientWidth, gl_viewport.clientHeight);
   if (glState.get("currentGraphics").optional_render_passes.Bloom) {
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(gl_viewport.clientWidth, gl_viewport.clientHeight),
-      1.5,
-      0.4,
-      1.1 // Everything that goes outside of this rgb threadhold will glow
-    );
-    composer.addPass(bloomPass);
+    composer.addPass(new EffectPass(camera, new BloomEffect()));
   }
 }
 

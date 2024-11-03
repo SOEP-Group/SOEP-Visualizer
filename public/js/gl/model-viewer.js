@@ -4,6 +4,9 @@ import { glState } from "./index.js";
 import { subscribe } from "../eventBuss.js";
 import { modelLibrary } from "./index.js";
 
+// From Ivan:
+// deprecated: Probably a bad idea. Takes long to load and upload to the GPU
+
 let satellite;
 let viewer_renderer;
 let viewer_camera;

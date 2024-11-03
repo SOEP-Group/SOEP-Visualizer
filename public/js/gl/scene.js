@@ -27,7 +27,14 @@ function loadBackground() {
   scene.background = texture;
 }
 
-export function initScene() {
+function loadObjects() {
+  if (sun) {
+    sun.dispose();
+  }
+  if (earth) {
+    earth.dispose();
+  }
+
   sun = new Sun();
   earth = new Earth({
     planetSize: 0.5,
@@ -36,8 +43,13 @@ export function initScene() {
     rotationSpeedMultiplier: 1,
     orbitalSpeedMultiplier: 1,
   });
+
   scene.add(sun.getGroup());
   scene.add(earth.getGroup());
+}
+
+export function initScene() {
+  loadObjects();
   loadBackground();
   const light = new THREE.AmbientLight(0xffffff, 0.1);
   scene.add(light);
@@ -49,5 +61,6 @@ export function initScene() {
 }
 
 export function reloadScene() {
+  loadObjects();
   loadBackground();
 }

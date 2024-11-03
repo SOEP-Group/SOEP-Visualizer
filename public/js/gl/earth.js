@@ -1,12 +1,15 @@
 import {
   Mesh,
   Group,
-  TextureLoader,
+  ShaderMaterial,
   SRGBColorSpace,
   Color,
   RepeatWrapping,
   IcosahedronGeometry,
   MeshStandardMaterial,
+  AdditiveBlending,
+  BackSide,
+  NormalBlending,
 } from "three";
 import { clock } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
@@ -20,6 +23,7 @@ export class Earth {
   orbitalDistance;
   orbitalSpeed;
   currentOrbitAngle;
+  cloudsMesh;
 
   constructor({
     planetSize = 1,
@@ -48,10 +52,37 @@ export class Earth {
     this.planetGeometry = new IcosahedronGeometry(this.planetSize, 12);
 
     this.createPlanet();
+    this.createAtmosphere();
 
     this.animate = this.createAnimateFunction();
     this.animate();
   }
+
+  dispose() {
+    this.animate = null;
+    this.group.traverse((object) => {
+      if (object.isMesh) {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach((material) => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+          if (object.material.map) object.material.map.dispose();
+          if (object.material.bumpMap) object.material.bumpMap.dispose();
+          if (object.material.alphaMap) object.material.alphaMap.dispose();
+          if (object.material.emissiveMap)
+            object.material.emissiveMap.dispose();
+        }
+      }
+    });
+
+    if (this.group.parent) {
+      this.group.parent.remove(this.group);
+    }
+  }
+
   calculateEarthRotationInRadians() {
     const now = new Date();
     const referenceTime = new Date(
@@ -85,17 +116,6 @@ export class Earth {
         textureLoader.loadAsync(curr_text_dir + "Bump.jpg"),
         textureLoader.loadAsync(curr_text_dir + "Lights.png"),
       ]);
-
-    const planetCloudsMaterial = new MeshStandardMaterial({
-      alphaMap: cloudsMap,
-      transparent: true,
-    });
-    const planetCloudsMesh = new Mesh(
-      this.planetGeometry,
-      planetCloudsMaterial
-    );
-    planetCloudsMesh.scale.setScalar(1.01);
-    this.planetGroup.add(planetCloudsMesh);
 
     const planetMaterial = new MeshStandardMaterial({
       map: albedoMap,
@@ -204,6 +224,71 @@ export class Earth {
     this.planetGroup.rotation.y = this.currRotation;
     this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
+
+    const planetCloudsMaterial = new MeshStandardMaterial({
+      map: cloudsMap,
+      alphaMap: cloudsMap,
+      blending: AdditiveBlending,
+      transparent: true,
+      opacity: 1,
+    });
+    this.cloudsMesh = new Mesh(this.planetGeometry, planetCloudsMaterial);
+    this.cloudsMesh.scale.setScalar(1.003);
+    this.cloudsMesh.renderOrder = 1;
+    this.planetGroup.add(this.cloudsMesh);
+  }
+
+  createAtmosphere() {
+    const uniforms = {
+      rim_color: { value: new Color(0x40a2f7) },
+      facing_color: { value: new Color(0x000000) },
+      fresnelBias: { value: 0.1 },
+      fresnelScale: { value: 1.0 },
+      fresnelPower: { value: 4.0 },
+    };
+    const vs = `
+    uniform float fresnelBias;
+    uniform float fresnelScale;
+    uniform float fresnelPower;
+    
+    varying float vReflectionFactor;
+    
+    void main() {
+      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+      vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+    
+      vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal);
+    
+      vec3 I = worldPosition.xyz - cameraPosition;
+    
+      vReflectionFactor = fresnelBias + fresnelScale * pow( 1.0 + dot( normalize( I ), worldNormal ), fresnelPower);
+    
+      gl_Position = projectionMatrix * mvPosition;
+    }
+    `;
+    const fs = `
+    uniform vec3 rim_color;
+    uniform vec3 facing_color;
+    
+    varying float vReflectionFactor;
+    
+    void main() {
+      float f = clamp( vReflectionFactor, 0.0, 1.0 );
+      gl_FragColor = vec4(mix(facing_color, rim_color, vec3(f)), f);
+    }
+    `;
+    const fresnelMat = new ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: vs,
+      fragmentShader: fs,
+      transparent: true,
+      blending: AdditiveBlending,
+    });
+
+    const atmoMesh = new Mesh(this.planetGeometry, fresnelMat);
+    atmoMesh.renderOrder = 2;
+    atmoMesh.scale.setScalar(1.01);
+    this.group.add(atmoMesh);
   }
 
   updatePlanetRotation(dt) {
@@ -226,12 +311,22 @@ export class Earth {
     );
   }
 
+  updateCloudsRotation(dt) {
+    let rotationSpeed = 0.03;
+    if (this.cloudsMesh) {
+      this.cloudsMesh.rotation.y += rotationSpeed * dt;
+    }
+  }
+
   createAnimateFunction() {
     return () => {
-      requestAnimationFrame(this.animate);
-      const dt = clock.getDelta();
-      this.updatePlanetRotation(dt);
-      this.updatePlanetOrbit(dt);
+      if (this.animate) {
+        requestAnimationFrame(this.animate);
+        const dt = clock.getDelta();
+        this.updatePlanetRotation(dt);
+        this.updatePlanetOrbit(dt);
+        this.updateCloudsRotation(dt);
+      }
     };
   }
 

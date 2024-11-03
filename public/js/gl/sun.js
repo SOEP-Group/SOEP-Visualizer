@@ -9,10 +9,12 @@ import {
   AdditiveBlending,
   DynamicDrawUsage,
   MeshBasicMaterial,
+  MeshStandardMaterial,
   IcosahedronGeometry,
 } from "three";
 import { ImprovedNoise } from "three/addons/math/ImprovedNoise.js";
 import { textureLoader } from "./index.js";
+import { Flare } from "./lensflare.js";
 
 export class Sun {
   group;
@@ -20,6 +22,8 @@ export class Sun {
   corona;
   sunRim;
   glow;
+  flare;
+  color = new Color(0xfdb813);
 
   constructor() {
     this.sunTexture = "images/sun/sunmap.jpg";
@@ -33,17 +37,69 @@ export class Sun {
     this.createGlow();
     this.createSun();
 
-    this.animate = this.createAnimateFunction();
-    this.animate();
+    // this.animate = this.createAnimateFunction();
+    // this.animate();
+  }
+
+  dispose() {
+    this.animate = null;
+
+    this.group.traverse((object) => {
+      if (object.isMesh) {
+        if (object.geometry) object.geometry.dispose();
+
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach((material) => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+
+          if (object.material.map) object.material.map.dispose();
+          if (object.material.emissiveMap)
+            object.material.emissiveMap.dispose();
+          if (object.material.alphaMap) object.material.alphaMap.dispose();
+        }
+      }
+    });
+
+    if (this.flare) {
+      this.flare.traverse((object) => {
+        if (object.isMesh) {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach((material) => material.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        }
+      });
+
+      if (this.flare.parent) {
+        this.flare.parent.remove(this.flare);
+      }
+      this.flare = null;
+    }
+
+    if (this.group.parent) {
+      this.group.parent.remove(this.group);
+    }
+
+    this.group = null;
+    this.corona = null;
+    this.sunRim = null;
+    this.glow = null;
   }
 
   createSun() {
     const map = textureLoader.load(this.sunTexture);
     const sunGeometry = new IcosahedronGeometry(5, 12);
-    const sunMaterial = new MeshBasicMaterial({
-      map,
-      emissive: new Color(0xffff99),
-      emissiveIntensity: 1.5,
+    const sunMaterial = new MeshStandardMaterial({
+      emissiveMap: map,
+      emissive: this.color,
+      emissiveIntensity: 3.2,
     });
     const sunMesh = new Mesh(sunGeometry, sunMaterial);
     this.group.add(sunMesh);
@@ -58,6 +114,8 @@ export class Sun {
       this.group.rotation.y = -t / 5;
       this.corona.userData.update(t);
     };
+
+    this.group.scale.setScalar(0.2);
   }
 
   createCorona() {
@@ -209,6 +267,18 @@ export class Sun {
     const sunLight = new PointLight(0xffffff, 10000);
     sunLight.position.set(0, 0, 0);
     this.group.add(sunLight);
+
+    this.flare = new Flare({
+      position: new Vector3(),
+      colorGain: this.color,
+      angle: Math.PI * 2,
+    });
+
+    this.flare.flareSpeed = 0.0; // change this if you wanna animate the flare
+    this.flare.glareSize = 0.1;
+    this.flare.flareSize = 0.001;
+
+    this.group.add(this.flare);
   }
 
   createAnimateFunction() {
@@ -221,5 +291,9 @@ export class Sun {
 
   getGroup() {
     return this.group;
+  }
+
+  getFlare() {
+    return this.flare;
   }
 }

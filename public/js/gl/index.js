@@ -49,11 +49,11 @@ function onStart() {
   loadingManager.onLoad = onLoadFinished;
   loadingManager.onProgress = onLoadProgress;
   loadingManager.onError = onLoadError;
-  initRenderer();
   initScene();
+  initRenderer();
   initDebug();
-  loadAllModels();
-  initViewer();
+  // loadAllModels();
+  // initViewer();
 
   glState.set({
     focusedTarget: { target: earth.getGroup().id },
