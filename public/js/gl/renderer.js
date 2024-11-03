@@ -12,6 +12,7 @@ import { scene, reloadScene, sun } from "./scene.js";
 import { glState } from "./index.js";
 import { subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
+import { ViewportGizmo } from "three-viewport-gizmo";
 
 export const graphicalSettings = {
   ultra_low: {
@@ -61,10 +62,10 @@ export function finishedLoadingImages() {
 let renderer;
 export let camera;
 let composer; // Use this to add render passes for different post processing effects
-let controls;
+export let controls;
 clock.start();
 
-let cameraFocus;
+let orientationGizmo;
 
 function updateCameraFocus(focusTarget) {
   const { target, instanceIndex } = focusTarget;
@@ -131,6 +132,7 @@ function updateCameraFocus(focusTarget) {
     y: newPosition.y,
     z: newPosition.z,
     onUpdate: () => {
+      orientationGizmo.update();
       controls.update();
     },
   });
@@ -141,25 +143,17 @@ function updateCameraFocus(focusTarget) {
     y: focusPosition.y,
     z: focusPosition.z,
     onUpdate: () => {
+      orientationGizmo.update();
       controls.update();
     },
   });
-}
-
-function updateControlsPos() {
-  if (cameraFocus !== undefined) {
-    let focusPosition = new THREE.Vector3(0, 0, 0).copy(cameraFocus.position);
-    controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
-  }
-
-  controls.update();
 }
 
 let prevTime = performance.now();
 
 function animate() {
   composer.render();
-  updateControlsPos();
+  if (controls.enabled && !orientationGizmo.animating) controls.update();
   let renderer_info = glState.get("rendererInfo");
   renderer_info.frames++;
   const time = performance.now();
@@ -173,6 +167,7 @@ function animate() {
     prevTime = time;
   }
   glState.set({ rendererInfo: renderer_info, realTimeDump: renderer.info });
+  orientationGizmo.render();
   requestAnimationFrame(animate);
 
   if (loadedImages) {
@@ -350,7 +345,6 @@ function determinePreset(score) {
 }
 
 export function initRenderer() {
-  initEventListeners();
   subscribe("glStateChanged", onStateChanged);
   const gl_viewport = document.getElementById("gl_viewport");
   camera = new THREE.PerspectiveCamera(
@@ -365,6 +359,12 @@ export function initRenderer() {
   renderer.setSize(gl_viewport.clientWidth, gl_viewport.clientHeight);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.25;
+  orientationGizmo = new ViewportGizmo(camera, renderer, {
+    container: document.getElementById("ui"),
+    placement: "top-left",
+  });
+
+  orientationGizmo.enabled = false; // Currently we get some weird gimbal lock issues...
   const viewport_div = document.getElementById("gl_viewport");
   viewport_div.appendChild(renderer.domElement);
 
@@ -376,9 +376,11 @@ export function initRenderer() {
   controls.dynamicDampingFactor = 0.15;
   controls.zoomSpeed = 0.3;
   controls.update();
+  orientationGizmo.attachControls(controls);
   camera.position.set(0, 0, 3);
   let graphics_preset = detectIdealSettings();
   glState.set({ currentGraphics: graphics_preset });
+  initEventListeners();
   initEffectComposer();
   animate();
 }
@@ -392,7 +394,11 @@ function initEventListeners() {
     camera.updateProjectionMatrix();
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     composer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    orientationGizmo.update();
   });
+
+  orientationGizmo.addEventListener("start", () => (controls.enabled = false));
+  orientationGizmo.addEventListener("end", () => (controls.enabled = true));
 }
 
 function updateRenderer() {
