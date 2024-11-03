@@ -1,465 +1,109 @@
-/* /* body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-} */
-
-
-/* ########### HEADER ################ */
-
-.header {
-    background-color: #000000;
-    color: white;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    width: 100%;
-    z-index: 10;
-    border-bottom: 2px solid #374151;
+html {
+  height: 100%;
 }
 
-
-/* ########### NAV ################ */
-
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 100%;
-    position: relative;
-    padding: 0 1rem;
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
 }
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
-}
-
-.nav-links {
-    display: flex;
-    margin-left: 2.5rem;
-    gap: 3.5rem;
-}
-
-.nav-link,
-.dropdown-trigger {
-    color: white;
-    margin-right: 1.5rem;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover,
-.dropdown-trigger:hover {
-    color: #d1d5db;
-    transition: color 0.3s ease;
-}
-
-.prediction-dropdown-trigger {
-    background-color: rgb(15, 14, 14);
-    cursor: pointer;
-}
-
-.prediction-dropdown-trigger option {
-    background-color: rgb(15, 14, 14);
-    color: #d1d5db;
-}
-
-.prediction-dropdown-trigger:hover,
-.satellite-dropdown-trigger:hover {
-    color: #d1d5db;
-    transition: color 0.3s ease;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    color: white;
-    min-width: 230px;
-    border: 1px solid #374151;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    border-radius: 4px;
-}
-
-.dropdown-content a,
-.dropdown-item {
-    color: #d1d5db;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    background-color: rgb(15, 14, 14);
-    transition: background-color 0.3s ease;
-}
-
-.dropdown-content a:hover,
-.dropdown-item:hover {
-    background-color: #242527;
-}
-
-#search-input {
-    box-sizing: border-box;
-    background-color: #000000;
-    color: white;
-    font-size: 16px;
-    padding: 12px 16px;
-    border: none;
-    border-bottom: 1px solid #374151;
-    width: 100%;
-    outline: none;
-    border-radius: 4px 4px 0 0;
-}
-
-#search-input:focus {
-    outline: 2px solid #374151;
-}
-
-.show {
-    display: block;
-}
-
-.hidden {
-    display: none;
-}
-
-
-/* ########### BURGER ################ */
-
-.menu__btn {
-    position: fixed;
-    top: 20px;
-    right: 30px;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    z-index: 1;
-    transition: transform 0.25s ease;
-}
-
-.menu__btn>span,
-.menu__btn>span::before,
-.menu__btn>span::after {
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: white;
-    transition: all 0.25s ease;
-}
-
-.menu__btn>span {
-    transition: color 0.3s ease;
-}
-
-.menu__btn:hover>span,
-.menu__btn:hover>span::before,
-.menu__btn:hover>span::after {
-    background-color: #d1d5db;
-}
-
-.menu__btn>span::before {
-    content: '';
-    top: -8px;
-}
-
-.menu__btn>span::after {
-    content: '';
-    top: 8px;
-}
-
-.menu__btn.active>span {
-    background-color: transparent;
-}
-
-.menu__btn.active>span::before {
-    transform: rotate(45deg);
-    top: 0;
-}
-
-.menu__btn.active>span::after {
-    transform: rotate(-45deg);
-    top: 0;
-}
-
-.menu__btn:hover {
-    color: #d1d5db;
-}
-
-.menu__box {
-    display: block;
-    position: fixed;
-    top: 69px;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    margin: 0;
-    padding: 20px 0;
-    background-color: rgb(15, 14, 14);
-    border: 1px solid #374151;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease, background-color 0.3s ease;
-}
-
-.menu__item {
-    display: block;
-    padding: 12px 24px;
-    color: white;
-    font-size: 16px;
-    transition-duration: .25s;
-}
-
-.menu__item:hover {
-    background-color: #242527;
-}
-
-.menu__box.active {
-    right: 0;
-}
-
-
-/* ########### Left Window ################ */
-
-.side-window {
-    position: fixed;
-    left: -300px;
-    top: 69px;
-    width: auto;
-    height: 100%;
-    padding: 20px 0;
-    background-color: rgb(15, 14, 14);
-    border: 1px solid #374151;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    color: white;
-    transition: left 0.25s ease;
-    z-index: 1000;
-}
-
-.side-window.open {
-    left: 0;
-}
-
-.side-window-content {
-    padding: 20px;
-    margin-top: 20px;
-}
-
-h2 {
-    font-size: 26px !important;
-    color: white;
-    font-weight: bold !important;
-    text-align: center;
-    margin-bottom: 20px !important;
-}
-
-.form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.input-box {
-    background-color: #1a1a1a;
-    color: white;
-    border: 1px solid #374151;
-    border-radius: 4px;
-    padding: 12px;
-    font-size: 16px;
-    margin-bottom: 15px;
-    width: 80%;
-    box-sizing: border-box;
-}
-
-.calculate-button {
-    background-color: #374151;
-    color: white;
-    border-radius: 4px;
-    padding: 12px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.calculate-button:hover {
-    background-color: #4b5563;
-}
-
-.close-btn {
-    position: absolute;
-    top: 5px;
-    right: 15px;
-    font-size: 26px;
-    color: white;
-    cursor: pointer;
-    z-index: 1001;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.close-btn:hover {
-    color: #d1d5db;
-}
-
-
-/* Will add this later when satellites is fixed */
-
 
 /* ############ EARTH ############### */
-
-
-/*.gl_viewport {
-    position: relative;
-    top: 50px;
-}*/
-
-
-/* ########### Popup Container ################ */
-
-.popup-container {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    margin: 1rem;
-    z-index: 50;
-    max-width: 20rem;
-    width: 100%;
+.gl_viewport {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
 }
 
-.loading-skeleton,
-.satellite-popup {
-    background-color: #2d3748;
-    color: white;
-    border: 1px solid #4a5568;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 20rem;
-    width: 100%;
-    height: 18rem;
-    border-radius: 0.375rem;
-    position: relative;
+.mobile-close {
+  --aug-border-y: 1px;
+  --aug-border-x: 1px;
+  --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
 }
 
-.loading-title,
-.satellite-title {
-    font-size: 1.125rem;
-    font-weight: 600;
+.popup-window {
+  --aug-tr: 20px;
+  --aug-tr-extend1: 50%;
+  --aug-border-y: 1px;
+  --aug-border-x: 1px;
+  --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
 }
 
-.close-button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #4a5568;
-    color: white;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s;
+.loading-text::after {
+  content: "";
+  animation: loadingDots 1s steps(4, end) infinite;
 }
 
-.close-button:hover {
-    background-color: #2d3748;
+@keyframes loadingDots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
 }
 
-.skeleton {
-    display: inline-block;
-    height: 1em;
-    width: 100px;
-    background: #555;
-    border-radius: 4px;
-    animation: pulse 1.5s infinite;
-    margin-left: 5px;
+/* ############ Reset Position (Compass) ############### */
+
+.reset-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 }
 
-@keyframes pulse {
-    0% {
-        opacity: 0.7;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0.7;
-    }
+.reset-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
-
-/* ############ Loading Screen ############### */
-
-.loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/images/background/earth-from-space.jpg');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+#ui {
+  pointer-events: none;
 }
 
-.loading-content {
-    text-align: center;
-    color: #ffffff;
+#ui * {
+  pointer-events: auto;
 }
 
-.loading-title {
-    font-size: 4em;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+button[data-ripple="true"] {
+  position: relative;
+  overflow: hidden;
+  transition: background 400ms;
 }
 
-.spinner {
-    margin: 0 auto;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #ffffff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+span.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 600ms linear;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-
-/* Spinner Animation */
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
-
-
-/* ############ RESIZER ############### */
-
-.resizer {
-    width: 10px;
-    cursor: ew-resize;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
 
 /* ########################### */
