@@ -61,7 +61,7 @@ export function finishedLoadingImages() {
 let renderer;
 export let camera;
 let composer; // Use this to add render passes for different post processing effects
-let controls;
+export let controls;
 clock.start();
 
 let cameraFocus;
