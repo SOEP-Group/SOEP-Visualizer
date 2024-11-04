@@ -54,3 +54,5 @@ export class State {
     }
   }
 }
+
+export let globalState = new State("onGlobalStateChanged", {});
