@@ -1,5 +1,4 @@
 const { mockSatelliteData, mockOrbitData } = require("../mockData.js");
-const { scalePosition } = require("../public/js/utils/utils");
 
 exports.Home = async function (req, res) {
   return res.render("index");
@@ -33,6 +32,7 @@ exports.RenderSatellite = async function (req, res) {
     });
 };
 
+
 exports.getOrbitData = (req, res) => {
   const satelliteId = req.params.id;
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -59,3 +59,4 @@ exports.getOrbitData = (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
   });
 };
+

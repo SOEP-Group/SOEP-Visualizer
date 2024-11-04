@@ -11,7 +11,7 @@ import {
   BackSide,
   NormalBlending,
 } from "three";
-import { clock } from "./renderer.js";
+import { camera, clock, controls } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
 
 export class Earth {
@@ -210,11 +210,6 @@ export class Earth {
 
         diffuseColor.rgb *= max(1.0 - cloudsMapValue, 0.2 );
         diffuseColor.rgb += fresnel * vec3(0.3, 0.6, 1.0);
-
-        float intensity = 1.4 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );
-        vec3 atmosphere = vec3( 0.3, 0.6, 1.0 ) * pow(intensity, 5.0);
-
-        diffuseColor.rgb += atmosphere;
       `
       );
     };
@@ -227,11 +222,11 @@ export class Earth {
 
     const planetCloudsMaterial = new MeshStandardMaterial({
       map: cloudsMap,
-      alphaMap: cloudsMap,
       blending: AdditiveBlending,
       transparent: true,
       opacity: 1,
     });
+
     this.cloudsMesh = new Mesh(this.planetGeometry, planetCloudsMaterial);
     this.cloudsMesh.scale.setScalar(1.003);
     this.cloudsMesh.renderOrder = 1;
@@ -318,6 +313,31 @@ export class Earth {
     }
   }
 
+  updateCloudsOpacity(dt) {
+    if (!controls || !this.cloudsMesh) {
+      return;
+    }
+
+    let zoomFactor =
+      (controls.target.distanceTo(controls.object.position) -
+        controls.minDistance) /
+      (controls.maxDistance - controls.minDistance);
+
+    zoomFactor = Math.max(0, Math.min(zoomFactor, 1));
+
+    const fadeThreshold = 0.2;
+    if (zoomFactor < fadeThreshold) {
+      const fadeFactor = zoomFactor / fadeThreshold;
+      this.cloudsMesh.material.opacity = fadeFactor;
+    } else {
+      this.cloudsMesh.material.opacity = 1;
+    }
+    if (zoomFactor !== this.prevZoomFactor) {
+      this.cloudsMesh.material.needsUpdate = true;
+    }
+    this.prevZoomFactor = zoomFactor;
+  }
+
   createAnimateFunction() {
     return () => {
       if (this.animate) {
@@ -326,6 +346,7 @@ export class Earth {
         this.updatePlanetRotation(dt);
         this.updatePlanetOrbit(dt);
         this.updateCloudsRotation(dt);
+        this.updateCloudsOpacity(dt);
       }
     };
   }

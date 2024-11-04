@@ -4,15 +4,13 @@ import { Earth } from "./earth.js";
 import { Satellites } from "./satellite.js";
 import { subscribe } from "../eventBuss.js";
 import { glState, cubeTextureLoader } from "./index.js";
-import { fetchOrbit, fetchSatellites } from "../api/satellites.js";
+import { fetchSatellites } from "../api/satellites.js";
 
 export let scene = new THREE.Scene();
 
 export let sun;
 
 export let satellites;
-
-export let currentOrbitLine = null;
 
 // Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
 export let earth;
@@ -50,6 +48,7 @@ function loadObjects() {
   scene.add(sun.getGroup());
   scene.add(earth.getGroup());
 }
+
 
 export function initOrbit() {
   subscribe("glStateChanged", onGlStateChanged);
@@ -130,6 +129,7 @@ if (currentOrbitLine) {
   earth.getGroup().remove(currentOrbitLine);
 }
 }
+
 
 export function initScene() {
   loadObjects();

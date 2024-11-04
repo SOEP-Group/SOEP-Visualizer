@@ -22,7 +22,6 @@ function onStart() {
   initSettings();
   initPredictions();
   initPopup();
-  initOrbit();
 
   const tabs = document.querySelectorAll(".tab");
   const panels = document.querySelectorAll(".tab-panel");
