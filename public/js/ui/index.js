@@ -5,6 +5,7 @@ import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
 import { initPopup } from "./popup.js";
 import { glState } from "../gl/index.js";
+import { initOrbit } from "../gl/orbit.js";
 
 export * from "./settings.js";
 export * from "./header.js";
@@ -22,6 +23,7 @@ function onStart() {
   initSettings();
   initPredictions();
   initPopup();
+  initOrbit();
 
   const tabs = document.querySelectorAll(".tab");
   const panels = document.querySelectorAll(".tab-panel");
