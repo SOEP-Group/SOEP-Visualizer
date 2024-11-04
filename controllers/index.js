@@ -47,7 +47,6 @@ exports.getOrbitData = (req, res) => {
                       position: scalePosition(point.position)
                   };
               });
-              console.log("sending data: ", orbitData);
           }
       });
       if (orbitData) {

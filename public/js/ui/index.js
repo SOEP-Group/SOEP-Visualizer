@@ -4,8 +4,7 @@ import { initSettings } from "./settings.js";
 import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
 import { initPopup } from "./popup.js";
-import { glState } from "../gl/index.js";
-import { initOrbit } from "../gl/orbit.js";
+import { glState, initOrbit } from "../gl/index.js";
 
 export * from "./settings.js";
 export * from "./header.js";

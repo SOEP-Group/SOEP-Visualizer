@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Sun } from "./sun.js";
 import { Earth } from "./earth.js";
 import { Satellites } from "./satellite.js";
+import { subscribe } from "../eventBuss.js";
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchOrbit, fetchSatellites } from "../api/satellites.js";
 
@@ -50,6 +51,21 @@ function loadObjects() {
   scene.add(earth.getGroup());
 }
 
+export function initOrbit() {
+  subscribe("glStateChanged", onGlStateChanged);
+}
+
+function onGlStateChanged(changedStates) {
+if (changedStates["clickedSatellite"]) {
+  const clicked_satellite = glState.get("clickedSatellite");
+  if (clicked_satellite !== undefined && clicked_satellite !== null) {
+  displayOrbit(satellites.getIdByInstanceId(clicked_satellite));
+  } else {
+  stopDisplayingOrbit()
+  }
+}
+}
+
 export async function displayOrbit(satellite) {
   stopDisplayingOrbit();
 
@@ -77,7 +93,6 @@ export async function displayOrbit(satellite) {
               entry.position.z >= loopPosition.z - tolerance &&
               entry.position.z <= loopPosition.z + tolerance
           ) {
-              console.log("Loop completed");
               loopCompleted = true
               break; // Exit the loop entirely
           }
