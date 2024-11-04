@@ -68,7 +68,6 @@ export async function displayOrbit(satellite) {
   let loopCompleted = false
 
   for (const entry of data) {
-    console.log(loopPosition.x)
       if (entry.tsince > 30) {
           // go 30 steps forward before looking for the closing of the loop
           if (
@@ -126,9 +125,17 @@ export function initScene() {
   const light = new THREE.AmbientLight(0xffffff, 0.1);
   scene.add(light);
 
-  fetchSatellites().then((res) => {
-    satellites = new Satellites(res);
-    earth.getGroup().add(satellites.getGroup());
+  fetchSatellites()
+  .then((res) => {
+      const scaledSatellites = res.map((satellite) => ({
+          ...satellite,
+          position: scalePosition(satellite.position)
+      }));
+      satellites = new Satellites(scaledSatellites);
+      earth.getGroup().add(satellites.getGroup());
+  })
+  .catch((error) => {
+      console.error('Error fetching satellites:', error);
   });
 }
 
