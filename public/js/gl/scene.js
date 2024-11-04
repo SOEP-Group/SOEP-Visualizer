@@ -4,6 +4,8 @@ import { Earth } from "./earth.js";
 import { Satellites } from "./satellite.js";
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchSatellites } from "../api/satellites.js";
+import { globalState } from "../globalState.js";
+import { subscribe } from "../eventBuss.js";
 
 export let scene = new THREE.Scene();
 
@@ -48,19 +50,35 @@ function loadObjects() {
   scene.add(earth.getGroup());
 }
 
+function addSatellites(satellites_obj) {
+  if (!satellites_obj) {
+    console.error("No satellites detected!");
+    return;
+  }
+  satellites = new Satellites(satellites_obj);
+  earth.getGroup().add(satellites.getGroup());
+}
+
+function globalStateChanged(changedStates) {
+  if (changedStates["satellites"]) {
+    addSatellites(globalState.get("satellites"));
+  }
+}
+
 export function initScene() {
+  subscribe("onGlobalStateChanged", globalStateChanged);
   loadObjects();
   loadBackground();
   const light = new THREE.AmbientLight(0xffffff, 0.1);
   scene.add(light);
 
   fetchSatellites().then((res) => {
-    satellites = new Satellites(res);
-    earth.getGroup().add(satellites.getGroup());
+    globalState.set({ satellites: res });
   });
 }
 
 export function reloadScene() {
   loadObjects();
   loadBackground();
+  addSatellites(globalState.get("satellites"));
 }
