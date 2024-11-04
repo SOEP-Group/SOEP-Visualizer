@@ -106,4 +106,9 @@ span.ripple {
   }
 }
 
+.orientation-gizmo:hover {
+  cursor: pointer;
+  background-color: rgba(135, 206, 235, 0.3);
+}
+
 /* ########################### */
