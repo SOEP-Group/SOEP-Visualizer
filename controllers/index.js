@@ -1,4 +1,5 @@
 const { mockSatelliteData, mockOrbitData } = require("../mockData.js");
+const { scalePosition } = require("../public/js/utils/utils");
 
 exports.Home = async function (req, res) {
   return res.render("index");
@@ -37,20 +38,25 @@ exports.getOrbitData = (req, res) => {
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   delay(200).then(() => {
-    let orbitData = null
-    mockOrbitData.forEach((satelliteData) => {
-      if (satelliteData.satelliteName === satelliteId) {
-        orbitData = satelliteData.orbit;
-        console.log("sending data: ", orbitData);
+      let orbitData = null;
+      mockOrbitData.forEach((satelliteData) => {
+          if (satelliteData.satelliteName === satelliteId) {
+              orbitData = satelliteData.orbit.map((point) => {
+                  return {
+                      ...point,
+                      position: scalePosition(point.position)
+                  };
+              });
+              console.log("sending data: ", orbitData);
+          }
+      });
+      if (orbitData) {
+          res.json(orbitData);
+      } else {
+          res.status(404).json({ error: 'Satellite not found' });
       }
-  });
-    if (orbitData) {
-        res.json(orbitData);
-    } else {
-        res.status(404).json({ error: 'Satellite not found' });
-    }
   }).catch(error => {
-    console.error('Error in delay:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error in delay:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   });
 };

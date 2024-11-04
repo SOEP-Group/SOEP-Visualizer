@@ -4,7 +4,6 @@ import { Earth } from "./earth.js";
 import { Satellites } from "./satellite.js";
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchOrbit, fetchSatellites } from "../api/satellites.js";
-import { scalePosition } from "../utils/utils.js";
 
 export let scene = new THREE.Scene();
 
@@ -59,7 +58,7 @@ export async function displayOrbit(satellite) {
 
   const orbitPathGeometry = new THREE.BufferGeometry();
   const vertices = [];
-  const tolerance = 50; // might have to update and scale according to startposition
+  const tolerance = 0.005; // might have to update and scale according to startposition
   const loopPosition = {
       x: data[0].position.x,
       y: data[0].position.y,
@@ -84,21 +83,19 @@ export async function displayOrbit(satellite) {
           }
       }
 
-    const scaledEntryPosition = scalePosition(entry.position)
       vertices.push(
-          scaledEntryPosition.x,
-          scaledEntryPosition.y,
-          scaledEntryPosition.z
+        entry.position.x,
+        entry.position.y,
+        entry.position.z
       );
 }
 
 // To close the loop
 if (loopCompleted){
-const scaledLoopPosition = scalePosition(loopPosition)
 vertices.push(
-  scaledLoopPosition.x,
-  scaledLoopPosition.y,
-  scaledLoopPosition.z
+  loopPosition.x,
+  loopPosition.y,
+  loopPosition.z
 );
 }
 
@@ -125,17 +122,9 @@ export function initScene() {
   const light = new THREE.AmbientLight(0xffffff, 0.1);
   scene.add(light);
 
-  fetchSatellites()
-  .then((res) => {
-      const scaledSatellites = res.map((satellite) => ({
-          ...satellite,
-          position: scalePosition(satellite.position)
-      }));
-      satellites = new Satellites(scaledSatellites);
-      earth.getGroup().add(satellites.getGroup());
-  })
-  .catch((error) => {
-      console.error('Error fetching satellites:', error);
+  fetchSatellites().then((res) => {
+    satellites = new Satellites(res);
+    earth.getGroup().add(satellites.getGroup());
   });
 }
 
