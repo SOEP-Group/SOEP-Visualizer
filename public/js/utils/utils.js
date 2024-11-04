@@ -24,3 +24,10 @@ export function scalePosition(satellitePosition) {
   
     return scaledPosition;
   }
+
+  
+if (typeof define === 'function' && define.amd) {
+    define([], () => ({ scalePosition }));
+} else if (typeof window !== 'undefined') {
+    window.scalePosition = scalePosition;
+}
