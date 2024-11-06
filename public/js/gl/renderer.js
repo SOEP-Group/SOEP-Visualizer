@@ -360,7 +360,7 @@ export function initRenderer() {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.25;
   orientationGizmo = new ViewportGizmo(camera, renderer, {
-    container: document.getElementById("ui"),
+    container: document.getElementById("viewport-gizmo-container"),
     placement: "top-left",
   });
 

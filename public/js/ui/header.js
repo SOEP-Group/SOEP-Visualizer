@@ -2,6 +2,12 @@
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
 
+const eventsButton = document.getElementById("events-button");
+const eventsTab = document.getElementById("events-tab");
+
+const predictionButton = document.getElementById("prediction-button");
+const predictionTab = document.getElementById("prediction-tab");
+
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
@@ -24,11 +30,21 @@ export function initHeader() {
   });
 
   dropdownButton.addEventListener("click", function () {
-    const menuClosed = dropdownMenu.classList.contains("translate-x-full");
+    const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
     if (menuClosed) {
       return openMenu();
     }
     closeMenu();
+  });
+
+  eventsButton.addEventListener("click", function() {
+    openMenu();  // Call the function to open the burger menu
+    eventsTab.click();
+  });
+
+  predictionButton.addEventListener("click", function() {
+    openMenu();  // Call the function to open the burger menu
+    predictionTab.click();
   });
 
   // document.addEventListener("click", function (event) {
@@ -48,7 +64,7 @@ export function initHeader() {
 }
 
 function openMenu() {
-  dropdownMenu.classList.remove("translate-x-full");
+  dropdownMenu.classList.remove("-translate-x-full");
   dropdownMenu.classList.add("translate-x-0");
   dropdownButton.classList.add("tham-active");
 }
@@ -56,5 +72,5 @@ function openMenu() {
 function closeMenu() {
   dropdownMenu.classList.remove("translate-x-0");
   dropdownButton.classList.remove("tham-active");
-  dropdownMenu.classList.add("translate-x-full");
+  dropdownMenu.classList.add("-translate-x-full");
 }
