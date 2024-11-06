@@ -55,18 +55,7 @@
 
   
         <ul class="flex text-sm md:text-base ml-7 space-x-5">
-          <!-- Prediction dropdown -->
-          <li class="relative group">
-            <button class="bg-black menu-hover text-white px-3 py-2 rounded" id="prediction-button">
-              Prediction
-            </button>
-            <div id="prediction-dropdown" class="absolute hidden group-hover:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
-              <a href="#" id="collision-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Collision prediction</a>
-              <a href="#" id="pass-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Pass prediction</a>
-              <a href="#" id="re-entry-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Re-entry prediction</a>
-            </div>
-          </li>
-  
+
           <!-- Satellite dropdown -->
           <li class="relative group">
             <div>
@@ -88,6 +77,19 @@
               Events
             </button>
           </li> 
+
+          <!-- Prediction dropdown -->
+          <li class="relative group">
+            <button class="bg-black menu-hover text-white px-3 py-2 rounded" id="prediction-button">
+              Prediction
+            </button>
+            <div id="prediction-dropdown" class="absolute hidden group-hover:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
+              <a href="#" id="collision-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Collision prediction</a>
+              <a href="#" id="pass-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Pass prediction</a>
+              <a href="#" id="re-entry-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Re-entry prediction</a>
+            </div>
+          </li>
+
         </ul>
       </div>
     </nav>
