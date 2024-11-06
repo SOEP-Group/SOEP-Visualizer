@@ -77,6 +77,10 @@ export function initScene() {
   });
 }
 
+export function getEarth(){
+  return earth
+}
+
 export function reloadScene() {
   loadObjects();
   loadBackground();
