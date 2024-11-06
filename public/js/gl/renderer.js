@@ -370,8 +370,8 @@ export function initRenderer() {
 
   controls = new TrackballControls(camera, renderer.domElement);
   controls.noPan = true;
-  controls.minDistance = 1.3;
-  controls.maxDistance = 5;
+  controls.minDistance = 0.65;
+  controls.maxDistance = 10;
   controls.enableDamping = true;
   controls.dynamicDampingFactor = 0.15;
   controls.zoomSpeed = 0.3;
