@@ -10,7 +10,6 @@ body {
   padding: 0;
 }
 
-/* ############ EARTH ############### */
 .gl_viewport {
   position: relative;
   flex-grow: 1;

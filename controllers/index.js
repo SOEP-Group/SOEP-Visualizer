@@ -1,9 +1,14 @@
 const { mockSatelliteData, mockOrbitData } = require("../mockData.js");
 const pool = require("../db");
 const { scalePosition } = require("../public/js/utils/utils");
+const path = require("path");
+const fs = require("fs");
 
 exports.Home = async function (req, res) {
-  return res.render("index");
+  // We embedd the svg, which allows us to do stuff like svg animation
+  const svgPath = path.join(__dirname, "../public/images/logo/logo.svg");
+  const svgContent = fs.readFileSync(svgPath, "utf8");
+  return res.render("index", { logo: svgContent });
 };
 
 // New controller function to render the template with data
