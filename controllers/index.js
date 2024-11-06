@@ -8,7 +8,16 @@ exports.Home = async function (req, res) {
   // We embedd the svg, which allows us to do stuff like svg animation
   const svgPath = path.join(__dirname, "../public/images/logo/logo.svg");
   const svgContent = fs.readFileSync(svgPath, "utf8");
-  return res.render("index", { logo: svgContent });
+
+  const animatedSvgPath = path.join(
+    __dirname,
+    "../public/images/logo/animated_logo.svg"
+  );
+  const animatedSvgContent = fs.readFileSync(animatedSvgPath, "utf8");
+  return res.render("index", {
+    logo: svgContent,
+    animated_logo: animatedSvgContent,
+  });
 };
 
 // New controller function to render the template with data
