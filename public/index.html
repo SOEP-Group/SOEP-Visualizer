@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>SOEP Visualizer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script async src="https://unpkg.com/es-module-shims@1.0.1/dist/es-module-shims.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
-    <!-- Looks so bad with landscape mode, lets just disallow it -->
-     <!-- Does not work on IOS -->
-    <!-- <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">  -->
-    <link href="./css/output.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
-    <link rel="stylesheet" href="./css/style.css" />
 
-    <script type="importmap">
+<head>
+  <title>SOEP Visualizer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script async src="https://unpkg.com/es-module-shims@1.0.1/dist/es-module-shims.js"></script>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+  <!-- Looks so bad with landscape mode, lets just disallow it -->
+  <!-- Does not work on IOS -->
+  <!-- <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">  -->
+  <link href="./css/output.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <script type="importmap">
       {
         "imports": {
           "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
@@ -22,265 +24,243 @@
         }
       }
     </script>
-  </head>
+</head>
 
-  <body>
-    <div
-      id="loading-screen"
-      class="top-0 left-0 fixed w-full h-full bg-loading-screen bg-cover bg-center flex justify-center items-center z-50 opacity-100 transition-opacity duration-500"
-    >
-      <div class="flex flex-col items-center space-y-4 text-white">
-        <h1 class="font-bold text-7xl drop-shadow-lg">SOEP</h1>
-        <div
-          class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"
-        ></div>
-      </div>
+<body>
+  <div id="loading-screen"
+    class="top-0 left-0 fixed w-full h-full bg-loading-screen bg-cover bg-center flex justify-center items-center z-50 opacity-100 transition-opacity duration-500">
+    <div class="flex flex-col items-center space-y-4 text-white">
+      <img src="../images/logo/logo.svg" alt="Logo" class="h-[150px] w-auto drop-shadow-[4px_4px_10px_rgba(0,0,0,0.5)]">
+      <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
     </div>
+  </div>
 
-    <header
-      class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-gray-700 sticky top-0"
-    >
-      <nav class="flex justify-between items-center max-w-full relative px-4 w-full">
-        <!-- Logo -->
-        <div class="flex items-center py-5">
-          <a href="#" class="text-lg md:text-xl font-bold text-white">SOEP</a>
+  <header
+    class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-gray-700 sticky top-0">
+    <nav class="flex justify-between items-center max-w-full relative px-4 w-full">
+      <!-- Logo -->
+      <div class="flex items-center py-5">
+        <a href="../index.html" class="flex items-center">
+          <img src="../images/logo/logo.svg" alt="Logo" class="h-[60px] w-auto">
+        </a>
 
-          <ul class="flex text-sm md:text-base ml-10 space-x-5">
-            <!-- Prediction dropdown -->
-            <li class="relative group">
-              <button class="bg-black menu-hover text-white px-3 py-2 rounded" id="prediction-button">
-                Prediction
-              </button>
-              <div
-                id="prediction-dropdown"
-                class="absolute hidden group-hover:block bg-black text-white border border-gray-700 rounded shadow-lg w-60"
-              >
-                <a href="#" id="collision-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700"
-                  >Collision prediction</a
-                >
-                <a href="#" id="pass-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700"
-                  >Pass prediction</a
-                >
-                <a href="#" id="re-entry-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700"
-                  >Re-entry prediction</a
-                >
-              </div>
-            </li>
+        <ul class="flex text-sm md:text-base ml-10 space-x-5">
+          <!-- Prediction dropdown -->
+          <li class="relative group">
+            <button class="bg-black menu-hover text-white px-3 py-2 rounded" id="prediction-button">
+              Prediction
+            </button>
+            <div id="prediction-dropdown"
+              class="absolute hidden group-hover:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
+              <a href="#" id="collision-pred"
+                class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Collision prediction</a>
+              <a href="#" id="pass-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Pass
+                prediction</a>
+              <a href="#" id="re-entry-pred"
+                class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Re-entry prediction</a>
+            </div>
+          </li>
 
-            <!-- Satellite dropdown -->
-            <li class="relative group">
-              <div>
-              <button
-                id="satellite-dropdown-trigger"
-                class="bg-black text-white px-3 py-2 rounded hover:text-gray-300"
-              >
+          <!-- Satellite dropdown -->
+          <li class="relative group">
+            <div>
+              <button id="satellite-dropdown-trigger" class="bg-black text-white px-3 py-2 rounded hover:text-gray-300">
                 Satellites
               </button>
-              <div
-                id="satellite-dropdown"
-                class="absolute hidden group-hover:block focus-within:block bg-black text-white border border-gray-700 rounded shadow-lg w-60"
-              >
-                <input
-                  id="search-input"
-                  type="text"
-                  placeholder="Search.."
-                  class="w-full px-4 py-2 bg-black text-white focus:outline-none border-b border-gray-700"
-                />
+              <div id="satellite-dropdown"
+                class="absolute hidden group-hover:block focus-within:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
+                <input id="search-input" type="text" placeholder="Search.."
+                  class="w-full px-4 py-2 bg-black text-white focus:outline-none border-b border-gray-700" />
                 <a href="#" class="block px-4 py-2 hover:bg-gray-700">Cosmos</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700"
-                  >Starlink</a
-                >
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700"
-                  >Satellite3</a
-                >
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700"
-                  >Satellite4</a
-                >
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700"
-                  >Satellite5</a
-                >
+                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Starlink</a>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite3</a>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite4</a>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite5</a>
               </div>
-            </li>
-          </ul>
-        </div>
-        
-        <!-- Dropdown burger -->
-        <div id="menu__toggle" class="tham tham-e-squeeze tham-w-6 transform transition-transform duration-300 ease-in-out">
-          <div class="tham-box">
-            <div class="tham-inner bg-white" />
-          </div>
-        </div>
-      </nav>
-    </header>
+          </li>
+        </ul>
+      </div>
 
-    <div
-      class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
-      id="dynamic-content"
-    ></div>
+      <!-- Dropdown burger -->
+      <div id="menu__toggle"
+        class="tham tham-e-squeeze tham-w-6 transform transition-transform duration-300 ease-in-out">
+        <div class="tham-box">
+          <div class="tham-inner bg-white" />
+        </div>
+      </div>
+    </nav>
+  </header>
 
-    
-    <div class="gl_viewport" id="gl_viewport">
-      <!-- Place the ui overlay items in here-->
-      <div id="ui" class="absolute z-20 w-full h-full">
-        
-        <!-- Sliding window left-->
-        <div id="side-left-window" class="z-20 min-w-80 bg-black absolute top-0 left-0 h-full text-white flex items-center -translate-x-full transform transition-transform duration-300 ease-in-out p-4">
-          <button id="close-left-window" class="bg-transparent absolute top-4 right-4">
-            <svg  class="h-8 w-8 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-              <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="18" y1="6" x2="6" y2="18" />  <line x1="6" y1="6" x2="18" y2="18" />
+  <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
+    id="dynamic-content"></div>
+
+
+  <div class="gl_viewport" id="gl_viewport">
+    <!-- Place the ui overlay items in here-->
+    <div id="ui" class="absolute z-20 w-full h-full">
+
+      <!-- Sliding window left-->
+      <div id="side-left-window"
+        class="z-20 min-w-80 bg-black absolute top-0 left-0 h-full text-white flex items-center -translate-x-full transform transition-transform duration-300 ease-in-out p-4">
+        <button id="close-left-window" class="bg-transparent absolute top-4 right-4">
+          <svg class="h-8 w-8 text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        <div></div>
+        <div id="left-window-content"></div>
+      </div>
+
+      <!-- Sliding window right-->
+      <div id="ham_menu"
+        class="bg-black w-full md:w-1/3 absolute top-0 right-0 h-full text-white flex flex-col translate-x-full transform transition-transform duration-300 ease-in-out">
+        <!-- Tabs -->
+        <div class="tabs flex space-x-4 border-b border-gray-300">
+          <button data-ripple="true" class="tab active-tab">
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <path
+                d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" />
+              <path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" />
+              <circle cx="15" cy="9" r="1" />
             </svg>
           </button>
-          <div></div>
-          <div id="left-window-content"></div>
+          <button data-ripple="true" class="tab">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+          </button>
+
+          <button data-ripple="true" class="tab">
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <circle cx="14" cy="6" r="2" />
+              <line x1="4" y1="6" x2="12" y2="6" />
+              <line x1="16" y1="6" x2="20" y2="6" />
+              <circle cx="8" cy="12" r="2" />
+              <line x1="4" y1="12" x2="6" y2="12" />
+              <line x1="10" y1="12" x2="20" y2="12" />
+              <circle cx="17" cy="18" r="2" />
+              <line x1="4" y1="18" x2="15" y2="18" />
+              <line x1="19" y1="18" x2="20" y2="18" />
+            </svg>
+          </button>
+
+          <button data-ripple="true" class="tab">
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <path d="M9 9v-1a3 3 0 0 1 6 0v1" />
+              <path d="M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3" />
+              <line x1="3" y1="13" x2="7" y2="13" />
+              <line x1="17" y1="13" x2="21" y2="13" />
+              <line x1="12" y1="20" x2="12" y2="14" />
+              <line x1="4" y1="19" x2="7.35" y2="17" />
+              <line x1="20" y1="19" x2="16.65" y2="17" />
+              <line x1="4" y1="7" x2="7.75" y2="9.4" />
+              <line x1="20" y1="7" x2="16.25" y2="9.4" />
+            </svg>
+          </button>
         </div>
 
-        <!-- Sliding window right-->
-        <div 
-          id="ham_menu" 
-          class="bg-black w-full md:w-1/3 absolute top-0 right-0 h-full text-white flex flex-col translate-x-full transform transition-transform duration-300 ease-in-out"
-        >
-          <!-- Tabs -->
-          <div class="tabs flex space-x-4 border-b border-gray-300">
-            <button data-ripple="true" class="tab active-tab">
-              <svg class="h-6 w-6"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-                <path stroke="none" d="M0 0h24v24H0z"/>  
-                <path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" />  
-                <path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" />  
-                <circle cx="15" cy="9" r="1"  />
-              </svg>
-            </button>
-            <button data-ripple="true" class="tab">
-              <svg class="h-6 w-6"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  
-                <circle cx="12" cy="12" r="10" />  <line x1="12" y1="16" x2="12" y2="12" />  
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-            </button>
-
-            <button data-ripple="true" class="tab">
-              <svg class="h-6 w-6"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-                <path stroke="none" d="M0 0h24v24H0z"/>  
-                <circle cx="14" cy="6" r="2" />  
-                <line x1="4" y1="6" x2="12" y2="6" />  
-                <line x1="16" y1="6" x2="20" y2="6" />  
-                <circle cx="8" cy="12" r="2" />  
-                <line x1="4" y1="12" x2="6" y2="12" />  
-                <line x1="10" y1="12" x2="20" y2="12" />  
-                <circle cx="17" cy="18" r="2" />  
-                <line x1="4" y1="18" x2="15" y2="18" />  
-                <line x1="19" y1="18" x2="20" y2="18" />
-              </svg>
-            </button>
-
-            <button data-ripple="true" class="tab">
-              <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-                <path stroke="none" d="M0 0h24v24H0z"/>  
-                <path d="M9 9v-1a3 3 0 0 1 6 0v1" />  
-                <path d="M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3" />  
-                <line x1="3" y1="13" x2="7" y2="13" />  <line x1="17" y1="13" x2="21" y2="13" />  
-                <line x1="12" y1="20" x2="12" y2="14" />  <line x1="4" y1="19" x2="7.35" y2="17" />  
-                <line x1="20" y1="19" x2="16.65" y2="17" />  <line x1="4" y1="7" x2="7.75" y2="9.4" />  
-                <line x1="20" y1="7" x2="16.25" y2="9.4" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Content -->
-          <div class="tab-content mt-4 h-full p-2">
-            <div id="satellite-info" class="tab-panel active-panel">
-              <div id="satellite-model-viewport" class="min-h-80">
-                <p id="satellite-info-default">Please click on a satellite to see extra info here</p>
-              </div>
-              <div id="satellite-info-content" class="hidden h-full">
-                <div id="popup-content-mobile" class="block md:hidden"></div>
-                <p>Add some extra info when we get it</p>
-              </div>
+        <!-- Content -->
+        <div class="tab-content mt-4 h-full p-2">
+          <div id="satellite-info" class="tab-panel active-panel">
+            <div id="satellite-model-viewport" class="min-h-80">
+              <p id="satellite-info-default">Please click on a satellite to see extra info here</p>
             </div>
-
-            <div class="tab-panel">
-              <h2 class="text-2xl">How to use:</h2>
-              <p>Let's force Shakir to write this</p>
-              <hr/>
-              <h3 class="text-lg">Curious how the project is coming along?</h3>
-              <a
-                data-ripple="true"
-                class="btn-blue"
-                href="https://soep-group.github.io/soep-weekly-blog/"
-                target="_blank"
-
-                rel="noopener noreferrer"
-              >Check out our blog</a>
-            </div>
-
-            <div class="tab-panel">
-              <div
-                class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white"
-              >
-                <h3 class="justify-begin">Graphics preset:</h3>
-                <select
-                  id="graphics-settings"
-                  class="border p-2 rounded bg-black border-white justify-end"
-                ></select>
-              </div>
-              <button
-                type="button"
-                id="settings-save"
-                data-ripple="true"
-                class="btn-blue"
-              >
-                Save settings
-              </button>
-          </div>
-
-            <div class="tab-panel">
-              <h4 id="debug-ui-fps-counter"></h4>
-              <h4>Renderer stats:</h4>
-              <p id="debug-ui-renderer-info"></p>
-              <h4>GPU info:</h4>
-              <p id="debug-ui-gpu-info"></p>
+            <div id="satellite-info-content" class="hidden h-full">
+              <div id="popup-content-mobile" class="block md:hidden"></div>
+              <p>Add some extra info when we get it</p>
             </div>
           </div>
 
-          
+          <div class="tab-panel">
+            <h2 class="text-2xl">How to use:</h2>
+            <p>Let's force Shakir to write this</p>
+            <hr />
+            <h3 class="text-lg">Curious how the project is coming along?</h3>
+            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+              rel="noopener noreferrer">Check out our blog</a>
+          </div>
+
+          <div class="tab-panel">
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin">Graphics preset:</h3>
+              <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
+            </div>
+            <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
+              Save settings
+            </button>
+          </div>
+
+          <div class="tab-panel">
+            <h4 id="debug-ui-fps-counter"></h4>
+            <h4>Renderer stats:</h4>
+            <p id="debug-ui-renderer-info"></p>
+            <h4>GPU info:</h4>
+            <p id="debug-ui-gpu-info"></p>
+          </div>
         </div>
-        <!-- Note Ivan: This is just a proof of concept on how we could potentially rebuild the ui -->
-        <div id="popup-container" class="z-10 pb-4
+
+
+      </div>
+      <!-- Note Ivan: This is just a proof of concept on how we could potentially rebuild the ui -->
+      <div id="popup-container"
+        class="z-10 pb-4
          rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out hidden md:flex md:flex-col w-4/5 h-2/4 md:w-1/5 md:h-1/4">
-          <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full" data-augmented-ui="border tr-2-clip-x br-clip">
-            <div class="flex flex-row justify-start">
-              <button id="close-popup" class="bg-transparent ">
-                <svg  class="h-8 w-8 text-teal-300 hover:text-teal-200"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-                  <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="18" y1="6" x2="6" y2="18" />  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-            <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
-              <p class="loading-text">Loading</p>
-            </div>
-            <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
+        <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+          data-augmented-ui="border tr-2-clip-x br-clip">
+          <div class="flex flex-row justify-start">
+            <button id="close-popup" class="bg-transparent ">
+              <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
+          <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
+            <p class="loading-text">Loading</p>
+          </div>
+          <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
         </div>
       </div>
-      <div id="mobile-popup-revert" class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
-        <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full" data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
-          <button>
-            <svg class="h-12 w-12 text-teal-300"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  
-              <path stroke="none" d="M0 0h24v24H0z"/>  
-              <line x1="18" y1="6" x2="6" y2="18" />  
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+    </div>
+    <div id="mobile-popup-revert"
+      class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
+      <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+        data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
+        <button>
+          <svg class="h-12 w-12 text-teal-300" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
-
     </div>
 
-    <!-- <button id="reset-to-north" class="reset-button">
+  </div>
+
+  <!-- <button id="reset-to-north" class="reset-button">
       <img
         src="./images/icons/compass.png"
         alt="Reset to North"
         class="reset-icon"
       />
     </button> -->
-  </body>
-  <script type="module" src="js/main.js"></script>
+</body>
+<script type="module" src="js/main.js"></script>
+
 </html>
