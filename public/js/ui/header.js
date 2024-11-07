@@ -8,6 +8,10 @@ const eventsTab = document.getElementById("events-tab");
 const predictionButton = document.getElementById("prediction-button");
 const predictionTab = document.getElementById("prediction-tab");
 
+const collisionPredButton = document.getElementById("collision-pred");
+const passPredButton = document.getElementById("pass-pred");
+const reEntryPredButton = document.getElementById("re-entry-pred");
+
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
@@ -38,12 +42,28 @@ export function initHeader() {
   });
 
   eventsButton.addEventListener("click", function() {
-    openMenu();  // Call the function to open the burger menu
+    openMenu(); 
     eventsTab.click();
   });
 
+  collisionPredButton.addEventListener("click", function() {
+    openMenu(); 
+    predictionTab.click();
+  });
+
+  passPredButton.addEventListener("click", function() {
+    openMenu();
+    predictionTab.click();
+  });
+
+  reEntryPredButton.addEventListener("click", function() {
+    openMenu(); 
+    predictionTab.click();
+  });
+
+
   predictionButton.addEventListener("click", function() {
-    openMenu();  // Call the function to open the burger menu
+    openMenu(); 
     predictionTab.click();
   });
 
