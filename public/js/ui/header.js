@@ -43,29 +43,29 @@ export function initHeader() {
     closeMenu();
   });
 
-  eventsButton.addEventListener("click", function() {
-    openMenu(); 
+  eventsButton.addEventListener("click", function () {
+    openMenu();
     eventsTab.click();
   });
 
-  collisionPredButton.addEventListener("click", function() {
-    openMenu(); 
-    predictionTab.click();
-  });
-
-  passPredButton.addEventListener("click", function() {
+  collisionPredButton.addEventListener("click", function () {
     openMenu();
     predictionTab.click();
   });
 
-  reEntryPredButton.addEventListener("click", function() {
-    openMenu(); 
+  passPredButton.addEventListener("click", function () {
+    openMenu();
+    predictionTab.click();
+  });
+
+  reEntryPredButton.addEventListener("click", function () {
+    openMenu();
     predictionTab.click();
   });
 
 
-  predictionButton.addEventListener("click", function() {
-    openMenu(); 
+  predictionButton.addEventListener("click", function () {
+    openMenu();
     predictionTab.click();
   });
 
@@ -89,7 +89,7 @@ function openMenu() {
   dropdownMenu.classList.remove("-translate-x-full");
   dropdownMenu.classList.add("translate-x-0");
   dropdownButton.classList.add("tham-active");
-  if(firstMenuOpen){
+  if (firstMenuOpen) {
     eventsTab.click();
     firstMenuOpen = false
   }
