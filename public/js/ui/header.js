@@ -12,6 +12,8 @@ const collisionPredButton = document.getElementById("collision-pred");
 const passPredButton = document.getElementById("pass-pred");
 const reEntryPredButton = document.getElementById("re-entry-pred");
 
+let firstMenuOpen = true;
+
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
@@ -87,6 +89,10 @@ function openMenu() {
   dropdownMenu.classList.remove("-translate-x-full");
   dropdownMenu.classList.add("translate-x-0");
   dropdownButton.classList.add("tham-active");
+  if(firstMenuOpen){
+    eventsTab.click();
+    firstMenuOpen = false
+  }
 }
 
 function closeMenu() {
