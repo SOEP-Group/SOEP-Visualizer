@@ -82,11 +82,11 @@ exports.getOrbitData = async (req, res) => {
     );
     const totalSpeed = Math.sqrt(
       Math.pow(row.xdot_km_per_s, 2) +
-        Math.pow(row.ydot_km_per_s, 2) +
-        Math.pow(row.zdot_km_per_s, 2)
+      Math.pow(row.ydot_km_per_s, 2) +
+      Math.pow(row.zdot_km_per_s, 2)
     );
     const orbitalPeriodSeconds =
-      (2 * Math.PI * orbitalRadius) / totalSpeed + 60;
+      ((2 * Math.PI * orbitalRadius) / totalSpeed) * 1.01;
     const orbitDataResult = await pool.query(orbitDataQuery, [
       satelliteId,
       timestamp,

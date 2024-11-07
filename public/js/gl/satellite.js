@@ -125,4 +125,13 @@ export class Satellites {
   getGroup() {
     return this.group;
   }
+
+  getPosition(instanceId) {
+    const matrix = new Matrix4();
+    this.instancedMesh.mesh.getMatrixAt(instanceId, matrix);
+    const position = new Vector3();
+    matrix.decompose(position, new Quaternion(), new Vector3(1, 1, 1));
+    return position;
+  }
+
 }

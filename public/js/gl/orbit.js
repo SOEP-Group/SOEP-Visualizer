@@ -14,7 +14,7 @@ function onGlStateChanged(changedStates) {
   if (changedStates["clickedSatellite"]) {
     const clicked_satellite = glState.get("clickedSatellite");
     if (clicked_satellite !== undefined && clicked_satellite !== null) {
-      displayOrbit(satellites.getIdByInstanceId(clicked_satellite));
+      displayOrbit(clicked_satellite);
     } else {
       stopDisplayingOrbit();
     }
@@ -23,9 +23,10 @@ function onGlStateChanged(changedStates) {
 
 export async function displayOrbit(satellite) {
   stopDisplayingOrbit();
+  const satellite_id = satellites.getIdByInstanceId(satellite)
 
   // get data for this satellite from db
-  const data = await fetchOrbit(satellite);
+  const data = await fetchOrbit(satellite_id);
 
   const orbitPathGeometry = new THREE.BufferGeometry();
   const vertices = [];
@@ -36,6 +37,10 @@ export async function displayOrbit(satellite) {
     z: data[0].position.z,
   };
   let loopCompleted = false;
+
+  // Add current position as start position
+  const startPosition = satellites.getPosition(satellite)
+  vertices.push(startPosition.x, startPosition.y, startPosition.z);
 
   for (const entry of data) {
     if (entry.tsince > 30) {
