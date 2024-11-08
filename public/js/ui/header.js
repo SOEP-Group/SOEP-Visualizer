@@ -44,8 +44,19 @@ export function initHeader() {
   });
 
   eventsButton.addEventListener("click", function () {
-    openMenu();
-    eventsTab.click();
+    const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
+    if (menuClosed) {
+      return openMenu();
+    }
+    closeMenu();
+  });
+
+  predictionButton.addEventListener("click", function () {
+    const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
+    if (menuClosed) {
+      return openMenu();
+    }
+    closeMenu();
   });
 
   collisionPredButton.addEventListener("click", function () {
@@ -59,12 +70,6 @@ export function initHeader() {
   });
 
   reEntryPredButton.addEventListener("click", function () {
-    openMenu();
-    predictionTab.click();
-  });
-
-
-  predictionButton.addEventListener("click", function () {
     openMenu();
     predictionTab.click();
   });
