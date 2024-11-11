@@ -3,7 +3,9 @@ const index_routes = require("./routes/index");
 const api_routes = require("./routes/api");
 const path = require("path");
 const cors = require("cors");
-const fs = require("fs");
+const pool = require("./db");
+
+process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 const app = express(),
   bodyParser = require("body-parser");
@@ -38,6 +40,17 @@ app.use("/api/", api_routes);
 module.exports = app;
 
 const PORT = process.env.PORT || 3000;
+
+function Shutdown() {
+  console.log("Shutting down server...");
+  pool.end(() => {
+    console.log("Database connection pool has ended.");
+    process.exit(0);
+  });
+}
+
+process.on("SIGTERM", Shutdown); // e.g., kill command
+process.on("SIGINT", Shutdown); // e.g., Ctrl+C in terminal
 
 if (require.main === module) {
   app.listen(PORT, () => {

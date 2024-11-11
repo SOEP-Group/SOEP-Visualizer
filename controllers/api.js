@@ -1,31 +1,38 @@
 const pool = require("../db");
 const { scalePosition } = require("../public/js/utils/utils");
 
-const fakeSatelliteData = [
-  { id: "satellite_1", position: { x: 2500, y: -1000, z: 1000 } },
-  { id: "satellite_2", position: { x: -2000, y: 2000, z: 2000 } },
-  { id: "satellite_3", position: { x: 3000, y: 3000, z: -1500 } },
-  { id: "satellite_4", position: { x: 3789, y: 2012, z: -5277 } },
-];
+exports.getAllSatellites = async function (req, res) {
+  // Suck it Alpha
+  try {
+    const query = `
+    SELECT DISTINCT ON (satellite_id) 
+      satellite_id, timestamp, x_km, y_km, z_km, xdot_km_per_s, ydot_km_per_s, zdot_km_per_s
+    FROM satellite_data
+    ORDER BY satellite_id, ABS(EXTRACT(EPOCH FROM (timestamp - NOW()))) ASC;
+  `; // Closest timestamp to today
 
-// Temp
-exports.getAllSatellites = function (req, res) {
-  // pool.query('SELECT * FROM satellites')
-  //   .then(result => {
-  //     res.json(result.rows);
-  //   })
-  //   .catch(err => {
-  //     console.error('Error fetching satellites:', err);
-  //     res.status(500).send('Error fetching satellites.');
-  //   });
+    const result = await pool.query(query);
 
-  // Use this for now, for the love of god why were there so many different ways to fetch satellites
-  const scaledSatellites = fakeSatelliteData.map((satellite) => ({
-    ...satellite,
-    position: scalePosition(satellite.position),
-  }));
-
-  setTimeout(() => {
-    res.json(scaledSatellites);
-  }, 500);
+    const transformedRows = result.rows.map((row) => {
+      const transformedRow = {
+        id: row.satellite_id,
+        timestamp: row.timestamp,
+        position: {
+          x: row.x_km,
+          y: row.y_km,
+          z: row.z_km,
+        },
+        speed: {
+          x: row.xdot_km_per_s,
+          y: row.ydot_km_per_s,
+          z: row.zdot_km_per_s,
+        },
+      };
+      transformedRow.position = scalePosition(transformedRow.position);
+      return transformedRow;
+    });
+    res.json(transformedRows);
+  } catch (err) {
+    res.status(500).json({ error: err.stack });
+  }
 };
