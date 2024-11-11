@@ -2,10 +2,18 @@
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
 
+const eventsButton = document.getElementById("events-button");
+const eventsTab = document.getElementById("events-tab");
+
+const predictionButton = document.getElementById("prediction-button");
+const predictionTab = document.getElementById("prediction-tab");
+
+let firstMenuOpen = true;
+
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
-  const searchInput = document.getElementById("search-input");
+  const searchInput = document.getElementById("satellite-search");
 
   searchInput.addEventListener("keyup", function () {
     const filter = searchInput.value.toUpperCase();
@@ -24,11 +32,21 @@ export function initHeader() {
   });
 
   dropdownButton.addEventListener("click", function () {
-    const menuClosed = dropdownMenu.classList.contains("translate-x-full");
+    const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
     if (menuClosed) {
       return openMenu();
     }
     closeMenu();
+  });
+
+  eventsButton.addEventListener("click", function () {
+    openMenu();
+    eventsTab.click();
+  });
+
+  predictionButton.addEventListener("click", function () {
+    openMenu();
+    predictionTab.click();
   });
 
   // document.addEventListener("click", function (event) {
@@ -48,13 +66,17 @@ export function initHeader() {
 }
 
 function openMenu() {
-  dropdownMenu.classList.remove("translate-x-full");
+  dropdownMenu.classList.remove("-translate-x-full");
   dropdownMenu.classList.add("translate-x-0");
   dropdownButton.classList.add("tham-active");
+  if (firstMenuOpen) {
+    eventsTab.click();
+    firstMenuOpen = false
+  }
 }
 
 function closeMenu() {
   dropdownMenu.classList.remove("translate-x-0");
   dropdownButton.classList.remove("tham-active");
-  dropdownMenu.classList.add("translate-x-full");
+  dropdownMenu.classList.add("-translate-x-full");
 }
