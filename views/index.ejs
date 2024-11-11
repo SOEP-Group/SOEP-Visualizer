@@ -43,68 +43,49 @@
     <nav class="flex items-center max-w-full px-4 w-full">
 
       <!-- Burger menu -->
-      <div id="menu__toggle"
-        class="tham tham-e-squeeze tham-w-10 h-10 transform transition-transform duration-300 ease-in-out">
+      <div id="menu__toggle" class="tham tham-e-squeeze tham-w-8 h-8 transform transition-transform duration-300 ease-in-out">
         <div class="tham-box">
-          <div class="tham-inner bg-white h-[2px] w-[8px]"></div>
-          <div class="tham-inner bg-white h-[2px] w-[8px]"></div>
-          <div class="tham-inner bg-white h-[2px] w-[8px]"></div>
+          <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
+          <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
+          <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
         </div>
       </div>
 
       <!-- Logo -->
-      <div class="flex items-center py-5">
+      <div class="flex items-center py-5 md:ml-7 ml-4">
         <a href="/" class="flex items-center">
           <div alt="Logo" class="logo h-[60px] w-auto">
             <%- logo %>
           </div>
         </a>
 
-        <ul class="flex text-sm md:text-base ml-7 space-x-5">
+      <!-- Events Button -->
+        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400" id="events-button">
+          Events
+        </button>
 
-          <!-- Satellite dropdown -->
-          <li class="relative group">
-            <div>
-              <button id="satellite-dropdown-trigger"
-                class="bg-black text-white px-3 py-2 rounded hover:text-gray-400">Satellites</button>
-              <div id="satellite-dropdown"
-                class="absolute hidden group-hover:block focus-within:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
-                <input id="search-input" type="text" placeholder="Search.."
-                  class="w-full px-4 py-2 bg-black text-white focus:outline-none border-b border-gray-700" />
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Cosmos</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Starlink</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite3</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite4</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700">Satellite5</a>
-              </div>
-            </div>
-          </li>
+      <!-- Prediction dropdown -->
+        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400"
+          id="prediction-button">
+          Prediction
+        </button>
 
-          <!-- Events Button -->
-          <li>
-            <button class="bg-black menu-hover text-white px-3 py-2 rounded  hover:text-gray-400" id="events-button">
-              Events
-            </button>
-          </li>
+      <!-- Satellite search -->
+      <div class="relative w-full md:w-72 hidden md:block md:ml-7">
 
-          <!-- Prediction dropdown -->
-          <li class="relative group">
-            <button class="bg-black menu-hover text-white px-3 py-2 rounded  hover:text-gray-400"
-              id="prediction-button">
-              Prediction
-            </button>
-            <!-- <div id="prediction-dropdown"
-              class="absolute hidden group-hover:block bg-black text-white border border-gray-700 rounded shadow-lg w-60">
-              <a href="#" id="collision-pred"
-                class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Collision prediction</a>
-              <a href="#" id="pass-pred" class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Pass
-                prediction</a>
-              <a href="#" id="re-entry-pred"
-                class="prediction-dropdown-trigger block px-4 py-2 hover:bg-gray-700">Re-entry prediction</a>
-            </div> -->
-          </li>
+        <!-- Search Input -->
+        <input type="text" id="satellite-search" placeholder="Find a satellite"
+          class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition duration-300 ease-in-out">
+      
+        <!-- Search Button (magnifying glass) -->
+        <button id="satellite-search-button" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out">
+          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+          </svg>
+          
+        </button>
+      </div>
 
-        </ul>
       </div>
     </nav>
   </header>
