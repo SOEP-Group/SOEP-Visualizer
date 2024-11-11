@@ -13,7 +13,7 @@ let firstMenuOpen = true;
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
-  const searchInput = document.getElementById("search-input");
+  const searchInput = document.getElementById("satellite-search");
 
   searchInput.addEventListener("keyup", function () {
     const filter = searchInput.value.toUpperCase();
