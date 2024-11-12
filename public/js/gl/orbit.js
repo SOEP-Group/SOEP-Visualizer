@@ -38,6 +38,9 @@ export async function displayOrbit(satellite) {
   };
   let loopCompleted = false;
 
+  // Add earth center to create earth line
+  vertices.push(0, 0, 0);
+  
   // Add current position as start position
   const startPosition = satellites.getPosition(satellite)
   vertices.push(startPosition.x, startPosition.y, startPosition.z);
