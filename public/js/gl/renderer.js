@@ -362,6 +362,7 @@ export function initRenderer() {
   orientationGizmo = new ViewportGizmo(camera, renderer, {
     container: document.getElementById("viewport-gizmo-container"),
     placement: "top-left",
+    size: 110,
   });
 
   orientationGizmo.enabled = false; // Currently we get some weird gimbal lock issues...
