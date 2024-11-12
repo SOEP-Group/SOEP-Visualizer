@@ -43,7 +43,8 @@
     <nav class="flex items-center max-w-full px-4 w-full">
 
       <!-- Burger menu -->
-      <div id="menu__toggle" class="tham tham-e-squeeze tham-w-8 h-8 transform transition-transform duration-300 ease-in-out">
+      <div id="menu__toggle"
+        class="tham tham-e-squeeze tham-w-8 h-8 transform transition-transform duration-300 ease-in-out">
         <div class="tham-box">
           <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
           <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
@@ -54,37 +55,39 @@
       <!-- Logo -->
       <div class="flex items-center py-5 md:ml-7 ml-4">
         <a href="/" class="flex items-center">
-          <div alt="Logo" class="logo h-[60px] w-auto">
-            <%- logo %>
-          </div>
+          <img src="../images/logo/logo.svg" alt="Logo" class="h-[60px] w-auto">
         </a>
 
-      <!-- Events Button -->
-        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400" id="events-button">
+        <!-- Events Button -->
+        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400"
+          id="events-button">
           Events
         </button>
 
-      <!-- Prediction dropdown -->
+        <!-- Prediction dropdown -->
         <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400"
           id="prediction-button">
           Prediction
         </button>
 
-      <!-- Satellite search -->
-      <div class="relative w-full md:w-72 hidden md:block md:ml-7">
+        <!-- Satellite search -->
+        <div class="relative w-full md:w-72 hidden md:block md:ml-7">
 
-        <!-- Search Input -->
-        <input type="text" id="satellite-search" placeholder="Find a satellite"
-          class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition duration-300 ease-in-out">
-      
-        <!-- Search Button (magnifying glass) -->
-        <button id="satellite-search-button" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out">
-          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-          </svg>
-          
-        </button>
-      </div>
+          <!-- Search Input -->
+          <input type="text" id="satellite-search" placeholder="Search for a satellite"
+            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition duration-300 ease-in-out">
+
+          <!-- Search Button (magnifying glass) -->
+          <button id="satellite-search-button"
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out">
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+
+          </button>
+        </div>
 
       </div>
     </nav>
