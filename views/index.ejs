@@ -59,15 +59,15 @@
         </a>
 
         <!-- Events Button -->
-        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400"
+        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded hover:text-gray-400"
           id="events-button">
           Events
         </button>
 
         <!-- Prediction dropdown -->
-        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded  hover:text-gray-400"
+        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded hover:text-gray-400"
           id="prediction-button">
-          Prediction
+          Predictions
         </button>
 
         <!-- Satellite search -->
@@ -135,7 +135,7 @@
           </button>
 
           <!-- Predictions -->
-          <button data-ripple="true" class="tab group relative" id="prediction-tab">
+          <button data-ripple="true" class="tab group relative" id="prediction-tab-icon">
             <!-- Satellite -->
             <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
               fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -236,15 +236,70 @@
             <p id="debug-ui-gpu-info"></p> -->
           </div>
 
-          <div id="satellite-info" class="tab-panel">
-            <div id="satellite-model-viewport" class="min-h-80">
-              <p id="satellite-info-default">Predictions should go here</p>
+          <div id="prediction-tab" class="tab-panel">
+
+            <!-- Passing Satellites -->
+            <div class="expandable-section">
+              <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-passing" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                Passing Satellites
+              </h3>
+              <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
             </div>
-            <div id="satellite-info-content" class="hidden h-full">
-              <div id="popup-content-mobile" class="block md:hidden"></div>
-              <p>Add some extra info when we get it</p>
+
+            <!-- Pass Prediction -->
+            <div class="expandable-section">
+              <h3 id="pass-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-pass" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                Pass Prediction
+              </h3>
+              <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
             </div>
+
+            <!-- Re-entry Prediction -->
+            <div class="expandable-section">
+              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-re-entry" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                Re-entry Prediction
+              </h3>
+              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
+            </div>
+
+
+
+
           </div>
+
 
           <div class="tab-panel">
             <p>Add some graphs here</p>

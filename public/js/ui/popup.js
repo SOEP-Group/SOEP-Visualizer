@@ -7,7 +7,7 @@ const popupContainer = document.getElementById("popup-container");
 const closeBtn = document.getElementById("close-popup");
 const skeleton = document.getElementById("popup-skeleton");
 const content = document.getElementById("popup-content");
-const mobileContent = document.getElementById("popup-content-mobile");
+// const mobileContent = document.getElementById("popup-content-mobile");
 
 function onGlStateChanged(changedStates) {
   if (changedStates["clickedSatellite"]) {
@@ -29,12 +29,12 @@ function openPopup() {
 }
 
 function getContent(satellite) {
-  mobileContent.innerHTML = "";
+  // mobileContent.innerHTML = "";
   fetchSatellite(satellite).then((res) => {
     content.classList.remove("hidden");
     skeleton.classList.add("hidden");
     content.innerHTML = res;
-    mobileContent.innerHTML = res;
+    // mobileContent.innerHTML = res;
   });
 }
 
