@@ -22,8 +22,8 @@ function onGlStateChanged(changedStates) {
 }
 
 function openPopup() {
-  popupContainer.classList.remove("translate-y-full");
-  popupContainer.classList.add("translate-y-0");
+  popupContainer.classList.remove("translate-x-full", "right-[-100%]");
+  popupContainer.classList.add("translate-x-0", "right-5");
   content.classList.add("hidden");
   skeleton.classList.remove("hidden");
 }
@@ -39,8 +39,8 @@ function getContent(satellite) {
 }
 
 function closePopup() {
-  popupContainer.classList.add("translate-y-full");
-  popupContainer.classList.remove("translate-y-0");
+  popupContainer.classList.add("translate-x-full", "right-[-100%]");
+  popupContainer.classList.remove("translate-x-0", "right-5");
 }
 
 export function initPopup() {

@@ -23,8 +23,8 @@ body {
 }
 
 .popup-window {
-  --aug-tr: 20px;
-  --aug-tr-extend1: 50%;
+  --aug-tl: 20px;
+  --aug-tl-extend1: 0%;
   --aug-border-y: 1px;
   --aug-border-x: 1px;
   --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);

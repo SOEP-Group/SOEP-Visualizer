@@ -275,12 +275,12 @@
       <!-- Note Ivan: This is just a proof of concept on how we could potentially rebuild the ui -->
       <div id="popup-container"
         class="z-10 pb-4
-         rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out hidden md:flex md:flex-col w-4/5 h-2/4 md:w-1/5 md:h-1/4">
+     rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-transform duration-300 ease-in-out hidden md:flex md:flex-col w-4/5 h-2/4 md:w-1/4 md:h-2/5 text-sm ">
         <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
-          data-augmented-ui="border tr-2-clip-x br-clip">
-          <div class="flex flex-row justify-start">
-            <button id="close-popup" class="bg-transparent ">
-              <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+          data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
+          <div class="flex flex-row justify-end">
+            <button id="close-popup" class="bg-transparent">
+              <svg class="h-8 w-10 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" />
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -294,23 +294,23 @@
           <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
         </div>
       </div>
-    </div>
-    <div id="mobile-popup-revert"
-      class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
-      <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
-        data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
-        <button>
-          <svg class="h-12 w-12 text-teal-300" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
-            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" />
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
-    </div>
 
-  </div>
+      <div id="mobile-popup-revert"
+        class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
+        <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+          data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
+          <button>
+            <svg class="h-12 w-12 text-teal-300" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
 </body>
 <script type="module" src="js/main.js"></script>
 
