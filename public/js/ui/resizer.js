@@ -1,38 +1,42 @@
-// I'll be honest, i've no idea what this is supposed to do
+export function initResizer() {
+  const resizer = document.querySelector(".resizer");
+  const sidebar = document.getElementById("ham_menu");
+  const MIN_WIDTH = window.innerWidth * 0.30;
+  const MAX_WIDTH = window.innerWidth * 0.95;
 
-var resizer = document.querySelector(".resizer");
+  if (resizer && sidebar) {
+    let x = 0, w = 0;
 
-function initResizerFn(resizer, sidebar) {
-  var x, w;
+    resizer.addEventListener("mousedown", function (e) {
+      x = e.clientX;
+      const sbWidth = window.getComputedStyle(sidebar).width;
+      w = parseInt(sbWidth, 10);
 
-  function rs_mousedownHandler(e) {
-    x = e.clientX;
-    var sbWidth = window.getComputedStyle(sidebar).width;
-    w = parseInt(sbWidth, 10);
+      document.addEventListener("mousemove", mouseMoveHandler);
+      document.addEventListener("mouseup", mouseUpHandler);
+    });
 
-    document.addEventListener("mousemove", rs_mousemoveHandler);
-    document.addEventListener("mouseup", rs_mouseupHandler);
-  }
+    function mouseMoveHandler(e) {
+      const dx = e.clientX - x;
+      let cw = w + dx;
 
-  function rs_mousemoveHandler(e) {
-    var dx = e.clientX - x;
-    var cw = w + dx;
 
-    if (cw > MIN_WIDTH) {
+      if (cw < MIN_WIDTH) {
+        cw = MIN_WIDTH;
+      }
+
+      if (cw > MAX_WIDTH) {
+        cw = MAX_WIDTH;
+      }
+
       sidebar.style.width = `${cw}px`;
-      lastWidth = cw;
-    } else {
-      sidebar.style.width = `${MIN_WIDTH}px`;
-      lastWidth = MIN_WIDTH;
     }
-  }
 
-  function rs_mouseupHandler() {
-    document.removeEventListener("mouseup", rs_mouseupHandler);
-    document.removeEventListener("mousemove", rs_mousemoveHandler);
+    function mouseUpHandler() {
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
+    }
+  } else {
+    console.error("Resizer or sidebar element not found.");
   }
-
-  resizer.addEventListener("mousedown", rs_mousedownHandler);
 }
-
-initResizerFn(resizer, sideWindow);
