@@ -8,6 +8,8 @@ const closeBtn = document.getElementById("close-popup");
 const skeleton = document.getElementById("popup-skeleton");
 const content = document.getElementById("popup-content");
 const mobileContent = document.getElementById("popup-content-mobile");
+const toggleArrow = document.getElementById("toggle-arrow");
+const arrowIcon = document.getElementById("arrow-icon");
 
 function onGlStateChanged(changedStates) {
   if (changedStates["clickedSatellite"]) {
@@ -43,9 +45,16 @@ function closePopup() {
   popupContainer.classList.remove("translate-x-0", "right-5");
 }
 
+function togglePopupSize() {
+  popupContainer.classList.toggle("h-5/6"); // extend the height
+  arrowIcon.classList.toggle("rotate-180");
+}
+
 export function initPopup() {
   subscribe("glStateChanged", onGlStateChanged);
   closeBtn.addEventListener("click", (event) => {
     glState.set({ clickedSatellite: undefined });
   });
+
+  toggleArrow.addEventListener("click", togglePopupSize);
 }
