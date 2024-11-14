@@ -12,7 +12,7 @@ import { scene, reloadScene, sun } from "./scene.js";
 import { glState } from "./index.js";
 import { subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
-import { ViewportGizmo } from "three-viewport-gizmo";
+import { ViewportGizmo } from "../utils/custom-gizmo.js";
 
 export const graphicalSettings = {
   ultra_low: {
