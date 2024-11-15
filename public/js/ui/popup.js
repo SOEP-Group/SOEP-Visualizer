@@ -46,7 +46,7 @@ function closePopup() {
 }
 
 function togglePopupSize() {
-  popupContainer.classList.toggle("h-9/10"); // extend the height
+  popupContainer.classList.toggle("h-[95%]"); // extend the height
   arrowIcon.classList.toggle("rotate-180");
 }
 
