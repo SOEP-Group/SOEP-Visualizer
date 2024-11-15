@@ -8,6 +8,8 @@ const closeBtn = document.getElementById("close-popup");
 const skeleton = document.getElementById("popup-skeleton");
 const content = document.getElementById("popup-content");
 const mobileContent = document.getElementById("popup-content-mobile");
+const toggleArrow = document.getElementById("toggle-arrow");
+const arrowIcon = document.getElementById("arrow-icon");
 
 function onGlStateChanged(changedStates) {
   if (changedStates["clickedSatellite"]) {
@@ -22,8 +24,8 @@ function onGlStateChanged(changedStates) {
 }
 
 function openPopup() {
-  popupContainer.classList.remove("translate-y-full");
-  popupContainer.classList.add("translate-y-0");
+  popupContainer.classList.remove("translate-x-full", "right-[-100%]");
+  popupContainer.classList.add("translate-x-0", "right-5");
   content.classList.add("hidden");
   skeleton.classList.remove("hidden");
 }
@@ -39,8 +41,13 @@ function getContent(satellite) {
 }
 
 function closePopup() {
-  popupContainer.classList.add("translate-y-full");
-  popupContainer.classList.remove("translate-y-0");
+  popupContainer.classList.add("translate-x-full", "right-[-100%]");
+  popupContainer.classList.remove("translate-x-0", "right-5");
+}
+
+function togglePopupSize() {
+  popupContainer.classList.toggle("h-[95%]"); // extend the height
+  arrowIcon.classList.toggle("rotate-180");
 }
 
 export function initPopup() {
@@ -48,4 +55,20 @@ export function initPopup() {
   closeBtn.addEventListener("click", (event) => {
     glState.set({ clickedSatellite: undefined });
   });
+
+  toggleArrow.addEventListener("click", togglePopupSize);
 }
+
+function confirmOpenLink(event, url) {
+  // Prevent the default action (navigating to the link)
+  event.preventDefault();
+
+  // Show a confirmation dialog
+  const userConfirmed = confirm("Are you sure you want to open this link in a new tab?");
+
+  if (userConfirmed) {
+    // If the user confirms, open the link in a new tab
+    window.open(url, "_blank");
+  }
+}
+

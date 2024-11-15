@@ -1,3 +1,11 @@
-<h2 class="text-2xl"><%= name %></h2>
+<h2 class="text-2xl">
+    <%= name %>
+</h2>
 <hr class="border-teal-300" />
-<p><strong>Description:</strong> <span><%= description %></span></p>
+<p><strong>Speed:</strong></p>
+<p><strong>Height:</strong></p>
+<p><strong>Coordinates:</strong></p>
+<p><strong>Launch Date:</strong></p>
+<p><strong>Description:</strong> <a href="<%= description %>"
+        onclick="return confirm('Are you sure you want to open this link in a new tab?')" target="_blank">Click here to
+        read more</a></p>

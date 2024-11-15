@@ -2,6 +2,7 @@ import { subscribe } from "../eventBuss.js";
 import { State } from "../globalState.js";
 import { initSettings } from "./settings.js";
 import { initHeader } from "./header.js";
+import { initResizer } from "./resizer.js";
 // import { initPredictions } from "./predictions.js";
 import { initPopup } from "./popup.js";
 import { glState } from "../gl/index.js";
@@ -9,8 +10,10 @@ import { initOrbit } from "../gl/orbit.js";
 
 export * from "./settings.js";
 export * from "./header.js";
+export * from "./resizer.js";
 export * from "./predictions.js";
 export * from "./popup.js";
+
 
 subscribe("appStartup", onStart);
 subscribe("glStateChanged", onGlStateChanged);
@@ -21,6 +24,7 @@ const satellite_mobile_revert = document.getElementById("mobile-popup-revert");
 function onStart() {
   initHeader();
   initSettings();
+  initResizer();
   // initPredictions();
   initPopup();
   initOrbit();
