@@ -19,8 +19,7 @@
         "imports": {
           "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
           "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/",
-          "postprocessing": "https://unpkg.com/postprocessing@6.36.3/build/index.js",
-          "three-viewport-gizmo": "https://unpkg.com/three-viewport-gizmo@1.0.1/dist/three-viewport-gizmo.js"
+          "postprocessing": "https://unpkg.com/postprocessing@6.36.3/build/index.js"
         }
       }
     </script>
@@ -39,7 +38,7 @@
   </div>
 
   <header
-    class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-gray-700 sticky top-0">
+    class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-teal-300 sticky top-0">
     <nav class="flex items-center max-w-full px-4 w-full">
 
       <!-- Burger menu -->
@@ -71,20 +70,18 @@
 
         <!-- Satellite search -->
         <div class="relative w-full md:w-72 hidden md:block md:ml-7">
-
           <!-- Search Input -->
           <input type="text" id="satellite-search" placeholder="Search for a satellite"
-            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition duration-300 ease-in-out">
-
+            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
           <!-- Search Button (magnifying glass) -->
           <button id="satellite-search-button"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out">
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
+            title="Search">
             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" fill="none" viewBox="0 0 24 24">
               <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
                 d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
             </svg>
-
           </button>
         </div>
 
@@ -92,39 +89,30 @@
     </nav>
   </header>
 
-  <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-10 bg-white"
-    id="dynamic-content"></div>
-
   <div class="gl_viewport" id="gl_viewport">
-    <!-- Place the ui overlay items in here-->
     <div id="ui" class="absolute z-20 w-full h-full">
 
-      <!-- The gizmo was blocking the burger tabs icons -->
       <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
       </div>
-      <!-- Sliding window left-->
-      <!-- <div id="side-left-window"
-        class="z-20 min-w-80 bg-black absolute top-0 left-0 h-full text-white flex items-center -translate-x-full transform transition-transform duration-300 ease-in-out p-4">
-        <button id="close-left-window" class="bg-transparent absolute top-4 right-4">
-          <svg class="h-8 w-8 text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
-            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" />
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-        <div></div>
-        <div id="left-window-content"></div>
-      </div> -->
 
-      <!-- Sliding window right-->
+      <!-- Sliding window left-->
       <div id="ham_menu"
-        class="bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
+        class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
+        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
+          <div
+            class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center hidden"
+            title="Resize">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+        </div>
         <!-- Tabs -->
         <div class="tabs flex space-x-4 border-b border-gray-300">
 
           <!-- Calender (Events) -->
-          <button data-ripple="true" class="tab group relative" id="events-tab">
+          <button data-ripple="true" class="tab group relative" id="events-tab" title="Events">
             <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
               fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" />
@@ -134,7 +122,7 @@
           </button>
 
           <!-- Predictions -->
-          <button data-ripple="true" class="tab group relative" id="prediction-tab-icon">
+          <button data-ripple="true" class="tab group relative" id="prediction-tab-icon" title="Predictions">
             <!-- Satellite -->
             <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
               fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -181,7 +169,7 @@
           </button>
 
           <!-- Graphs -->
-          <button data-ripple="true" class="tab group relative">
+          <button data-ripple="true" class="tab group relative" title="Graphs">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -194,21 +182,17 @@
           </button>
 
           <!-- Info -->
-          <button data-ripple="true" class="tab group relative">
+          <button data-ripple="true" class="tab group relative" title="Info">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <!-- Hover Text -->
-            <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-              Info
-            </span> -->
           </button>
 
           <!-- Settings -->
-          <button data-ripple="true" class="tab group relative">
+          <button data-ripple="true" class="tab group relative" title="Settings">
             <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
               fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -216,10 +200,6 @@
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
             </svg>
-            <!-- Hover Text -->
-            <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-                Settings
-              </span> -->
           </button>
 
         </div>
@@ -316,35 +296,41 @@
               </div>
               <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
                 Save settings
-              </button>
-            </div>
-
+            </button>
           </div>
         </div>
 
-        <!-- Note Ivan: This is just a proof of concept on how we could potentially rebuild the ui -->
-        <div id="popup-container"
-          class="z-10 pb-4
-         rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out hidden md:flex md:flex-col w-4/5 h-2/4 md:w-1/5 md:h-1/4">
-          <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
-            data-augmented-ui="border tr-2-clip-x br-clip">
-            <div class="flex flex-row justify-start">
-              <button id="close-popup" class="bg-transparent ">
-                <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
-                  stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" />
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-            <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
-              <p class="loading-text">Loading</p>
-            </div>
-            <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
+      </div>
+
+      <div id="popup-container"
+        class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
+        <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+          data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
+          <div class="flex flex-row justify-end">
+            <button id="close-popup" class="bg-transparent" title="Close">
+              <svg class="h-8 w-10 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
+          <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
+            <p class="loading-text">Loading</p>
+          </div>
+        </div>
+
+        <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
+          title="More info">
+          <svg id="arrow-icon"
+            class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400"
+            stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5L12 17.25l-7.5-6.75" />
+          </svg>
         </div>
       </div>
+
       <div id="mobile-popup-revert"
         class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
         <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
@@ -359,7 +345,6 @@
           </button>
         </div>
       </div>
-
     </div>
 </body>
 <script type="module" src="js/main.js"></script>
