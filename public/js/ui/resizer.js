@@ -7,6 +7,20 @@ export function initResizer() {
   if (resizer && sidebar) {
     let x = 0, w = 0;
 
+    function showResizer() {
+      if (!sidebar.classList.contains("-translate-x-full")) {
+        resizer.classList.remove("hidden");
+      }
+    }
+
+    function hideResizer() {
+      if (sidebar.classList.contains("-translate-x-full")) {
+        resizer.classList.add("hidden");
+      }
+    }
+
+    hideResizer();
+
     resizer.addEventListener("mousedown", function (e) {
       x = e.clientX;
       const sbWidth = window.getComputedStyle(sidebar).width;
@@ -19,7 +33,6 @@ export function initResizer() {
     function mouseMoveHandler(e) {
       const dx = e.clientX - x;
       let cw = w + dx;
-
 
       if (cw < MIN_WIDTH) {
         cw = MIN_WIDTH;
@@ -36,6 +49,23 @@ export function initResizer() {
       document.removeEventListener("mousemove", mouseMoveHandler);
       document.removeEventListener("mouseup", mouseUpHandler);
     }
+
+    const toggleButton = document.getElementById("resize");
+    toggleButton.addEventListener("click", function () {
+      if (sidebar.classList.contains("translate-x-0")) {
+        hideResizer();
+      } else {
+        showResizer();
+      }
+    });
+
+    sidebar.addEventListener('transitionend', function () {
+      if (sidebar.classList.contains("translate-x-0")) {
+        showResizer();
+      } else {
+        hideResizer();
+      }
+    });
   } else {
     console.error("Resizer or sidebar element not found.");
   }

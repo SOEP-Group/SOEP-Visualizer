@@ -74,7 +74,7 @@
         <div class="relative w-full md:w-72 hidden md:block md:ml-7">
           <!-- Search Input -->
           <input type="text" id="satellite-search" placeholder="Search for a satellite"
-            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full transition duration-300 ease-in-out">
+            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
           <!-- Search Button (magnifying glass) -->
           <button id="satellite-search-button"
             class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
@@ -100,8 +100,15 @@
       <!-- Sliding window left-->
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
-        <div id="resize" class="resizer-container absolute top-0 right-0 h-full">
-          <div class="resizer w-[10px] cursor-ew-resize h-full absolute"></div>
+        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
+          <div
+            class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center hidden"
+            title="Resize">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
         </div>
         <!-- Tabs -->
         <div class="tabs flex space-x-4 border-b border-gray-300">
