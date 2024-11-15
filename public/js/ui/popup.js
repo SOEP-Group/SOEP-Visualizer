@@ -31,12 +31,12 @@ function openPopup() {
 }
 
 function getContent(satellite) {
-  mobileContent.innerHTML = "";
+  // mobileContent.innerHTML = "";
   fetchSatellite(satellite).then((res) => {
     content.classList.remove("hidden");
     skeleton.classList.add("hidden");
     content.innerHTML = res;
-    mobileContent.innerHTML = res;
+    // mobileContent.innerHTML = res;
   });
 }
 

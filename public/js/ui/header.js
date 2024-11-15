@@ -6,7 +6,7 @@ const eventsButton = document.getElementById("events-button");
 const eventsTab = document.getElementById("events-tab");
 
 const predictionButton = document.getElementById("prediction-button");
-const predictionTab = document.getElementById("prediction-tab");
+const predictionTab = document.getElementById("prediction-tab-icon");
 
 let firstMenuOpen = true;
 
