@@ -46,7 +46,7 @@ function closePopup() {
 }
 
 function togglePopupSize() {
-  popupContainer.classList.toggle("h-5/6"); // extend the height
+  popupContainer.classList.toggle("h-9/10"); // extend the height
   arrowIcon.classList.toggle("rotate-180");
 }
 
@@ -58,3 +58,17 @@ export function initPopup() {
 
   toggleArrow.addEventListener("click", togglePopupSize);
 }
+
+function confirmOpenLink(event, url) {
+  // Prevent the default action (navigating to the link)
+  event.preventDefault();
+
+  // Show a confirmation dialog
+  const userConfirmed = confirm("Are you sure you want to open this link in a new tab?");
+
+  if (userConfirmed) {
+    // If the user confirms, open the link in a new tab
+    window.open(url, "_blank");
+  }
+}
+
