@@ -7,7 +7,6 @@ const popupContainer = document.getElementById("popup-container");
 const closeBtn = document.getElementById("close-popup");
 const skeleton = document.getElementById("popup-skeleton");
 const content = document.getElementById("popup-content");
-
 const mobileContent = document.getElementById("popup-content-mobile");
 const toggleArrow = document.getElementById("toggle-arrow");
 const arrowIcon = document.getElementById("arrow-icon");
