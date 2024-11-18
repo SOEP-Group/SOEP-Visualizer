@@ -205,7 +205,7 @@
         </div>
 
         <!-- Content -->
-        <div class="tab-content mt-4 h-full p-2">
+        <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
           <div class="tab-panel">
             <p id="satellite-info-default">Events</p>
             <!-- <h4 id="debug-ui-fps-counter"></h4>
@@ -255,47 +255,47 @@
               </div>
             </div>
 
-              <!-- Re-entry Prediction -->
-              <div class="expandable-section">
-                <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                  <!-- Triangle Icon -->
-                  <div id="arrow-re-entry" class="mr-2">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                      viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m9 5 7 7-7 7" />
-                    </svg>
-                  </div>
-                  <!-- Section Title -->
-                  <span class="cursor-pointer">Re-entry Prediction</span>
-                </h3>
-                <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+            <!-- Re-entry Prediction -->
+            <div class="expandable-section">
+              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-re-entry" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
                 </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Re-entry Prediction</span>
+              </h3>
+              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
               </div>
-
             </div>
 
-            <div class="tab-panel">
-              <p>Add some graphs here</p>
-            </div>
+          </div>
 
-            <div class="tab-panel">
-              <h2 class="text-2xl">How to use:</h2>
-              <p>Let's force Shakir to write this</p>
-              <hr />
-              <h3 class="text-lg">Curious how the project is coming along?</h3>
-              <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/"
-                target="_blank" rel="noopener noreferrer">Check out our blog</a>
-            </div>
+          <div class="tab-panel">
+            <p>Add some graphs here</p>
+          </div>
 
-            <div class="tab-panel">
-              <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-                <h3 class="justify-begin">Graphics preset:</h3>
-                <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
-              </div>
-              <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
-                Save settings
+          <div class="tab-panel">
+            <h2 class="text-2xl">How to use:</h2>
+            <p>Let's force Shakir to write this</p>
+            <hr />
+            <h3 class="text-lg">Curious how the project is coming along?</h3>
+            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+              rel="noopener noreferrer">Check out our blog</a>
+          </div>
+
+          <div class="tab-panel">
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin">Graphics preset:</h3>
+              <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
+            </div>
+            <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
+              Save settings
             </button>
           </div>
         </div>
