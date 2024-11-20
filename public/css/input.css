@@ -4,15 +4,17 @@
 
 @layer components {
   .btn-blue {
-    @apply rounded-md uppercase font-bold bg-blue-700 py-2 px-4 text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-blue-600 focus:shadow-none active:bg-blue-600 hover:bg-blue-600 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none;
+    @apply bg-sky-900 hover:border-teal-300 text-white hover:bg-sky-700 font-bold py-2 px-4 rounded mt-3;
   }
 
   .tab {
     @apply px-4 py-2 font-medium text-gray-600 transition duration-300 ease-in-out cursor-pointer hover:text-white;
   }
+
   .active-tab {
     @apply border-b-2 border-white text-white;
   }
+
   .tab-panel {
     @apply hidden space-y-4;
   }
