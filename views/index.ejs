@@ -205,7 +205,7 @@
         </div>
 
         <!-- Content -->
-        <div class="tab-content mt-4 h-full p-2">
+        <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
           <div class="tab-panel">
             <p id="satellite-info-default">Events</p>
             <!-- <h4 id="debug-ui-fps-counter"></h4>
@@ -215,7 +215,7 @@
             <p id="debug-ui-gpu-info"></p> -->
           </div>
 
-          <div id="prediction-tab" class="tab-panel overflow-y-auto h-[70vh]">
+          <div id="prediction-tab" class="tab-panel space-y-6">
 
             <!-- Passing Satellites -->
             <div class="expandable-section">
@@ -255,47 +255,95 @@
               </div>
             </div>
 
-              <!-- Re-entry Prediction -->
-              <div class="expandable-section">
-                <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                  <!-- Triangle Icon -->
-                  <div id="arrow-re-entry" class="mr-2">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                      viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m9 5 7 7-7 7" />
-                    </svg>
-                  </div>
-                  <!-- Section Title -->
-                  <span class="cursor-pointer">Re-entry Prediction</span>
-                </h3>
-                <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+            <!-- Re-entry Prediction -->
+            <div class="expandable-section">
+              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-re-entry" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
                 </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Re-entry Prediction</span>
+              </h3>
+              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
               </div>
-
             </div>
 
-            <div class="tab-panel">
-              <p>Add some graphs here</p>
-            </div>
+          </div>
 
-            <div class="tab-panel">
-              <h2 class="text-2xl">How to use:</h2>
-              <p>Let's force Shakir to write this</p>
-              <hr />
-              <h3 class="text-lg">Curious how the project is coming along?</h3>
-              <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/"
-                target="_blank" rel="noopener noreferrer">Check out our blog</a>
-            </div>
+          <div class="tab-panel">
+            <p>Add some graphs here</p>
+          </div>
 
-            <div class="tab-panel">
-              <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-                <h3 class="justify-begin">Graphics preset:</h3>
-                <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
-              </div>
-              <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
-                Save settings
+          <div class="tab-panel">
+            <h2 class="text-2xl font-semibold">How to Use</h2>
+            <!-- Description Text -->
+            <p class="text-base text-gray-400">
+              This project is designed to help you track and explore satellites around Earth. Click on a satellite to
+              see more details about it.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Toggle View -->
+            <h3 class="text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View</h3>
+            <div class="flex flex-col space-y-2 mt-4">
+              <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
+                Click the "Toggle View" button or use the "Alt + V" keyboard shortcut to switch views.
+              </p>
+            </div>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Events -->
+            <h3 class="text-lg text-white">What are the events?</h3>
+            <p class="mt-2 text-gray-400">
+              The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
+              location.
+              These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Predictions -->
+            <h3 class="text-lg text-white">What predictions do we have and how do they work?</h3>
+            <p class="mt-2 text-gray-400">
+              We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
+              satellites are visible from specific locations. These predictions help us track the movement of
+              satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
+              observed from a given location. Additionally, we provide information on when a selected satellite will be
+              visible from your location, based on real-time data.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Graphs -->
+            <h3 class="text-lg text-white">What do the graphs show?</h3>
+            <p class="mt-2 text-gray-400">
+              The graphs display detailed information about the selected satellite, including its
+              speed, height above Earth, and other relevant data. They provide a visual representation of the
+              satellite's position over time, both in the past 24 hours and into the future.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Blog -->
+            <h3 class="text-lg text-gray-200">Curious how the project is coming along?</h3>
+            <p class="mt-2 text-gray-400">For the latest updates on the project, check out our blog where we share
+              weekly progress and updates about our work.</p>
+            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+              rel="noopener noreferrer">
+              Check out our blog
+            </a>
+          </div>
+
+          <div class="tab-panel">
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin">Graphics preset:</h3>
+              <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
+            </div>
+            <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
+              Save settings
             </button>
           </div>
         </div>

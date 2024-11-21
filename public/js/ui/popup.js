@@ -60,14 +60,11 @@ export function initPopup() {
 }
 
 function confirmOpenLink(event, url) {
-  // Prevent the default action (navigating to the link)
   event.preventDefault();
 
-  // Show a confirmation dialog
   const userConfirmed = confirm("Are you sure you want to open this link in a new tab?");
 
   if (userConfirmed) {
-    // If the user confirms, open the link in a new tab
     window.open(url, "_blank");
   }
 }
