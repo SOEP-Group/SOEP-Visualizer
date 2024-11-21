@@ -338,14 +338,25 @@
           </div>
 
           <div class="tab-panel">
+            
+            <!-- Graphics present -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
               <h3 class="justify-begin">Graphics preset:</h3>
-              <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
+              <select id="graphics-settings" class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
             </div>
+
+            <!-- Timezone -->
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin">Time zone:</h3>
+              <select id="time-zone-settings" class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+            </div>
+
+            <!-- Save settings button -->
             <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
               Save settings
             </button>
           </div>
+
         </div>
 
       </div>
