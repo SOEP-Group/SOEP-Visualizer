@@ -57,8 +57,8 @@ export class Satellites {
         this.baseColor.b,
       ];
 
-      this.positions.set([x, y, z], index * 3); // Populate positions array
-      this.speeds.set([vx, vy, vz], index * 3); // Populate speeds array
+      this.positions.set([x, y, z], index * 3);
+      this.speeds.set([vx, vy, vz], index * 3);
       colors.set(baseColorArray, index * 3);
 
       this.instanceIdToSatelliteIdMap[index] = satellite.id;
@@ -68,7 +68,7 @@ export class Satellites {
     geometry.setAttribute(
       "position",
       new Float32BufferAttribute(this.positions, 3)
-    ); // Use shared positions array
+    );
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
 
     const material = new PointsMaterial({
@@ -77,6 +77,7 @@ export class Satellites {
       map: textureLoader.load("images/satellites/dot_map.png"),
       transparent: true,
       opacity: 1.0,
+      alphaTest: 0.1,
     });
 
     this.points = new Points(geometry, material);
@@ -87,10 +88,13 @@ export class Satellites {
     this.raycaster.setFromCamera(mouse, camera);
 
     const intersects = this.raycaster.intersectObject(earth.getGroup());
-    if (intersects.length > 0 && intersects[0].object.type === "Points") {
-      return intersects[0].index;
+    for (const interesection of intersects) {
+      if (interesection.object.type === "Points") {
+        return interesection.index;
+      } else if (interesection.object.type === "Mesh") {
+        return null;
+      }
     }
-
     return null;
   }
 
