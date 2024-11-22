@@ -72,7 +72,7 @@ export class Satellites {
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
 
     const material = new PointsMaterial({
-      size: 0.01,
+      size: 0.015,
       vertexColors: true,
       map: textureLoader.load("images/satellites/dot_map.png"),
       transparent: true,
