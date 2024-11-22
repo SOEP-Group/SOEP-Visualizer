@@ -17,7 +17,7 @@ export class Satellites {
   group;
   raycaster;
   instanceIdToSatelliteIdMap = {};
-  baseColor = new Color(1, 0, 0);
+  baseColor = new Color().setHex(0xFF0000);
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
   focusedSatellite = -1;
