@@ -27,6 +27,7 @@ export class Satellites {
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
   focusedSatellite = -1;
+  isUpdating = false;
 
   constructor(data) {
     this.instanceCount = data.length;
@@ -139,75 +140,74 @@ export class Satellites {
   // We will swap the buffers every frame, but with further testing maybe we could swap the buffers every 3rd frame or something if the first option becomes too burdensome on some devices
   createWorkers(workerCount, data) {
     const chunkSize = Math.ceil(this.instanceCount / workerCount);
-
     const bufferSize = this.instanceCount * 3;
-    this.positions_read = new Float32Array(bufferSize);
-
-    this.positions_write = new Float32Array(bufferSize);
-
-    this.speeds = new Float32Array(bufferSize);
-
+    const sharedBufferSize = bufferSize * Float32Array.BYTES_PER_ELEMENT;
+  
+    const positionsBuffer = new SharedArrayBuffer(sharedBufferSize);
+    const speedsBuffer = new SharedArrayBuffer(sharedBufferSize);
+  
+    this.positions_read = new Float32Array(positionsBuffer);
+    this.positions_write = new Float32Array(positionsBuffer);
+    this.speeds = new Float32Array(speedsBuffer);
+  
     data.forEach((satellite, index) => {
       const { x, y, z } = satellite.position;
       const { x: vx, y: vy, z: vz } = satellite.speed;
-
+  
       this.positions_read.set([x, y, z], index * 3);
       this.positions_write.set([x, y, z], index * 3);
       this.speeds.set([vx, vy, vz], index * 3);
     });
-
+  
+    this.workers = [];
     for (let i = 0; i < workerCount; i++) {
       const worker = new Worker(
-        new URL("../workers/satellite_worker.js", import.meta.url)
+        new URL("../workers/satellite_worker.js", import.meta.url),
+        { type: "module" }
       );
       const startIndex = i * chunkSize;
       const endIndex = Math.min((i + 1) * chunkSize, this.instanceCount);
+  
       worker.onerror = (error) => {
         console.error(`Worker ${i} encountered an error:`, error);
       };
+  
       this.workers.push({ worker, startIndex, endIndex });
     }
   }
 
   updatePositions(deltaTime) {
     // For some reason sharing buffers across threads is the equvalent to knowing what the dog doing...next to impossible
-    // const promises = this.workers.map(({ worker, startIndex, endIndex }) => {
-    //   return new Promise((resolve) => {
-    //     worker.onmessage = (event) => {
-    //       // Reassign positions_write to the updated buffer
-    //       this.positions_write = new Float32Array(event.data.buffer);
-    //       resolve();
-    //     };
+    // Update: I did it, I know what the fuck the dog is doing
+    if(this.isUpdating){
+      return;
+    }
+    this.isUpdating = true;
+    const promises = this.workers.map(({ worker, startIndex, endIndex }) => {
+      return new Promise((resolve) => {
+        worker.onmessage = () => resolve();
+    
+        worker.postMessage({
+          command: "update",
+          deltaTime,
+          startIndex,
+          endIndex,
+          positions: this.positions_write.buffer,
+          speeds: this.speeds.buffer,
+        });
+      });
+    });
+    
+    Promise.all(promises).then(() => {
+      [this.positions_read, this.positions_write] = [
+        this.positions_write,
+        this.positions_read,
+      ];
 
-    //     // Transfer positions_write buffer to the worker
-    //     worker.postMessage(
-    //       {
-    //         command: "update",
-    //         deltaTime,
-    //         startIndex,
-    //         endIndex,
-    //         positions: this.positions_write.buffer,
-    //         speeds: this.speeds.buffer, // This buffer is shared, so no transfer
-    //       },
-    //       [this.positions_write.buffer] // Transfer ownership
-    //     );
-    //   });
-    // });
-
-    // Promise.all(promises).then(() => {
-    //   // Swap buffers after all workers are done
-    //   [this.positions_read, this.positions_write] = [
-    //     this.positions_write,
-    //     this.positions_read,
-    //   ];
-
-    //   // Update Three.js geometry with the new positions
-    //   this.points.geometry.attributes.position.array = this.positions_read;
-    //   this.points.geometry.attributes.position.needsUpdate = true;
-
-    //   // Continue animation
-    //   requestAnimationFrame(this.animate);
-    // });
+      this.points.geometry.attributes.position.array = this.positions_read;
+      this.points.geometry.attributes.position.needsUpdate = true;
+      this.isUpdating = false;
+    });
 
     // Currently doesn't work... speeds are maybe messed up and not accurate. We probably want realtime sgp analysis on a seperate thread
     // for (let i = 0; i < this.instanceCount; i++) {
@@ -231,8 +231,6 @@ export class Satellites {
     // // Update Three.js geometry with the new positions
     // this.points.geometry.attributes.position.array = this.positions_read;
     // this.points.geometry.attributes.position.needsUpdate = true;
-
-    requestAnimationFrame(this.animate);
   }
 
   setFocused(id) {
@@ -261,6 +259,7 @@ export class Satellites {
   createAnimateFunction() {
     return () => {
       if (this.animate) {
+        requestAnimationFrame(this.animate);
         const dt = clock.getDelta();
         this.updatePositions(dt);
       }
