@@ -41,7 +41,7 @@ export class Satellites {
   }
 
   createNewInstancedMesh() {
-    this.geometry = new SphereGeometry(0.004, 64, 64);
+    this.geometry = new SphereGeometry(0.01, 6, 6);
     this.material = new MeshBasicMaterial();
 
     const instancedMesh = new InstancedMesh(
@@ -133,5 +133,4 @@ export class Satellites {
     matrix.decompose(position, new Quaternion(), new Vector3(1, 1, 1));
     return position;
   }
-
 }

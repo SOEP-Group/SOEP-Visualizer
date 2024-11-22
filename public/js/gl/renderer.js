@@ -8,7 +8,7 @@ import {
   SMAAEffect,
   SMAAPreset,
 } from "postprocessing";
-import { scene, reloadScene, sun } from "./scene.js";
+import { scene, reloadScene, sun, satellites } from "./scene.js";
 import { glState } from "./index.js";
 import { subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
@@ -103,6 +103,18 @@ function updateCameraFocus(focusTarget) {
           );
           instancePosition.add(groupWorldPosition);
           totalPosition.add(instancePosition);
+          meshCount++;
+        }
+      } else if (child.isPoints) {
+        const positions = child.geometry.attributes.position.array;
+        if (instanceIndex * 3 < positions.length) {
+          const pointPosition = new THREE.Vector3(
+            positions[instanceIndex * 3],
+            positions[instanceIndex * 3 + 1],
+            positions[instanceIndex * 3 + 2]
+          );
+          pointPosition.add(groupWorldPosition);
+          totalPosition.add(pointPosition);
           meshCount++;
         }
       }

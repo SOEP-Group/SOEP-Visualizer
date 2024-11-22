@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Sun } from "./sun.js";
 import { Earth } from "./earth.js";
-import { Satellites } from "./satellite.js";
+import { Satellites } from "./satellite_2d.js"; // remove the _2d here to use the 3D versions
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchSatellites } from "../api/satellites.js";
 import { globalState } from "../globalState.js";
@@ -77,8 +77,8 @@ export function initScene() {
   });
 }
 
-export function getEarth(){
-  return earth
+export function getEarth() {
+  return earth;
 }
 
 export function reloadScene() {
