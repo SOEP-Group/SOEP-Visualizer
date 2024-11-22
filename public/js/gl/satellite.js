@@ -41,7 +41,7 @@ export class Satellites {
   }
 
   createNewInstancedMesh() {
-    this.geometry = new SphereGeometry(0.004, 32, 32);
+    this.geometry = new SphereGeometry(0.004, 64, 64);
     this.material = new MeshBasicMaterial();
 
     const instancedMesh = new InstancedMesh(
