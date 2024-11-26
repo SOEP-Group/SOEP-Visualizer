@@ -282,14 +282,14 @@
           <div class="tab-panel">
             <h2 class="text-2xl font-semibold">How to Use</h2>
             <!-- Description Text -->
-            <p class="text-base text-gray-400">
+            <p class="text-sm md:text-base text-gray-400">
               This project is designed to help you track and explore satellites around Earth. Click on a satellite to
               see more details about it.
             </p>
             <hr class="my-6 border-teal-300" />
 
             <!-- Toggle View -->
-            <h3 class="text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View</h3>
+            <h3 class="text-md md:text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View</h3>
             <div class="flex flex-col space-y-2 mt-4">
               <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
                 Click the "Toggle View" button or use the "Alt + V" keyboard shortcut to switch views.
@@ -298,8 +298,8 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Events -->
-            <h3 class="text-lg text-white">What are the events?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What are the events?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
               location.
               These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
@@ -307,8 +307,8 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Predictions -->
-            <h3 class="text-lg text-white">What predictions do we have and how do they work?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
               satellites are visible from specific locations. These predictions help us track the movement of
               satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
@@ -318,8 +318,8 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Graphs -->
-            <h3 class="text-lg text-white">What do the graphs show?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               The graphs display detailed information about the selected satellite, including its
               speed, height above Earth, and other relevant data. They provide a visual representation of the
               satellite's position over time, both in the past 24 hours and into the future.
@@ -327,8 +327,8 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Blog -->
-            <h3 class="text-lg text-gray-200">Curious how the project is coming along?</h3>
-            <p class="mt-2 text-gray-400">For the latest updates on the project, check out our blog where we share
+            <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog where we share
               weekly progress and updates about our work.</p>
             <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
               rel="noopener noreferrer">
@@ -340,16 +340,16 @@
 
             <!-- Graphics present -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin">Graphics preset:</h3>
+              <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
               <select id="graphics-settings"
-                class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+                class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
             </div>
 
             <!-- Timezone -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin">Time zone:</h3>
+              <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
               <select id="time-zone-settings"
-                class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+                class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
             </div>
 
             <!-- Save settings button -->
