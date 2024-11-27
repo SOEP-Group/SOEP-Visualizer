@@ -1,6 +1,7 @@
 // burger menu
 
 import { fetchEvents } from "../api/events.js";
+import { getLocation } from "./utils.js";
 
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
@@ -60,8 +61,12 @@ export function initHeader() {
 
   eventsTab.addEventListener("click", async () => {
     eventsContent.innerHTML = "<p>Loading events...</p>";
+
+    // const { latitude, longitude } = await getLocation();
   
     const [sunEvents, moonEvents] = await Promise.all([
+      // fetchEvents("sun", latitude, longitude),
+      // fetchEvents("moon", latitude, longitude),
       fetchEvents("sun"),
       fetchEvents("moon"),
     ]);
