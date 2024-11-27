@@ -17,7 +17,6 @@ const mobileExtendArrow = document.getElementById("mobile-toggle-arrow");
 const mobileCloseButton = document.getElementById("mobile-close-popup");
 const mobileSkeleton = document.getElementById("mobile-popup-skeleton");
 const mobileArrowIcon = document.getElementById("mobile-arrow-icon");
-const mobilePopupRevert = document.getElementById("mobile-popup-revert");
 
 function onGlStateChanged(changedStates) {
   if (changedStates["clickedSatellite"]) {
@@ -95,13 +94,11 @@ function openMobilePopup() {
   mobilePopupContainer.classList.add("translate-y-0", "bottom-0");
   mobileContent.classList.add("hidden");
   mobileSkeleton.classList.remove("hidden");
-  mobilePopupRevert.classList.add("hidden");
 }
 
 function closeMobilePopup() {
   mobilePopupContainer.classList.add("translate-y-full", "bottom-[-100%]");
   mobilePopupContainer.classList.remove("translate-y-0", "bottom-0");
-  mobilePopupRevert.classList.remove("hidden");
 }
 
 function toggleMobilePopupSize() {
