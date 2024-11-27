@@ -4,21 +4,21 @@
 <head>
   <title>SOEP Visualizer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script async src="https://unpkg.com/es-module-shims@1.0.1/dist/es-module-shims.js"></script>
+  <script async src="./libs/es-shims/es-module-shims.js"></script>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
   <!-- Looks so bad with landscape mode, lets just disallow it -->
   <!-- Does not work on IOS -->
   <!-- <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">  -->
+  <link rel="stylesheet" type="text/css" href="./libs/au-css/augmented-ui.min.css">
   <link href="./css/output.css" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
   <link rel="stylesheet" href="./css/style.css" />
 
   <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/",
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
           "postprocessing": "https://unpkg.com/postprocessing@6.36.3/build/index.js"
         }
       }
@@ -43,7 +43,7 @@
 
       <!-- Burger menu -->
       <div id="menu__toggle"
-        class="tham tham-e-squeeze tham-w-8 h-8 transform transition-transform duration-300 ease-in-out">
+        class="tham tham-e-slider tham-w-8 h-8 transform transition-transform duration-300 ease-in-out">
         <div class="tham-box">
           <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
           <div class="tham-inner bg-white h-[2px] w-[6px]"></div>
@@ -99,8 +99,7 @@
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
         <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
-          <div
-            class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center hidden md:blk"
+          <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
             title="Resize">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="size-6">
@@ -205,7 +204,7 @@
         </div>
 
         <!-- Content -->
-        <div class="tab-content mt-4 h-full p-2">
+        <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
           <div class="tab-panel">
             <p id="satellite-info-default">Events</p>
             <!-- <h4 id="debug-ui-fps-counter"></h4>
@@ -215,7 +214,7 @@
             <p id="debug-ui-gpu-info"></p> -->
           </div>
 
-          <div id="prediction-tab" class="tab-panel overflow-y-auto h-[70vh]">
+          <div id="prediction-tab" class="tab-panel space-y-6">
 
             <!-- Passing Satellites -->
             <div class="expandable-section">
@@ -273,31 +272,114 @@
               <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
               </div>
             </div>
+            <!-- Re-entry Prediction -->
+            <div class="expandable-section">
+              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-re-entry" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Re-entry Prediction</span>
+              </h3>
+              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
+            </div>
 
+          </div>
           </div>
 
           <div class="tab-panel">
             <p>Add some graphs here</p>
           </div>
-
           <div class="tab-panel">
-            <h2 class="text-2xl">How to use:</h2>
-            <p>Let's force Shakir to write this</p>
-            <hr />
-            <h3 class="text-lg">Curious how the project is coming along?</h3>
-            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
-              rel="noopener noreferrer">Check out our blog</a>
+            <p>Add some graphs here</p>
           </div>
 
           <div class="tab-panel">
-            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin">Graphics preset:</h3>
-              <select id="graphics-settings" class="border p-2 rounded bg-black border-white justify-end"></select>
+            <h2 class="text-2xl font-semibold">How to Use</h2>
+            <!-- Description Text -->
+            <p class="text-sm md:text-base text-gray-400">
+              This project is designed to help you track and explore satellites around Earth. Click on a satellite to
+              see more details about it.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Toggle View -->
+            <h3 class="text-md md:text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View</h3>
+            <div class="flex flex-col space-y-2 mt-4">
+              <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
+                Click the "Toggle View" button or use the "Alt + V" keyboard shortcut to switch views.
+              </p>
             </div>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Events -->
+            <h3 class="text-md md:text-lg text-white">What are the events?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
+              The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
+              location.
+              These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Predictions -->
+            <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
+              We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
+              satellites are visible from specific locations. These predictions help us track the movement of
+              satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
+              observed from a given location. Additionally, we provide information on when a selected satellite will be
+              visible from your location, based on real-time data.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Graphs -->
+            <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
+              The graphs display detailed information about the selected satellite, including its
+              speed, height above Earth, and other relevant data. They provide a visual representation of the
+              satellite's position over time, both in the past 24 hours and into the future.
+            </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Blog -->
+            <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog where we share
+              weekly progress and updates about our work.</p>
+            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+              rel="noopener noreferrer">
+              Check out our blog
+            </a>
+          </div>
+
+          <div class="tab-panel">
+
+            <!-- Graphics present -->
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
+              <select id="graphics-settings"
+                class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+            </div>
+
+            <!-- Timezone -->
+            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+              <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
+              <select id="time-zone-settings"
+                class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+            </div>
+
+            <!-- Save settings button -->
             <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
               Save settings
             </button>
           </div>
+
         </div>
 
       </div>

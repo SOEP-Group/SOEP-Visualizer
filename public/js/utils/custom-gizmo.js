@@ -1,46 +1,127 @@
 var xt = Object.defineProperty;
-var bt = (s, t, e) => t in s ? xt(s, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : s[t] = e;
+var bt = (s, t, e) =>
+  t in s
+    ? xt(s, t, { enumerable: !0, configurable: !0, writable: !0, value: e })
+    : (s[t] = e);
 var p = (s, t, e) => bt(s, typeof t != "symbol" ? t + "" : t, e);
-import { Box3 as Y, Vector3 as _, InstancedBufferGeometry as Et, Float32BufferAttribute as J, InstancedInterleavedBuffer as k, InterleavedBufferAttribute as O, WireframeGeometry as Mt, Sphere as ut, UniformsLib as F, Vector2 as B, ShaderLib as j, UniformsUtils as ft, ShaderMaterial as At, Vector4 as L, Matrix4 as mt, Line3 as Lt, Mesh as gt, MathUtils as zt, Color as vt, SphereGeometry as Pt, MeshBasicMaterial as Ut, BackSide as Ct, CanvasTexture as Ot, SRGBColorSpace as Bt, RepeatWrapping as Dt, SpriteMaterial as Tt, Sprite as It, Raycaster as Rt, Object3D as Wt, OrthographicCamera as Ft, Quaternion as Q, Clock as jt, Euler as Gt } from "three";
+import {
+  Box3 as Y,
+  Vector3 as _,
+  InstancedBufferGeometry as Et,
+  Float32BufferAttribute as J,
+  InstancedInterleavedBuffer as k,
+  InterleavedBufferAttribute as O,
+  WireframeGeometry as Mt,
+  Sphere as ut,
+  UniformsLib as F,
+  Vector2 as B,
+  ShaderLib as j,
+  UniformsUtils as ft,
+  ShaderMaterial as At,
+  Vector4 as L,
+  Matrix4 as mt,
+  Line3 as Lt,
+  Mesh as gt,
+  MathUtils as zt,
+  Color as vt,
+  SphereGeometry as Pt,
+  MeshBasicMaterial as Ut,
+  BackSide as Ct,
+  CanvasTexture as Ot,
+  SRGBColorSpace as Bt,
+  RepeatWrapping as Dt,
+  SpriteMaterial as Tt,
+  Sprite as It,
+  Raycaster as Rt,
+  Object3D as Wt,
+  OrthographicCamera as Ft,
+  Quaternion as Q,
+  Clock as jt,
+  Euler as Gt,
+} from "three";
 const Ht = (s, t, e, i, n) => {
-  const o = document.createElement("div"), r = e.top ?? 0, a = e.left ?? 0, l = e.right ?? 0, h = e.bottom ?? 0, [d, c] = s.split("-");
-  return Object.assign(o.style, {
-    height: `${t}px`,
-    width: `${t}px`,
-    borderRadius: "100%",
-    position: "absolute",
-    background: "#fff3",
-    opacity: "0",
-    zIndex: "10000",
-    transform: `${c === "center" ? "translateX(-50%)" : ""} ${d === "center" ? "translateY(-50%)" : ""}`,
-    margin: `${r}px ${l}px ${h}px ${a}px`,
-    left: c === "left" ? "0" : c === "center" ? "50%" : "",
-    right: c === "right" ? "0" : "",
-    top: d === "top" ? "0" : d === "bottom" ? "" : "50%",
-    bottom: d === "bottom" ? "0" : ""
-  }), i && (o.id = i), n && (o.className = n), o;
-}, K = new Y(), D = new _();
+    const o = document.createElement("div"),
+      r = e.top ?? 0,
+      a = e.left ?? 0,
+      l = e.right ?? 0,
+      h = e.bottom ?? 0,
+      [d, c] = s.split("-");
+    return (
+      Object.assign(o.style, {
+        height: `${t}px`,
+        width: `${t}px`,
+        borderRadius: "100%",
+        position: "absolute",
+        background: "#fff3",
+        opacity: "0",
+        zIndex: "10000",
+        transform: `${c === "center" ? "translateX(-50%)" : ""} ${
+          d === "center" ? "translateY(-50%)" : ""
+        }`,
+        margin: `${r}px ${l}px ${h}px ${a}px`,
+        left: c === "left" ? "0" : c === "center" ? "50%" : "",
+        right: c === "right" ? "0" : "",
+        top: d === "top" ? "0" : d === "bottom" ? "" : "50%",
+        bottom: d === "bottom" ? "0" : "",
+      }),
+      i && (o.id = i),
+      n && (o.className = n),
+      o
+    );
+  },
+  K = new Y(),
+  D = new _();
 class yt extends Et {
   constructor() {
-    super(), this.isLineSegmentsGeometry = !0, this.type = "LineSegmentsGeometry";
-    const t = [-1, 2, 0, 1, 2, 0, -1, 1, 0, 1, 1, 0, -1, 0, 0, 1, 0, 0, -1, -1, 0, 1, -1, 0], e = [-1, 2, 1, 2, -1, 1, 1, 1, -1, -1, 1, -1, -1, -2, 1, -2], i = [0, 2, 1, 2, 3, 1, 2, 4, 3, 4, 5, 3, 4, 6, 5, 6, 7, 5];
-    this.setIndex(i), this.setAttribute("position", new J(t, 3)), this.setAttribute("uv", new J(e, 2));
+    super(),
+      (this.isLineSegmentsGeometry = !0),
+      (this.type = "LineSegmentsGeometry");
+    const t = [
+        -1, 2, 0, 1, 2, 0, -1, 1, 0, 1, 1, 0, -1, 0, 0, 1, 0, 0, -1, -1, 0, 1,
+        -1, 0,
+      ],
+      e = [-1, 2, 1, 2, -1, 1, 1, 1, -1, -1, 1, -1, -1, -2, 1, -2],
+      i = [0, 2, 1, 2, 3, 1, 2, 4, 3, 4, 5, 3, 4, 6, 5, 6, 7, 5];
+    this.setIndex(i),
+      this.setAttribute("position", new J(t, 3)),
+      this.setAttribute("uv", new J(e, 2));
   }
   applyMatrix4(t) {
-    const e = this.attributes.instanceStart, i = this.attributes.instanceEnd;
-    return e !== void 0 && (e.applyMatrix4(t), i.applyMatrix4(t), e.needsUpdate = !0), this.boundingBox !== null && this.computeBoundingBox(), this.boundingSphere !== null && this.computeBoundingSphere(), this;
+    const e = this.attributes.instanceStart,
+      i = this.attributes.instanceEnd;
+    return (
+      e !== void 0 &&
+        (e.applyMatrix4(t), i.applyMatrix4(t), (e.needsUpdate = !0)),
+      this.boundingBox !== null && this.computeBoundingBox(),
+      this.boundingSphere !== null && this.computeBoundingSphere(),
+      this
+    );
   }
   setPositions(t) {
     let e;
-    t instanceof Float32Array ? e = t : Array.isArray(t) && (e = new Float32Array(t));
+    t instanceof Float32Array
+      ? (e = t)
+      : Array.isArray(t) && (e = new Float32Array(t));
     const i = new k(e, 6, 1);
-    return this.setAttribute("instanceStart", new O(i, 3, 0)), this.setAttribute("instanceEnd", new O(i, 3, 3)), this.computeBoundingBox(), this.computeBoundingSphere(), this;
+    return (
+      this.setAttribute("instanceStart", new O(i, 3, 0)),
+      this.setAttribute("instanceEnd", new O(i, 3, 3)),
+      this.computeBoundingBox(),
+      this.computeBoundingSphere(),
+      this
+    );
   }
   setColors(t) {
     let e;
-    t instanceof Float32Array ? e = t : Array.isArray(t) && (e = new Float32Array(t));
+    t instanceof Float32Array
+      ? (e = t)
+      : Array.isArray(t) && (e = new Float32Array(t));
     const i = new k(e, 6, 1);
-    return this.setAttribute("instanceColorStart", new O(i, 3, 0)), this.setAttribute("instanceColorEnd", new O(i, 3, 3)), this;
+    return (
+      this.setAttribute("instanceColorStart", new O(i, 3, 0)),
+      this.setAttribute("instanceColorEnd", new O(i, 3, 3)),
+      this
+    );
   }
   fromWireframeGeometry(t) {
     return this.setPositions(t.attributes.position.array), this;
@@ -57,25 +138,44 @@ class yt extends Et {
   }
   computeBoundingBox() {
     this.boundingBox === null && (this.boundingBox = new Y());
-    const t = this.attributes.instanceStart, e = this.attributes.instanceEnd;
-    t !== void 0 && e !== void 0 && (this.boundingBox.setFromBufferAttribute(t), K.setFromBufferAttribute(e), this.boundingBox.union(K));
+    const t = this.attributes.instanceStart,
+      e = this.attributes.instanceEnd;
+    t !== void 0 &&
+      e !== void 0 &&
+      (this.boundingBox.setFromBufferAttribute(t),
+      K.setFromBufferAttribute(e),
+      this.boundingBox.union(K));
   }
   computeBoundingSphere() {
-    this.boundingSphere === null && (this.boundingSphere = new ut()), this.boundingBox === null && this.computeBoundingBox();
-    const t = this.attributes.instanceStart, e = this.attributes.instanceEnd;
+    this.boundingSphere === null && (this.boundingSphere = new ut()),
+      this.boundingBox === null && this.computeBoundingBox();
+    const t = this.attributes.instanceStart,
+      e = this.attributes.instanceEnd;
     if (t !== void 0 && e !== void 0) {
       const i = this.boundingSphere.center;
       this.boundingBox.getCenter(i);
       let n = 0;
       for (let o = 0, r = t.count; o < r; o++)
-        D.fromBufferAttribute(t, o), n = Math.max(n, i.distanceToSquared(D)), D.fromBufferAttribute(e, o), n = Math.max(n, i.distanceToSquared(D));
-      this.boundingSphere.radius = Math.sqrt(n), isNaN(this.boundingSphere.radius) && console.error("THREE.LineSegmentsGeometry.computeBoundingSphere(): Computed radius is NaN. The instanced position data is likely to have NaN values.", this);
+        D.fromBufferAttribute(t, o),
+          (n = Math.max(n, i.distanceToSquared(D))),
+          D.fromBufferAttribute(e, o),
+          (n = Math.max(n, i.distanceToSquared(D)));
+      (this.boundingSphere.radius = Math.sqrt(n)),
+        isNaN(this.boundingSphere.radius) &&
+          console.error(
+            "THREE.LineSegmentsGeometry.computeBoundingSphere(): Computed radius is NaN. The instanced position data is likely to have NaN values.",
+            this
+          );
     }
   }
-  toJSON() {
-  }
+  toJSON() {}
   applyMatrix(t) {
-    return console.warn("THREE.LineSegmentsGeometry: applyMatrix() has been renamed to applyMatrix4()."), this.applyMatrix4(t);
+    return (
+      console.warn(
+        "THREE.LineSegmentsGeometry: applyMatrix() has been renamed to applyMatrix4()."
+      ),
+      this.applyMatrix4(t)
+    );
   }
 }
 F.line = {
@@ -85,16 +185,12 @@ F.line = {
   dashOffset: { value: 0 },
   dashScale: { value: 1 },
   dashSize: { value: 1 },
-  gapSize: { value: 1 }
+  gapSize: { value: 1 },
   // todo FIX - maybe change to totalSize
 };
 j.line = {
-  uniforms: ft.merge([
-    F.common,
-    F.fog,
-    F.line
-  ]),
-  vertexShader: (
+  uniforms: ft.merge([F.common, F.fog, F.line]),
+  vertexShader:
     /* glsl */
     `
 		#include <common>
@@ -307,9 +403,8 @@ j.line = {
 			#include <fog_vertex>
 
 		}
-		`
-  ),
-  fragmentShader: (
+		`,
+  fragmentShader:
     /* glsl */
     `
 		uniform vec3 diffuse;
@@ -470,8 +565,7 @@ j.line = {
 			#include <premultiplied_alpha_fragment>
 
 		}
-		`
-  )
+		`,
 };
 class Z extends At {
   constructor(t) {
@@ -480,9 +574,11 @@ class Z extends At {
       uniforms: ft.clone(j.line.uniforms),
       vertexShader: j.line.vertexShader,
       fragmentShader: j.line.fragmentShader,
-      clipping: !0
+      clipping: !0,
       // required for clipping support
-    }), this.isLineMaterial = !0, this.setValues(t);
+    }),
+      (this.isLineMaterial = !0),
+      this.setValues(t);
   }
   get color() {
     return this.uniforms.diffuse.value;
@@ -494,7 +590,9 @@ class Z extends At {
     return "WORLD_UNITS" in this.defines;
   }
   set worldUnits(t) {
-    t === !0 ? this.defines.WORLD_UNITS = "" : delete this.defines.WORLD_UNITS;
+    t === !0
+      ? (this.defines.WORLD_UNITS = "")
+      : delete this.defines.WORLD_UNITS;
   }
   get linewidth() {
     return this.uniforms.linewidth.value;
@@ -506,7 +604,8 @@ class Z extends At {
     return "USE_DASH" in this.defines;
   }
   set dashed(t) {
-    t === !0 !== this.dashed && (this.needsUpdate = !0), t === !0 ? this.defines.USE_DASH = "" : delete this.defines.USE_DASH;
+    (t === !0) !== this.dashed && (this.needsUpdate = !0),
+      t === !0 ? (this.defines.USE_DASH = "") : delete this.defines.USE_DASH;
   }
   get dashScale() {
     return this.uniforms.dashScale.value;
@@ -548,117 +647,225 @@ class Z extends At {
     return "USE_ALPHA_TO_COVERAGE" in this.defines;
   }
   set alphaToCoverage(t) {
-    this.defines && (t === !0 !== this.alphaToCoverage && (this.needsUpdate = !0), t === !0 ? (this.defines.USE_ALPHA_TO_COVERAGE = "", this.extensions.derivatives = !0) : (delete this.defines.USE_ALPHA_TO_COVERAGE, this.extensions.derivatives = !1));
+    this.defines &&
+      ((t === !0) !== this.alphaToCoverage && (this.needsUpdate = !0),
+      t === !0
+        ? ((this.defines.USE_ALPHA_TO_COVERAGE = ""),
+          (this.extensions.derivatives = !0))
+        : (delete this.defines.USE_ALPHA_TO_COVERAGE,
+          (this.extensions.derivatives = !1)));
   }
 }
-const tt = new _(), et = new _(), m = new L(), g = new L(), S = new L(), G = new _(), H = new mt(), v = new Lt(), it = new _(), T = new Y(), I = new ut(), x = new L();
+const tt = new _(),
+  et = new _(),
+  m = new L(),
+  g = new L(),
+  S = new L(),
+  G = new _(),
+  H = new mt(),
+  v = new Lt(),
+  it = new _(),
+  T = new Y(),
+  I = new ut(),
+  x = new L();
 let b, z;
 function nt(s, t, e) {
-  return x.set(0, 0, -t, 1).applyMatrix4(s.projectionMatrix), x.multiplyScalar(1 / x.w), x.x = z / e.width, x.y = z / e.height, x.applyMatrix4(s.projectionMatrixInverse), x.multiplyScalar(1 / x.w), Math.abs(Math.max(x.x, x.y));
+  return (
+    x.set(0, 0, -t, 1).applyMatrix4(s.projectionMatrix),
+    x.multiplyScalar(1 / x.w),
+    (x.x = z / e.width),
+    (x.y = z / e.height),
+    x.applyMatrix4(s.projectionMatrixInverse),
+    x.multiplyScalar(1 / x.w),
+    Math.abs(Math.max(x.x, x.y))
+  );
 }
 function Nt(s, t) {
-  const e = s.matrixWorld, i = s.geometry, n = i.attributes.instanceStart, o = i.attributes.instanceEnd, r = Math.min(i.instanceCount, n.count);
+  const e = s.matrixWorld,
+    i = s.geometry,
+    n = i.attributes.instanceStart,
+    o = i.attributes.instanceEnd,
+    r = Math.min(i.instanceCount, n.count);
   for (let a = 0, l = r; a < l; a++) {
-    v.start.fromBufferAttribute(n, a), v.end.fromBufferAttribute(o, a), v.applyMatrix4(e);
-    const h = new _(), d = new _();
-    b.distanceSqToSegment(v.start, v.end, d, h), d.distanceTo(h) < z * 0.5 && t.push({
-      point: d,
-      pointOnLine: h,
-      distance: b.origin.distanceTo(d),
-      object: s,
-      face: null,
-      faceIndex: a,
-      uv: null,
-      uv1: null
-    });
+    v.start.fromBufferAttribute(n, a),
+      v.end.fromBufferAttribute(o, a),
+      v.applyMatrix4(e);
+    const h = new _(),
+      d = new _();
+    b.distanceSqToSegment(v.start, v.end, d, h),
+      d.distanceTo(h) < z * 0.5 &&
+        t.push({
+          point: d,
+          pointOnLine: h,
+          distance: b.origin.distanceTo(d),
+          object: s,
+          face: null,
+          faceIndex: a,
+          uv: null,
+          uv1: null,
+        });
   }
 }
 function Vt(s, t, e) {
-  const i = t.projectionMatrix, o = s.material.resolution, r = s.matrixWorld, a = s.geometry, l = a.attributes.instanceStart, h = a.attributes.instanceEnd, d = Math.min(a.instanceCount, l.count), c = -t.near;
-  b.at(1, S), S.w = 1, S.applyMatrix4(t.matrixWorldInverse), S.applyMatrix4(i), S.multiplyScalar(1 / S.w), S.x *= o.x / 2, S.y *= o.y / 2, S.z = 0, G.copy(S), H.multiplyMatrices(t.matrixWorldInverse, r);
+  const i = t.projectionMatrix,
+    o = s.material.resolution,
+    r = s.matrixWorld,
+    a = s.geometry,
+    l = a.attributes.instanceStart,
+    h = a.attributes.instanceEnd,
+    d = Math.min(a.instanceCount, l.count),
+    c = -t.near;
+  b.at(1, S),
+    (S.w = 1),
+    S.applyMatrix4(t.matrixWorldInverse),
+    S.applyMatrix4(i),
+    S.multiplyScalar(1 / S.w),
+    (S.x *= o.x / 2),
+    (S.y *= o.y / 2),
+    (S.z = 0),
+    G.copy(S),
+    H.multiplyMatrices(t.matrixWorldInverse, r);
   for (let u = 0, f = d; u < f; u++) {
-    if (m.fromBufferAttribute(l, u), g.fromBufferAttribute(h, u), m.w = 1, g.w = 1, m.applyMatrix4(H), g.applyMatrix4(H), m.z > c && g.z > c)
+    if (
+      (m.fromBufferAttribute(l, u),
+      g.fromBufferAttribute(h, u),
+      (m.w = 1),
+      (g.w = 1),
+      m.applyMatrix4(H),
+      g.applyMatrix4(H),
+      m.z > c && g.z > c)
+    )
       continue;
     if (m.z > c) {
-      const U = m.z - g.z, M = (m.z - c) / U;
+      const U = m.z - g.z,
+        M = (m.z - c) / U;
       m.lerp(g, M);
     } else if (g.z > c) {
-      const U = g.z - m.z, M = (g.z - c) / U;
+      const U = g.z - m.z,
+        M = (g.z - c) / U;
       g.lerp(m, M);
     }
-    m.applyMatrix4(i), g.applyMatrix4(i), m.multiplyScalar(1 / m.w), g.multiplyScalar(1 / g.w), m.x *= o.x / 2, m.y *= o.y / 2, g.x *= o.x / 2, g.y *= o.y / 2, v.start.copy(m), v.start.z = 0, v.end.copy(g), v.end.z = 0;
+    m.applyMatrix4(i),
+      g.applyMatrix4(i),
+      m.multiplyScalar(1 / m.w),
+      g.multiplyScalar(1 / g.w),
+      (m.x *= o.x / 2),
+      (m.y *= o.y / 2),
+      (g.x *= o.x / 2),
+      (g.y *= o.y / 2),
+      v.start.copy(m),
+      (v.start.z = 0),
+      v.end.copy(g),
+      (v.end.z = 0);
     const P = v.closestPointToPointParameter(G, !0);
     v.at(P, it);
-    const E = zt.lerp(m.z, g.z, P), w = E >= -1 && E <= 1, St = G.distanceTo(it) < z * 0.5;
+    const E = zt.lerp(m.z, g.z, P),
+      w = E >= -1 && E <= 1,
+      St = G.distanceTo(it) < z * 0.5;
     if (w && St) {
-      v.start.fromBufferAttribute(l, u), v.end.fromBufferAttribute(h, u), v.start.applyMatrix4(r), v.end.applyMatrix4(r);
-      const U = new _(), M = new _();
-      b.distanceSqToSegment(v.start, v.end, M, U), e.push({
-        point: M,
-        pointOnLine: U,
-        distance: b.origin.distanceTo(M),
-        object: s,
-        face: null,
-        faceIndex: u,
-        uv: null,
-        uv1: null
-      });
+      v.start.fromBufferAttribute(l, u),
+        v.end.fromBufferAttribute(h, u),
+        v.start.applyMatrix4(r),
+        v.end.applyMatrix4(r);
+      const U = new _(),
+        M = new _();
+      b.distanceSqToSegment(v.start, v.end, M, U),
+        e.push({
+          point: M,
+          pointOnLine: U,
+          distance: b.origin.distanceTo(M),
+          object: s,
+          face: null,
+          faceIndex: u,
+          uv: null,
+          uv1: null,
+        });
     }
   }
 }
 class qt extends gt {
   constructor(t = new yt(), e = new Z({ color: Math.random() * 16777215 })) {
-    super(t, e), this.isLineSegments2 = !0, this.type = "LineSegments2";
+    super(t, e), (this.isLineSegments2 = !0), (this.type = "LineSegments2");
   }
   // for backwards-compatibility, but could be a method of LineSegmentsGeometry...
   computeLineDistances() {
-    const t = this.geometry, e = t.attributes.instanceStart, i = t.attributes.instanceEnd, n = new Float32Array(2 * e.count);
+    const t = this.geometry,
+      e = t.attributes.instanceStart,
+      i = t.attributes.instanceEnd,
+      n = new Float32Array(2 * e.count);
     for (let r = 0, a = 0, l = e.count; r < l; r++, a += 2)
-      tt.fromBufferAttribute(e, r), et.fromBufferAttribute(i, r), n[a] = a === 0 ? 0 : n[a - 1], n[a + 1] = n[a] + tt.distanceTo(et);
+      tt.fromBufferAttribute(e, r),
+        et.fromBufferAttribute(i, r),
+        (n[a] = a === 0 ? 0 : n[a - 1]),
+        (n[a + 1] = n[a] + tt.distanceTo(et));
     const o = new k(n, 2, 1);
-    return t.setAttribute("instanceDistanceStart", new O(o, 1, 0)), t.setAttribute("instanceDistanceEnd", new O(o, 1, 1)), this;
+    return (
+      t.setAttribute("instanceDistanceStart", new O(o, 1, 0)),
+      t.setAttribute("instanceDistanceEnd", new O(o, 1, 1)),
+      this
+    );
   }
   raycast(t, e) {
-    const i = this.material.worldUnits, n = t.camera;
-    n === null && !i && console.error('LineSegments2: "Raycaster.camera" needs to be set in order to raycast against LineSegments2 while worldUnits is set to false.');
-    const o = t.params.Line2 !== void 0 && t.params.Line2.threshold || 0;
+    const i = this.material.worldUnits,
+      n = t.camera;
+    n === null &&
+      !i &&
+      console.error(
+        'LineSegments2: "Raycaster.camera" needs to be set in order to raycast against LineSegments2 while worldUnits is set to false.'
+      );
+    const o = (t.params.Line2 !== void 0 && t.params.Line2.threshold) || 0;
     b = t.ray;
-    const r = this.matrixWorld, a = this.geometry, l = this.material;
-    z = l.linewidth + o, a.boundingSphere === null && a.computeBoundingSphere(), I.copy(a.boundingSphere).applyMatrix4(r);
+    const r = this.matrixWorld,
+      a = this.geometry,
+      l = this.material;
+    (z = l.linewidth + o),
+      a.boundingSphere === null && a.computeBoundingSphere(),
+      I.copy(a.boundingSphere).applyMatrix4(r);
     let h;
-    if (i)
-      h = z * 0.5;
+    if (i) h = z * 0.5;
     else {
       const c = Math.max(n.near, I.distanceToPoint(b.origin));
       h = nt(n, c, l.resolution);
     }
-    if (I.radius += h, b.intersectsSphere(I) === !1)
-      return;
-    a.boundingBox === null && a.computeBoundingBox(), T.copy(a.boundingBox).applyMatrix4(r);
+    if (((I.radius += h), b.intersectsSphere(I) === !1)) return;
+    a.boundingBox === null && a.computeBoundingBox(),
+      T.copy(a.boundingBox).applyMatrix4(r);
     let d;
-    if (i)
-      d = z * 0.5;
+    if (i) d = z * 0.5;
     else {
       const c = Math.max(n.near, T.distanceToPoint(b.origin));
       d = nt(n, c, l.resolution);
     }
-    T.expandByScalar(d), b.intersectsBox(T) !== !1 && (i ? Nt(this, e) : Vt(this, n, e));
+    T.expandByScalar(d),
+      b.intersectsBox(T) !== !1 && (i ? Nt(this, e) : Vt(this, n, e));
   }
 }
 class _t extends yt {
   constructor() {
-    super(), this.isLineGeometry = !0, this.type = "LineGeometry";
+    super(), (this.isLineGeometry = !0), (this.type = "LineGeometry");
   }
   setPositions(t) {
-    const e = t.length - 3, i = new Float32Array(2 * e);
+    const e = t.length - 3,
+      i = new Float32Array(2 * e);
     for (let n = 0; n < e; n += 3)
-      i[2 * n] = t[n], i[2 * n + 1] = t[n + 1], i[2 * n + 2] = t[n + 2], i[2 * n + 3] = t[n + 3], i[2 * n + 4] = t[n + 4], i[2 * n + 5] = t[n + 5];
+      (i[2 * n] = t[n]),
+        (i[2 * n + 1] = t[n + 1]),
+        (i[2 * n + 2] = t[n + 2]),
+        (i[2 * n + 3] = t[n + 3]),
+        (i[2 * n + 4] = t[n + 4]),
+        (i[2 * n + 5] = t[n + 5]);
     return super.setPositions(i), this;
   }
   setColors(t) {
-    const e = t.length - 3, i = new Float32Array(2 * e);
+    const e = t.length - 3,
+      i = new Float32Array(2 * e);
     for (let n = 0; n < e; n += 3)
-      i[2 * n] = t[n], i[2 * n + 1] = t[n + 1], i[2 * n + 2] = t[n + 2], i[2 * n + 3] = t[n + 3], i[2 * n + 4] = t[n + 4], i[2 * n + 5] = t[n + 5];
+      (i[2 * n] = t[n]),
+        (i[2 * n + 1] = t[n + 1]),
+        (i[2 * n + 2] = t[n + 2]),
+        (i[2 * n + 3] = t[n + 3]),
+        (i[2 * n + 4] = t[n + 4]),
+        (i[2 * n + 5] = t[n + 5]);
     return super.setColors(i), this;
   }
   fromLine(t) {
@@ -668,221 +875,294 @@ class _t extends yt {
 }
 class $t extends qt {
   constructor(t = new _t(), e = new Z({ color: Math.random() * 16777215 })) {
-    super(t, e), this.isLine2 = !0, this.type = "Line2";
+    super(t, e), (this.isLine2 = !0), (this.type = "Line2");
   }
 }
-const Xt = 2 * Math.PI, kt = {
-  container: document.body,
-  placement: "top-right",
-  size: 128,
-  lineWidth: 20,
-  animated: !0,
-  speed: 1,
-  offset: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0
+const Xt = 2 * Math.PI,
+  kt = {
+    container: document.body,
+    placement: "top-right",
+    size: 128,
+    lineWidth: 20,
+    animated: !0,
+    speed: 1,
+    offset: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
+    font: {
+      family: "helvetica",
+      weight: 900,
+    },
+    resolution: 64,
+    sphere: {
+      enabled: !0,
+      color: 16777215,
+      opacity: 0,
+      hoverColor: 16777215,
+      hoverOpacity: 0.2,
+    },
+    x: {
+      text: "X",
+      colors: {
+        main: "#3c4b57",
+      },
+    },
+    y: {
+      text: "Y",
+      colors: {
+        main: "#3a9fbf",
+      },
+    },
+    z: {
+      text: "Z",
+      colors: {
+        main: "#5eead4",
+      },
+    },
+    nx: {
+      line: !1,
+      colors: {
+        main: "#3c4b57",
+      },
+    },
+    ny: {
+      line: !1,
+      colors: {
+        main: "#3a9fbf",
+      },
+    },
+    nz: {
+      line: !1,
+      colors: {
+        main: "#5eead4",
+      },
+    },
   },
-  font: {
-    family: "helvetica",
-    weight: 900
+  wt = ["x", "y", "z", "nx", "ny", "nz"],
+  Yt = {
+    x: [
+      [1, 0, 0],
+      [0, Math.PI * 0.5, 0],
+    ],
+    y: [
+      [0, 1, 0],
+      [-Math.PI * 0.5, 0, 0],
+    ],
+    z: [
+      [0, 0, 1],
+      [0, 0, 0],
+    ],
+    nx: [
+      [-1, 0, 0],
+      [0, -Math.PI * 0.5, 0],
+    ],
+    ny: [
+      [0, -1, 0],
+      [Math.PI * 0.5, 0, 0],
+    ],
+    nz: [
+      [0, 0, -1],
+      [0, Math.PI, 0],
+    ],
   },
-  resolution: 64,
-  sphere: {
-    enabled: !0,
-    color: 16777215,
-    opacity: 0,
-    hoverColor: 16777215,
-    hoverOpacity: 0.2
-  },
-  x: {
-    text: "X",
-    colors: {
-      main: "#3c4b57"
-    }
-  },
-  y: {
-    text: "Y",
-    colors: {
-      main: "#3a9fbf"
-    }
-  },
-  z: {
-    text: "Z",
-    colors: {
-      main: "#5eead4"
-    }
-  },
-  nx: {
-    line: !1,
-    colors: {
-      main: "#3c4b57"
-    }
-  },
-  ny: {
-    line: !1,
-    colors: {
-      main: "#3a9fbf"
-    }
-  },
-  nz: {
-    line: !1,
-    colors: {
-      main: "#5eead4"
-    }
-  }
-}, wt = ["x", "y", "z", "nx", "ny", "nz"], Yt = {
-  x: [
-    [1, 0, 0],
-    [0, Math.PI * 0.5, 0]
-  ],
-  y: [
-    [0, 1, 0],
-    [-Math.PI * 0.5, 0, 0]
-  ],
-  z: [
-    [0, 0, 1],
-    [0, 0, 0]
-  ],
-  nx: [
-    [-1, 0, 0],
-    [0, -Math.PI * 0.5, 0]
-  ],
-  ny: [
-    [0, -1, 0],
-    [Math.PI * 0.5, 0, 0]
-  ],
-  nz: [
-    [0, 0, -1],
-    [0, Math.PI, 0]
-  ]
-}, Qt = (s) => {
-  const t = new vt(), e = [], i = [];
-  if (wt.forEach((a, l) => {
-    const h = s[a];
-    if (h.line === !1) return;
-    const d = l < 3 ? 1 : -1, c = l < 3 ? 0.9 : 1.025;
-    e.push(
-      a.includes("x") ? c * d : 0,
-      a.includes("y") ? c * d : 0,
-      a.includes("z") ? c * d : 0,
-      0,
-      0,
-      0
+  Qt = (s) => {
+    const t = new vt(),
+      e = [],
+      i = [];
+    if (
+      (wt.forEach((a, l) => {
+        const h = s[a];
+        if (h.line === !1) return;
+        const d = l < 3 ? 1 : -1,
+          c = l < 3 ? 0.9 : 1.025;
+        e.push(
+          a.includes("x") ? c * d : 0,
+          a.includes("y") ? c * d : 0,
+          a.includes("z") ? c * d : 0,
+          0,
+          0,
+          0
+        );
+        const u = h.colors.main,
+          [f, y] = Array.isArray(u) ? u : [u, u];
+        i.push(...t.set(y).toArray(), ...t.set(f).toArray());
+      }),
+      !e.length)
+    )
+      return null;
+    const n = new _t();
+    n.setPositions(e), n.setColors(i);
+    const o = new Z({
+        linewidth: s.lineWidth ?? 20,
+        vertexColors: !0,
+        resolution: new B(window.innerWidth, window.innerHeight),
+      }),
+      r = new $t(n, o);
+    return (
+      r.computeLineDistances(), r.scale.set(1, 1, 1), (r.renderOrder = 1), r
     );
-    const u = h.colors.main, [f, y] = Array.isArray(u) ? u : [u, u];
-    i.push(
-      ...t.set(y).toArray(),
-      ...t.set(f).toArray()
+  },
+  Zt = (s) => {
+    const t = typeof s == "string" ? document.querySelector(s) : s;
+    if (!t) throw Error("Invalid DOM element");
+    return t;
+  };
+function Jt({ color: s, opacity: t } = {}) {
+  const e = new Pt(1.6, 64, 64),
+    i = new gt(
+      e,
+      new Ut({
+        color: s,
+        side: Ct,
+        transparent: !0,
+        opacity: t ?? 0.2,
+      })
     );
-  }), !e.length) return null;
-  const n = new _t();
-  n.setPositions(e), n.setColors(i);
-  const o = new Z({
-    linewidth: s.lineWidth ?? 20,
-    vertexColors: !0,
-    resolution: new B(window.innerWidth, window.innerHeight)
-  }), r = new $t(n, o);
-  return r.computeLineDistances(), r.scale.set(1, 1, 1), r.renderOrder = 1, r;
-}, Zt = (s) => {
-  const t = typeof s == "string" ? document.querySelector(s) : s;
-  if (!t) throw Error("Invalid DOM element");
-  return t;
-};
-function Jt({
-  color: s,
-  opacity: t
-} = {}) {
-  const e = new Pt(1.6, 64, 64), i = new gt(
-    e,
-    new Ut({
-      color: s,
-      side: Ct,
-      transparent: !0,
-      opacity: t ?? 0.2
-    })
-  );
-  return i.renderOrder = 0, i;
+  return (i.renderOrder = 0), i;
 }
 function Kt(s, t, e, i, n, o, r, a) {
   const l = document.createElement("canvas");
   t = t ?? 64;
   const h = 0.02;
-  l.width = t * 2 + t * (h * 4), l.height = t + t * (h * 2);
-  const d = t / 2, c = t / 2 + t * h, u = c * 3, f = l.getContext("2d");
-  if (st(f, d, c, c, e, a), st(f, d, u, c, o || "#FFF", a), i != null) {
-    const P = s.family || "sans-serif", E = s.weight || 500, w = te(f, i, P, E, t);
-    f.textAlign = "center", f.textBaseline = "middle", f.fillStyle = n || "#000", f.fillText(i, c, c + w), f.fillStyle = r || n || "#000", f.fillText(i, u, c + w);
+  (l.width = t * 2 + t * (h * 4)), (l.height = t + t * (h * 2));
+  const d = t / 2,
+    c = t / 2 + t * h,
+    u = c * 3,
+    f = l.getContext("2d");
+  if ((st(f, d, c, c, e, a), st(f, d, u, c, o || "#FFF", a), i != null)) {
+    const P = s.family || "sans-serif",
+      E = s.weight || 500,
+      w = te(f, i, P, E, t);
+    (f.textAlign = "center"),
+      (f.textBaseline = "middle"),
+      (f.fillStyle = n || "#000"),
+      f.fillText(i, c, c + w),
+      (f.fillStyle = r || n || "#000"),
+      f.fillText(i, u, c + w);
   }
   const y = new Ot(l);
-  return y.colorSpace = Bt, y.wrapS = y.wrapT = Dt, y.repeat.x = 0.5, new Tt({
-    map: y,
-    toneMapped: !1,
-    transparent: !0
-  });
+  return (
+    (y.colorSpace = Bt),
+    (y.wrapS = y.wrapT = Dt),
+    (y.repeat.x = 0.5),
+    new Tt({
+      map: y,
+      toneMapped: !1,
+      transparent: !0,
+    })
+  );
 }
 function st(s, t, e, i, n, o = !1) {
   const r = i * 0.1;
-  t = o ? t - r : t, o && (s.globalAlpha = 0.2), s.beginPath(), s.arc(e, i, t, 0, 2 * Math.PI), s.closePath(), s.fillStyle = n, s.fill(), o && (s.globalAlpha = 1, s.strokeStyle = n, s.lineWidth = r, s.stroke());
+  (t = o ? t - r : t),
+    o && (s.globalAlpha = 0.2),
+    s.beginPath(),
+    s.arc(e, i, t, 0, 2 * Math.PI),
+    s.closePath(),
+    (s.fillStyle = n),
+    s.fill(),
+    o &&
+      ((s.globalAlpha = 1), (s.strokeStyle = n), (s.lineWidth = r), s.stroke());
 }
 function te(s, t, e, i, n) {
   const o = Math.sqrt(Math.pow(n * 0.7, 2) / 2);
-  let r = o, a = 0, l = 0;
+  let r = o,
+    a = 0,
+    l = 0;
   do {
     s.font = `${i} ${r}px ${e}`;
     const c = s.measureText(t);
-    a = c.width, l = c.fontBoundingBoxDescent, r--;
+    (a = c.width), (l = c.fontBoundingBoxDescent), r--;
   } while (a > o && r > 0);
-  const h = Math.min(o / a, o / l), d = Math.floor(r * h);
-  return s.font = `${i} ${d}px ${e}`, o / l;
+  const h = Math.min(o / a, o / l),
+    d = Math.floor(r * h);
+  return (s.font = `${i} ${d}px ${e}`), o / l;
 }
 function ee(s) {
-  const t = new vt(), { font: e, resolution: i } = s;
+  const t = new vt(),
+    { font: e, resolution: i } = s;
   return wt.map((n, o) => {
-    const { text: r, colors: a, border: l } = s[n], h = o < 3, d = h ? n : n[1], { text: c, main: u, hover: f, hoverText: y } = a, P = Array.isArray(u) ? u[1] : u, E = l && r, w = new It(
-      Kt(
-        e,
-        i,
-        t.set(P).getStyle(),
-        r,
-        c != null ? t.set(c).getStyle() : null,
-        f != null ? t.set(f).getStyle() : null,
-        y != null ? t.set(y).getStyle() : null,
-        l
-      )
+    const { text: r, colors: a, border: l } = s[n],
+      h = o < 3,
+      d = h ? n : n[1],
+      { text: c, main: u, hover: f, hoverText: y } = a,
+      P = Array.isArray(u) ? u[1] : u,
+      E = l && r,
+      w = new It(
+        Kt(
+          e,
+          i,
+          t.set(P).getStyle(),
+          r,
+          c != null ? t.set(c).getStyle() : null,
+          f != null ? t.set(f).getStyle() : null,
+          y != null ? t.set(y).getStyle() : null,
+          l
+        )
+      );
+    return (
+      (w.userData.axis = n),
+      (w.userData.forceScale = E),
+      w.scale.setScalar(E || h ? 0.6 : 0.4),
+      (w.position[d] = h ? 1.2 : -1.2),
+      (w.renderOrder = 100),
+      w
     );
-    return w.userData.axis = n, w.userData.forceScale = E, w.scale.setScalar(E || h ? 0.6 : 0.4), w.position[d] = h ? 1.2 : -1.2, w.renderOrder = 100, w;
   });
 }
 const ie = [
-  ["x", 0, 3],
-  ["y", 1, 4],
-  ["z", 2, 5]
-], ot = 1, rt = 0.5, at = /* @__PURE__ */ new _();
+    ["x", 0, 3],
+    ["y", 1, 4],
+    ["z", 2, 5],
+  ],
+  ot = 1,
+  rt = 0.5,
+  at = /* @__PURE__ */ new _();
 function ne(s, t) {
-  at.set(0, 0, 1).applyQuaternion(t.quaternion), ie.forEach(([e, i, n]) => {
-    const o = at[e];
-    s[i].material.opacity = o >= 0 ? ot : rt, s[n].material.opacity = o >= 0 ? rt : ot;
-  });
+  at.set(0, 0, 1).applyQuaternion(t.quaternion),
+    ie.forEach(([e, i, n]) => {
+      const o = at[e];
+      (s[i].material.opacity = o >= 0 ? ot : rt),
+        (s[n].material.opacity = o >= 0 ? rt : ot);
+    });
 }
-const se = (s, t, e = 10) => Math.abs(s.clientX - t.x) < e && Math.abs(s.clientY - t.y) < e;
+const se = (s, t, e = 10) =>
+  Math.abs(s.clientX - t.x) < e && Math.abs(s.clientY - t.y) < e;
 function N(s) {
   for (let t = 0, e = s.length; t < e; t++)
-    s[t].scale.setScalar(
-      t < 3 || s[t].userData.forceScale ? 0.6 : 0.4
-    ), s[t].material.map.offset.x = 1;
+    s[t].scale.setScalar(t < 3 || s[t].userData.forceScale ? 0.6 : 0.4),
+      (s[t].material.map.offset.x = 1);
 }
-const ct = /* @__PURE__ */ new Rt(), V = /* @__PURE__ */ new B();
+const ct = /* @__PURE__ */ new Rt(),
+  V = /* @__PURE__ */ new B();
 function lt(s, t, e, i) {
-  V.x = (s.clientX - t.left) / t.width * 2 - 1, V.y = -((s.clientY - t.top) / t.height) * 2 + 1, ct.setFromCamera(V, e);
+  (V.x = ((s.clientX - t.left) / t.width) * 2 - 1),
+    (V.y = -((s.clientY - t.top) / t.height) * 2 + 1),
+    ct.setFromCamera(V, e);
   const n = ct.intersectObjects(i);
   return n.length ? n[0].object : null;
 }
-const oe = (s, t, e) => Math.min(Math.max(s, t), e), dt = (s, { color: t, opacity: e, hoverColor: i, hoverOpacity: n } = {}, o = !0) => {
-  const r = s.material;
-  r.color.set(o && i || t || 16777215), r.opacity = o ? n ?? 0.2 : e ?? 0;
-}, R = /* @__PURE__ */ new _(), q = /* @__PURE__ */ new Q(), A = /* @__PURE__ */ new Q(), W = /* @__PURE__ */ new Q(), C = /* @__PURE__ */ new mt(), ht = /* @__PURE__ */ new jt(), pt = /* @__PURE__ */ new Gt(), $ = /* @__PURE__ */ new B(), X = /* @__PURE__ */ new B();
+const oe = (s, t, e) => Math.min(Math.max(s, t), e),
+  dt = (
+    s,
+    { color: t, opacity: e, hoverColor: i, hoverOpacity: n } = {},
+    o = !0
+  ) => {
+    const r = s.material;
+    r.color.set((o && i) || t || 16777215), (r.opacity = o ? n ?? 0.2 : e ?? 0);
+  },
+  R = /* @__PURE__ */ new _(),
+  q = /* @__PURE__ */ new Q(),
+  A = /* @__PURE__ */ new Q(),
+  W = /* @__PURE__ */ new Q(),
+  C = /* @__PURE__ */ new mt(),
+  ht = /* @__PURE__ */ new jt(),
+  pt = /* @__PURE__ */ new Gt(),
+  $ = /* @__PURE__ */ new B(),
+  X = /* @__PURE__ */ new B();
 class ce extends Wt {
   /**
    * Creates a new ViewportGizmo instance.
@@ -977,7 +1257,10 @@ class ce extends Wt {
     p(this, "_distance", 0);
     p(this, "_controls");
     p(this, "_controlsListeners");
-    this._renderer = i, this.camera = e, this._orthoCamera.position.set(0, 0, 2), n = { ...kt, ...n || {} };
+    (this._renderer = i),
+      (this.camera = e),
+      this._orthoCamera.position.set(0, 0, 2),
+      (n = { ...kt, ...(n || {}) });
     const {
       container: o,
       placement: r,
@@ -987,11 +1270,22 @@ class ce extends Wt {
       offset: d,
       sphere: c,
       id: u,
-      className: f
+      className: f,
     } = n;
-    this.animated = l, this.speed = h;
+    (this.animated = l), (this.speed = h);
     const y = Qt(n);
-    y && this.add(y), this._spritePoints = ee(n), this.add(...this._spritePoints), c.enabled && (this._sphere = Jt(c), this._sphereConfig = c, this.add(this._sphere)), this._container = o ? Zt(o) : document.body, this._domElement = Ht(r, a, d, u, f), this._container.appendChild(this._domElement), this._startListening(), this.update();
+    y && this.add(y),
+      (this._spritePoints = ee(n)),
+      this.add(...this._spritePoints),
+      c.enabled &&
+        ((this._sphere = Jt(c)),
+        (this._sphereConfig = c),
+        this.add(this._sphere)),
+      (this._container = o ? Zt(o) : document.body),
+      (this._domElement = Ht(r, a, d, u, f)),
+      this._container.appendChild(this._domElement),
+      this._startListening(),
+      this.update();
   }
   /**
    * Renders the gizmo to the screen.
@@ -1002,8 +1296,20 @@ class ce extends Wt {
    */
   render() {
     this.animating && this._animate();
-    const { _renderer: e, _viewport: i } = this, n = e.getScissorTest(), o = e.autoClear;
-    return e.autoClear = !1, e.setViewport(i), n && e.setScissor(i), e.clear(!1, !0, !1), e.render(this, this._orthoCamera), e.setViewport(this._originalViewport), n && e.setScissor(this._originalScissor), e.autoClear = o, this;
+    const { _renderer: e, _viewport: i } = this,
+      n = e.getScissorTest(),
+      o = e.autoClear;
+    return (
+      (e.autoClear = !1),
+      e.setViewport(i),
+      n && e.setScissor(i),
+      e.clear(!1, !0, !1),
+      e.render(this, this._orthoCamera),
+      e.setViewport(this._originalViewport),
+      n && e.setScissor(this._originalScissor),
+      (e.autoClear = o),
+      this
+    );
   }
   /**
    * Updates the gizmo's DOM-related properties based on its current position
@@ -1013,13 +1319,20 @@ class ce extends Wt {
    */
   domUpdate() {
     this._domRect = this._domElement.getBoundingClientRect();
-    const e = this._renderer, i = this._domRect, n = e.domElement.getBoundingClientRect();
-    return this._viewport.set(
-      i.left - n.left,
-      e.domElement.clientHeight - (i.top - n.top + i.height),
-      i.width,
-      i.height
-    ), e.getViewport(this._originalViewport), e.getScissorTest() && e.getScissor(this._originalScissor), this;
+    const e = this._renderer,
+      i = this._domRect,
+      n = e.domElement.getBoundingClientRect();
+    return (
+      this._viewport.set(
+        i.left - n.left,
+        e.domElement.clientHeight - (i.top - n.top + i.height),
+        i.width,
+        i.height
+      ),
+      e.getViewport(this._originalViewport),
+      e.getScissorTest() && e.getScissor(this._originalScissor),
+      this
+    );
   }
   /**
    * Updates the gizmo's orientation to match the current camera orientation.
@@ -1037,7 +1350,10 @@ class ce extends Wt {
    * @returns The gizmo instance for method chaining
    */
   update(e = !0) {
-    return e && this._controls && this._controls.update(), this.domUpdate().cameraUpdate();
+    return (
+      e && this._controls && this._controls.update(),
+      this.domUpdate().cameraUpdate()
+    );
   }
   /**
    * Connects OrbitControls with the gizmo, handling interaction states and updates.
@@ -1046,26 +1362,44 @@ class ce extends Wt {
    * @param controls - The scene's {@link https://threejs.org/docs/#examples/en/controls/OrbitControls OrbitControls}
    */
   attachControls(e) {
-    this.detachControls(), this.target = e.target, this._controlsListeners = {
-      start: () => e.enabled = !1,
-      end: () => e.enabled = !0,
-      change: () => this.update(!1)
-    }, this.addEventListener("start", this._controlsListeners.start), this.addEventListener("end", this._controlsListeners.end), e.addEventListener("change", this._controlsListeners.change), this._controls = e;
+    this.detachControls(),
+      (this.target = e.target),
+      (this._controlsListeners = {
+        start: () => (e.enabled = !1),
+        end: () => (e.enabled = !0),
+        change: () => this.update(!1),
+      }),
+      this.addEventListener("start", this._controlsListeners.start),
+      this.addEventListener("end", this._controlsListeners.end),
+      e.addEventListener("change", this._controlsListeners.change),
+      (this._controls = e);
   }
   /** Removes all control event listeners and references. Safe to call multiple times. */
   detachControls() {
-    !this._controlsListeners || !this._controls || (this.target = new _().copy(this._controls.target), this.removeEventListener("start", this._controlsListeners.start), this.removeEventListener("end", this._controlsListeners.end), this._controls.removeEventListener(
-      "change",
-      this._controlsListeners.change
-    ), this._controlsListeners = void 0, this._controls = void 0);
+    !this._controlsListeners ||
+      !this._controls ||
+      ((this.target = new _().copy(this._controls.target)),
+      this.removeEventListener("start", this._controlsListeners.start),
+      this.removeEventListener("end", this._controlsListeners.end),
+      this._controls.removeEventListener(
+        "change",
+        this._controlsListeners.change
+      ),
+      (this._controlsListeners = void 0),
+      (this._controls = void 0));
   }
   /** Cleans up all resources including geometries, materials, textures, and event listeners. */
   dispose() {
-    this.detachControls(), this.children.forEach((e) => {
-      var n, o, r, a;
-      const i = e;
-      (n = i.material) == null || n.dispose(), (r = (o = i.material) == null ? void 0 : o.map) == null || r.dispose(), (a = i.geometry) == null || a.dispose();
-    }), this._domElement.remove();
+    this.detachControls(),
+      this.children.forEach((e) => {
+        var n, o, r, a;
+        const i = e;
+        (n = i.material) == null || n.dispose(),
+          (r = (o = i.material) == null ? void 0 : o.map) == null ||
+            r.dispose(),
+          (a = i.geometry) == null || a.dispose();
+      }),
+      this._domElement.remove();
   }
   /**
    * Updates the gizmo's orientation either based on the camera or internal state.
@@ -1074,7 +1408,10 @@ class ce extends Wt {
    * @param fromCamera - Whether to update based on camera orientation (true) or internal state (false)
    */
   _updateOrientation(e = !0) {
-    e && (this.quaternion.copy(this.camera.quaternion).invert(), this.updateMatrixWorld()), ne(this._spritePoints, this.camera);
+    e &&
+      (this.quaternion.copy(this.camera.quaternion).invert(),
+      this.updateMatrixWorld()),
+      ne(this._spritePoints, this.camera);
   }
   /**
    * Handles the animation of camera position and orientation changes.
@@ -1083,12 +1420,23 @@ class ce extends Wt {
    */
   _animate() {
     const { position: e, quaternion: i } = this.camera;
-    if (e.set(0, 0, 1), !this.animated) {
-      e.applyQuaternion(W).multiplyScalar(this._distance).add(this.target), i.copy(q), this._updateOrientation(), this.animating = !1, this.dispatchEvent({ type: "change" }), this.dispatchEvent({ type: "end" });
+    if ((e.set(0, 0, 1), !this.animated)) {
+      e.applyQuaternion(W).multiplyScalar(this._distance).add(this.target),
+        i.copy(q),
+        this._updateOrientation(),
+        (this.animating = !1),
+        this.dispatchEvent({ type: "change" }),
+        this.dispatchEvent({ type: "end" });
       return;
     }
     const o = ht.getDelta() * Xt * this.speed;
-    A.rotateTowards(W, o), e.applyQuaternion(A).multiplyScalar(this._distance).add(this.target), i.rotateTowards(q, o), this._updateOrientation(), requestAnimationFrame(() => this.dispatchEvent({ type: "change" })), A.angleTo(W) === 0 && (this.animating = !1, this.dispatchEvent({ type: "end" }));
+    A.rotateTowards(W, o),
+      e.applyQuaternion(A).multiplyScalar(this._distance).add(this.target),
+      i.rotateTowards(q, o),
+      this._updateOrientation(),
+      requestAnimationFrame(() => this.dispatchEvent({ type: "change" })),
+      A.angleTo(W) === 0 &&
+        ((this.animating = !1), this.dispatchEvent({ type: "end" }));
   }
   /**
    * Sets the camera orientation to look at the target from a specific axis.
@@ -1097,8 +1445,21 @@ class ce extends Wt {
    * @param axis - The axis to orient the camera along
    */
   _setOrientation(e) {
-    const i = this.camera, n = this.target, [o, r] = Yt[e];
-    R.fromArray(o), q.setFromEuler(pt.fromArray(r)), R.multiplyScalar(this._distance).add(n), C.setPosition(i.position), C.lookAt(i.position, n, this.up), A.setFromRotationMatrix(C), C.setPosition(R), C.lookAt(R, n, this.up), W.setFromRotationMatrix(C), this.animating = !0, ht.start(), this.dispatchEvent({ type: "start" });
+    const i = this.camera,
+      n = this.target,
+      [o, r] = Yt[e];
+    R.fromArray(o),
+      q.setFromEuler(pt.fromArray(r)),
+      R.multiplyScalar(this._distance).add(n),
+      C.setPosition(i.position),
+      C.lookAt(i.position, n, this.up),
+      A.setFromRotationMatrix(C),
+      C.setPosition(R),
+      C.lookAt(R, n, this.up),
+      W.setFromRotationMatrix(C),
+      (this.animating = !0),
+      ht.start(),
+      this.dispatchEvent({ type: "start" });
   }
   /**
    * Initializes event listeners for user interaction.
@@ -1106,7 +1467,9 @@ class ce extends Wt {
    * @private
    */
   _startListening() {
-    this._domElement.onpointerdown = (e) => this._onPointerDown(e), this._domElement.onpointermove = (e) => this._onPointerMove(e), this._domElement.onpointerleave = () => this._onPointerLeave();
+    (this._domElement.onpointerdown = (e) => this._onPointerDown(e)),
+      (this._domElement.onpointermove = (e) => this._onPointerMove(e)),
+      (this._domElement.onpointerleave = () => this._onPointerLeave());
   }
   /**
    * Handles the pointer down event for starting drag operations.
@@ -1117,23 +1480,46 @@ class ce extends Wt {
   _onPointerDown(e) {
     if (!this.enabled) return;
     const i = (r) => {
-      if (!this._dragging) {
-        if (se(r, $)) return;
-        N(this._spritePoints), this._dragging = !0;
-      }
-      X.set(r.clientX, r.clientY).sub($).multiplyScalar(1 / this._domRect.width * Math.PI), this.rotation.x = oe(
-        o.x + X.y,
-        Math.PI / -2 + 1e-3,
-        Math.PI / 2 - 1e-3
-      ), this.rotation.y = o.y + X.x, this.updateMatrixWorld(), A.copy(this.quaternion).invert(), this.camera.position.set(0, 0, 1).applyQuaternion(A).multiplyScalar(this._distance).add(this.target), this.camera.rotation.setFromQuaternion(A), this._updateOrientation(!1), this.dispatchEvent({ type: "change" });
-    }, n = () => {
-      if (document.removeEventListener("pointermove", i, !1), document.removeEventListener("pointerup", n, !1), !this._dragging) return this._handleClick(e);
-      this._dragging = !1, this.dispatchEvent({ type: "end" });
-    };
+        if (!this._dragging) {
+          if (se(r, $)) return;
+          N(this._spritePoints), (this._dragging = !0);
+        }
+        X.set(r.clientX, r.clientY)
+          .sub($)
+          .multiplyScalar((1 / this._domRect.width) * Math.PI),
+          (this.rotation.x = oe(
+            o.x + X.y,
+            Math.PI / -2 + 1e-3,
+            Math.PI / 2 - 1e-3
+          )),
+          (this.rotation.y = o.y + X.x),
+          this.updateMatrixWorld(),
+          A.copy(this.quaternion).invert(),
+          this.camera.position
+            .set(0, 0, 1)
+            .applyQuaternion(A)
+            .multiplyScalar(this._distance)
+            .add(this.target),
+          this.camera.rotation.setFromQuaternion(A),
+          this._updateOrientation(!1),
+          this.dispatchEvent({ type: "change" });
+      },
+      n = () => {
+        if (
+          (document.removeEventListener("pointermove", i, !1),
+          document.removeEventListener("pointerup", n, !1),
+          !this._dragging)
+        )
+          return this._handleClick(e);
+        (this._dragging = !1), this.dispatchEvent({ type: "end" });
+      };
     if (this.animating) return;
     e.preventDefault(), $.set(e.clientX, e.clientY);
     const o = pt.copy(this.rotation);
-    this._distance = this.camera.position.distanceTo(this.target), document.addEventListener("pointermove", i, !1), document.addEventListener("pointerup", n, !1), this.dispatchEvent({ type: "start" });
+    (this._distance = this.camera.position.distanceTo(this.target)),
+      document.addEventListener("pointermove", i, !1),
+      document.addEventListener("pointerup", n, !1),
+      this.dispatchEvent({ type: "start" });
   }
   /**
    * Handles pointer move events for hover effects and drag operations.
@@ -1142,7 +1528,10 @@ class ce extends Wt {
    * @param e - The pointer event
    */
   _onPointerMove(e) {
-    !this.enabled || this._dragging || (this._sphere && dt(this._sphere, this._sphereConfig), this._handleHover(e));
+    !this.enabled ||
+      this._dragging ||
+      (this._sphere && dt(this._sphere, this._sphereConfig),
+      this._handleHover(e));
   }
   /**
    * Handles pointer leave events to reset hover states.
@@ -1150,7 +1539,11 @@ class ce extends Wt {
    * @private
    */
   _onPointerLeave() {
-    !this.enabled || this._dragging || (this._sphere && dt(this._sphere, this._sphereConfig, !1), N(this._spritePoints), this._domElement.style.cursor = "");
+    !this.enabled ||
+      this._dragging ||
+      (this._sphere && dt(this._sphere, this._sphereConfig, !1),
+      N(this._spritePoints),
+      (this._domElement.style.cursor = ""));
   }
   /**
    * Handles click events for axis selection.
@@ -1159,13 +1552,10 @@ class ce extends Wt {
    * @param e - The pointer event
    */
   _handleClick(e) {
-    const i = lt(
-      e,
-      this._domRect,
-      this._orthoCamera,
-      this._spritePoints
-    );
-    i && (this._setOrientation(i.userData.axis), this.dispatchEvent({ type: "change" }));
+    const i = lt(e, this._domRect, this._orthoCamera, this._spritePoints);
+    i &&
+      (this._setOrientation(i.userData.axis),
+      this.dispatchEvent({ type: "change" }));
   }
   /**
    * Handles hover effects for interactive elements.
@@ -1174,16 +1564,13 @@ class ce extends Wt {
    * @param e - The pointer event
    */
   _handleHover(e) {
-    const i = lt(
-      e,
-      this._domRect,
-      this._orthoCamera,
-      this._spritePoints
-    );
-    N(this._spritePoints), i ? (i.material.map.offset.x = 0.5, i.scale.multiplyScalar(1.2), this._domElement.style.cursor = "pointer") : this._domElement.style.cursor = "";
+    const i = lt(e, this._domRect, this._orthoCamera, this._spritePoints);
+    N(this._spritePoints),
+      i
+        ? ((i.material.map.offset.x = 0.5),
+          i.scale.multiplyScalar(1.2),
+          (this._domElement.style.cursor = "pointer"))
+        : (this._domElement.style.cursor = "");
   }
 }
-export {
-  ce as ViewportGizmo
-};
-//# sourceMappingURL=three-viewport-gizmo.js.map
+export { ce as ViewportGizmo };

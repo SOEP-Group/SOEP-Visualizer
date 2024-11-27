@@ -10,9 +10,11 @@ exports.getAllSatellites = async function (req, res) {
     FROM satellite_data
     ORDER BY satellite_id, ABS(EXTRACT(EPOCH FROM (timestamp - NOW()))) ASC;
   `; // Closest timestamp to today
-
+    let query_start_timestamp = Date.now();
+    console.log("Getting satellites");
     const result = await pool.query(query);
-
+    console.log(`Query took ${Date.now() - query_start_timestamp}ms`);
+    let transform_start_timestamp = Date.now();
     const transformedRows = result.rows.map((row) => {
       const transformedRow = {
         id: row.satellite_id,
@@ -29,8 +31,12 @@ exports.getAllSatellites = async function (req, res) {
         },
       };
       transformedRow.position = scalePosition(transformedRow.position);
+      transformedRow.speed = scalePosition(transformedRow.speed);
       return transformedRow;
     });
+    console.log(
+      `Transformation took ${Date.now() - transform_start_timestamp}ms`
+    );
     res.json(transformedRows);
   } catch (err) {
     res.status(500).json({ error: err.stack });

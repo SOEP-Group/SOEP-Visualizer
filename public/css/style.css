@@ -116,4 +116,10 @@ span.ripple {
   background-color: rgba(135, 206, 235, 0.3);
 }
 
+@media (max-width: 768px) {
+  #resize {
+    display: none;
+  }
+}
+
 /* ########################### */
