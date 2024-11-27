@@ -31,7 +31,6 @@ exports.RenderSatellite = async function (req, res) {
 
     const result = await pool.query(query);
     if (result.rows.length > 0) {
-    console.log(result.rows[0]);
       res.render("satellite", result.rows[0], (err, html) => {
         if (err) {
           console.error("Error rendering satellite view:", err);
