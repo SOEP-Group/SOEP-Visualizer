@@ -16,6 +16,7 @@
     "@gltf-transform/core": "^4.0.10",
     "@gltf-transform/extensions": "^4.0.10",
     "@gltf-transform/functions": "^4.0.10",
+    "astronomy-engine": "^2.1.19",
     "axios": "^1.7.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
