@@ -76,7 +76,7 @@ export function displayOrbit(satellite) {
   );
 
   const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x3cebf0 }); // Light blue for orbit
-  const dynamicLineMaterial = new THREE.LineBasicMaterial({ color: 0xff5733 }); // Orange for dynamic line
+  const dynamicLineMaterial = new THREE.LineBasicMaterial({ color: 0x3cebf0 }); // Light blue for dynamic line
 
   currentOrbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
   currentSatelliteCenterLine = new THREE.Line(
