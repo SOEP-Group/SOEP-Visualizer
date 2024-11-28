@@ -14,7 +14,6 @@ export * from "./resizer.js";
 export * from "./predictions.js";
 export * from "./popup.js";
 
-
 subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
 // const satellite_default = document.getElementById("satellite-info-default");
