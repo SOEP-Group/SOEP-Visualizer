@@ -21,6 +21,9 @@ export class Satellites {
   workers = [];
   positions_read;
   positions_write;
+  positions_longlatalt;
+  tle_lines = [];
+  ids;
   speeds;
   instanceIdToSatelliteIdMap = {};
   baseColor = new Color(1, 0, 0);
@@ -34,11 +37,9 @@ export class Satellites {
     this.group = new Group();
     this.group.position.set(0, 0, 0);
     this.raycaster = new Raycaster();
-    this.raycaster.params.Points.threshold = 0.009;
+    this.raycaster.params.Points.threshold = 0.015;
 
     this.positions = new Float32Array(this.instanceCount * 3); // Initialize positions array
-    this.speeds = new Float32Array(this.instanceCount * 3); // Initialize speeds array
-
     this.createPoints(data);
     this.createWorkers(2, data);
 
@@ -50,19 +51,16 @@ export class Satellites {
     const colors = new Float32Array(this.instanceCount * 3);
 
     data.forEach((satellite, index) => {
-      const { x, y, z } = satellite.position;
-      const { x: vx, y: vy, z: vz } = satellite.speed; // Assume speed is present in satellite object
       const baseColorArray = [
         this.baseColor.r,
         this.baseColor.g,
         this.baseColor.b,
       ];
 
-      this.positions.set([x, y, z], index * 3);
-      this.speeds.set([vx, vy, vz], index * 3);
+      this.positions.set([0, 0, 0], index * 3);
       colors.set(baseColorArray, index * 3);
 
-      this.instanceIdToSatelliteIdMap[index] = satellite.id;
+      this.instanceIdToSatelliteIdMap[index] = satellite.satellite_id;
     });
 
     const geometry = new BufferGeometry();
@@ -118,6 +116,10 @@ export class Satellites {
     this.points.geometry.attributes.color.needsUpdate = true;
   }
 
+  getTLEData(id) {
+    return this.tle_lines[id];
+  }
+
   setHovered(id) {
     if (this.hoveredSatellite > -1 && this.hoveredSatellite !== id) {
       this.resetColors();
@@ -142,23 +144,30 @@ export class Satellites {
     const chunkSize = Math.ceil(this.instanceCount / workerCount);
     const bufferSize = this.instanceCount * 3;
     const sharedBufferSize = bufferSize * Float32Array.BYTES_PER_ELEMENT;
-  
+    const sharedIdBufferSize =
+      this.instanceCount * Int32Array.BYTES_PER_ELEMENT;
+
     const positionsBuffer = new SharedArrayBuffer(sharedBufferSize);
     const speedsBuffer = new SharedArrayBuffer(sharedBufferSize);
-  
+    const idBuffer = new SharedArrayBuffer(sharedIdBufferSize);
+
     this.positions_read = new Float32Array(positionsBuffer);
     this.positions_write = new Float32Array(positionsBuffer);
+    this.positions_longlatalt = new Float32Array(positionsBuffer);
     this.speeds = new Float32Array(speedsBuffer);
-  
+    this.ids = new Int32Array(idBuffer);
     data.forEach((satellite, index) => {
-      const { x, y, z } = satellite.position;
-      const { x: vx, y: vy, z: vz } = satellite.speed;
-  
-      this.positions_read.set([x, y, z], index * 3);
-      this.positions_write.set([x, y, z], index * 3);
-      this.speeds.set([vx, vy, vz], index * 3);
+      const tle_lines = {};
+      tle_lines.first = satellite.tle_line1;
+      tle_lines.second = satellite.tle_line2;
+
+      this.positions_read.set([0, 0, 0], index * 3);
+      this.positions_write.set([0, 0, 0], index * 3);
+      this.speeds.set([0, 0, 0], index * 3);
+      this.ids.set(satellite.satellite_id, index);
+      this.tle_lines.push(tle_lines);
     });
-  
+
     this.workers = [];
     for (let i = 0; i < workerCount; i++) {
       const worker = new Worker(
@@ -167,11 +176,20 @@ export class Satellites {
       );
       const startIndex = i * chunkSize;
       const endIndex = Math.min((i + 1) * chunkSize, this.instanceCount);
-  
+
       worker.onerror = (error) => {
         console.error(`Worker ${i} encountered an error:`, error);
       };
-  
+      const worker_data = {
+        command: "update_tle",
+        tleLines: data.slice(startIndex, endIndex).map((satellite) => ({
+          tle_line1: satellite.tle_line1,
+          tle_line2: satellite.tle_line2,
+        })),
+      };
+
+      worker.postMessage(worker_data);
+
       this.workers.push({ worker, startIndex, endIndex });
     }
   }
@@ -179,25 +197,27 @@ export class Satellites {
   updatePositions(deltaTime) {
     // For some reason sharing buffers across threads is the equvalent to knowing what the dog doing...next to impossible
     // Update: I did it, I know what the fuck the dog is doing
-    if(this.isUpdating){
+    if (this.isUpdating) {
       return;
     }
     this.isUpdating = true;
     const promises = this.workers.map(({ worker, startIndex, endIndex }) => {
       return new Promise((resolve) => {
         worker.onmessage = () => resolve();
-    
+
         worker.postMessage({
           command: "update",
           deltaTime,
           startIndex,
           endIndex,
           positions: this.positions_write.buffer,
+          latlongalt: this.positions_longlatalt,
           speeds: this.speeds.buffer,
+          ids: this.ids.buffer,
         });
       });
     });
-    
+
     Promise.all(promises).then(() => {
       [this.positions_read, this.positions_write] = [
         this.positions_write,
@@ -206,31 +226,10 @@ export class Satellites {
 
       this.points.geometry.attributes.position.array = this.positions_read;
       this.points.geometry.attributes.position.needsUpdate = true;
+      // This needs to be recomputed everytime. Might be a bottleneck depending on how threejs does this
+      this.points.geometry.computeBoundingSphere();
       this.isUpdating = false;
     });
-
-    // Currently doesn't work... speeds are maybe messed up and not accurate. We probably want realtime sgp analysis on a seperate thread
-    // for (let i = 0; i < this.instanceCount; i++) {
-    //   const idx = i * 3;
-
-    //   // Update position using speeds
-    //   this.positions_write[idx] =
-    //     this.positions_read[idx] + this.speeds[idx] * deltaTime; // X
-    //   this.positions_write[idx + 1] =
-    //     this.positions_read[idx + 1] + this.speeds[idx + 1] * deltaTime; // Y
-    //   this.positions_write[idx + 2] =
-    //     this.positions_read[idx + 2] + this.speeds[idx + 2] * deltaTime; // Z
-    // }
-
-    // // Swap buffers after the update
-    // [this.positions_read, this.positions_write] = [
-    //   this.positions_write,
-    //   this.positions_read,
-    // ];
-
-    // // Update Three.js geometry with the new positions
-    // this.points.geometry.attributes.position.array = this.positions_read;
-    // this.points.geometry.attributes.position.needsUpdate = true;
   }
 
   setFocused(id) {
@@ -269,9 +268,27 @@ export class Satellites {
   getPosition(instanceId) {
     const index = instanceId * 3;
     return new Vector3(
-      this.positions[index],
-      this.positions[index + 1],
-      this.positions[index + 2]
+      this.positions_read[index],
+      this.positions_read[index + 1],
+      this.positions_read[index + 2]
+    );
+  }
+
+  getGeodeticCoordinates(instanceId) {
+    const index = instanceId * 3;
+    return {
+      long: this.positions_longlatalt[index],
+      lat: this.positions_longlatalt[index + 1],
+      alt: this.positions_longlatalt[index + 2],
+    };
+  }
+
+  getSpeed(instanceId) {
+    const index = instanceId * 3;
+    return new Vector3(
+      this.speeds[index],
+      this.speeds[index + 1],
+      this.speeds[index + 2]
     );
   }
 }

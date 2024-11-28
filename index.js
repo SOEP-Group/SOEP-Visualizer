@@ -7,6 +7,13 @@ const pool = require("./db");
 
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
+require("dotenv").config({
+  path:
+    process.env.NODE_ENV === "production"
+      ? ".env.production"
+      : ".env.development",
+});
+
 const app = express(),
   bodyParser = require("body-parser");
 
@@ -19,13 +26,15 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // It's recommended to pass `{ extended: true }`
 
-app.use(express.static(path.join(__dirname, "public"), {
-  setHeaders: (res) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-  },
-}));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    setHeaders: (res) => {
+      res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ORIGIN);
+      res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+      res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    },
+  })
+);
 app.use("/views", express.static(path.join(__dirname, "views")));
 
 // Middleware for handling CORS
@@ -35,7 +44,7 @@ app.use(function (req, res, next) {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", process.env.NODE_ORIGIN);
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Cross-Origin-Opener-Policy", "same-origin");
   res.header("Cross-Origin-Embedder-Policy", "require-corp");
