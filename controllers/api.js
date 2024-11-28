@@ -46,30 +46,27 @@ exports.getAllSatellites = async function (req, res) {
 
 exports.getBodyEvents = async function (req, res) {
   const { body } = req.params;
-  // const { latitude, longitude } = req.query;
+  const { latitude, longitude } = req.query;
   const apiKey = process.env.ASTRONOMY_API_KEY;
   const apiSecret = process.env.ASTRONOMY_API_SECRET;
+
+  console.log("latitude", latitude);
+  console.log("longitude", longitude);
 
   if (!apiKey || !apiSecret) {
     return res.status(500).json({ error: "API credentials are missing" });
   }
 
-  // if (!latitude || !longitude) {
-  //   return res.status(400).json({ error: "Latitude and longitude are required" });
-  // }
-
   // 37.7749
   // -122.4194
   const params = {
-    latitude: 37.7749,
-    longitude: -122.4194,
+    latitude: parseFloat(latitude),
+    longitude: parseFloat(longitude),
     elevation: 10,
     from_date: new Date().toISOString().split("T")[0],
     to_date: new Date().toISOString().split("T")[0],
     time: "00:00:00",
   };
-
-  console.log(params);
 
   try {
     const encodedCredentials = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");

@@ -15,6 +15,9 @@ const predictionTab = document.getElementById("prediction-tab-icon");
 
 let firstMenuOpen = true;
 
+let userLatitude = null;
+let userLongitude = null;
+
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
@@ -62,13 +65,26 @@ export function initHeader() {
   eventsTab.addEventListener("click", async () => {
     eventsContent.innerHTML = "<p>Loading events...</p>";
 
-    // const { latitude, longitude } = await getLocation();
+    // getLocation(null, (latitude, longitude) => {
+    //   if (latitude && longitude) {
+    //     userLatitude = latitude;
+    //     userLongitude = longitude;
+    //   } else {
+    //     console.warn("Unable to retrieve user location.");
+    //   }
+    // });
+
+    // console.log("long and lat", userLatitude, userLongitude);
+
+    const location = await getLocation(null);
+    userLatitude = location.latitude;
+    userLongitude = location.longitude;
+
+    console.log("long and lat", userLatitude, userLongitude);
   
     const [sunEvents, moonEvents] = await Promise.all([
-      // fetchEvents("sun", latitude, longitude),
-      // fetchEvents("moon", latitude, longitude),
-      fetchEvents("sun"),
-      fetchEvents("moon"),
+      fetchEvents("sun", userLatitude || 37.7749, userLongitude || -122.4194),
+      fetchEvents("moon", userLatitude || 37.7749, userLongitude || -122.4194),
     ]);
   
     if (!sunEvents || sunEvents.length === 0) {
