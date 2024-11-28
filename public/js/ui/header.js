@@ -1,3 +1,5 @@
+import { uiState } from "./index.js";
+
 // burger menu
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
@@ -71,7 +73,7 @@ function openMenu() {
   dropdownButton.classList.add("tham-active");
   if (firstMenuOpen) {
     eventsTab.click();
-    firstMenuOpen = false
+    firstMenuOpen = false;
   }
 }
 
