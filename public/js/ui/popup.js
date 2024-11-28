@@ -10,6 +10,7 @@ const content = document.getElementById("popup-content");
 const toggleArrow = document.getElementById("toggle-arrow");
 const arrowIcon = document.getElementById("arrow-icon");
 
+let popupOpen = false;
 // Mobile Popup
 const mobilePopupContainer = document.getElementById("mobile-popup-container");
 const mobileContent = document.getElementById("mobile-popup-content");
@@ -32,19 +33,26 @@ function onGlStateChanged(changedStates) {
   }
 }
 
-export function initPopup() {
-  subscribe("glStateChanged", onGlStateChanged);
-  closeBtn.addEventListener("click", (event) => {
-    glState.set({ clickedSatellite: undefined });
-  });
-
-  toggleArrow.addEventListener("click", togglePopupSize);
-
-  mobileCloseButton.addEventListener("click", () => {
-    glState.set({ clickedSatellite: undefined });
-    closeMobilePopup();
-  });
-  mobileExtendArrow.addEventListener("click", toggleMobilePopupSize);
+function onRendererUpdate() {
+  if (popupOpen) {
+    const speed_visual = document.getElementById("satellite_speed_visualizer");
+    const long_visual = document.getElementById("satellite_long_visualizer");
+    const lat_visual = document.getElementById("satellite_lat_visualizer");
+    // Only really need to check one of them
+    if (speed_visual) {
+      const clicked_satellite = glState.get("clickedSatellite");
+      if (clicked_satellite !== undefined && clicked_satellite !== null) {
+        const speed = satellites.getSpeed(clicked_satellite);
+        const location = satellites.getGeodeticCoordinates(clicked_satellite);
+        const single_speed = Math.sqrt(
+          Math.pow(speed.x, 2) + Math.pow(speed.y, 2) + Math.pow(speed.z, 2)
+        );
+        speed_visual.innerHTML = `${single_speed.toFixed(3)}km/s`;
+        long_visual.innerHTML = `${location.long.toFixed(2)}°`;
+        lat_visual.innerHTML = `${location.lat.toFixed(2)}°`;
+      }
+    }
+  }
 }
 
 function openPopup() {
@@ -52,6 +60,7 @@ function openPopup() {
   popupContainer.classList.add("translate-x-0", "right-5");
   content.classList.add("hidden");
   skeleton.classList.remove("hidden");
+  popupOpen = true;
 }
 
 function getContent(satellite) {
@@ -67,6 +76,7 @@ function getContent(satellite) {
 }
 
 function closePopup() {
+  popupOpen = false;
   popupContainer.classList.add("translate-x-full", "right-[-100%]");
   popupContainer.classList.remove("translate-x-0", "right-5");
 }
@@ -76,12 +86,20 @@ function togglePopupSize() {
   arrowIcon.classList.toggle("rotate-180");
 }
 
-
+export function initPopup() {
+  subscribe("glStateChanged", onGlStateChanged);
+  subscribe("rendererUpdate", onRendererUpdate);
+  closeBtn.addEventListener("click", (event) => {
+    glState.set({ clickedSatellite: undefined });
+  });
+}
 
 function confirmOpenLink(event, url) {
   event.preventDefault();
 
-  const userConfirmed = confirm("Are you sure you want to open this link in a new tab?");
+  const userConfirmed = confirm(
+    "Are you sure you want to open this link in a new tab?"
+  );
 
   if (userConfirmed) {
     window.open(url, "_blank");
@@ -94,11 +112,13 @@ function openMobilePopup() {
   mobilePopupContainer.classList.add("translate-y-0", "bottom-0");
   mobileContent.classList.add("hidden");
   mobileSkeleton.classList.remove("hidden");
+  popupOpen = true;
 }
 
 function closeMobilePopup() {
   mobilePopupContainer.classList.add("translate-y-full", "bottom-[-100%]");
   mobilePopupContainer.classList.remove("translate-y-0", "bottom-0");
+  popupOpen = false;
 }
 
 function toggleMobilePopupSize() {
