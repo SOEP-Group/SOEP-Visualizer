@@ -81,7 +81,8 @@ function closePopup() {
   popupContainer.classList.remove("translate-x-0", "right-5");
 }
 
-function togglePopupSize() {
+function togglePopupSize(event) {
+  event.stopPropagation();
   popupContainer.classList.toggle("h-[95%]"); // extend the height
   arrowIcon.classList.toggle("rotate-180");
 }
@@ -89,9 +90,41 @@ function togglePopupSize() {
 export function initPopup() {
   subscribe("glStateChanged", onGlStateChanged);
   subscribe("rendererUpdate", onRendererUpdate);
+
   closeBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
     glState.set({ clickedSatellite: undefined });
   });
+
+  toggleArrow.addEventListener("click", togglePopupSize);
+
+  mobileCloseButton.addEventListener("click", () => {
+    event.stopPropagation();
+    glState.set({ clickedSatellite: undefined });
+    closeMobilePopup();
+  });
+  mobileExtendArrow.addEventListener("click", toggleMobilePopupSize);
+
+  popupContainer.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  mobilePopupContainer.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  popupContainer.addEventListener("mousedown", (event) =>
+    event.stopPropagation()
+  );
+  popupContainer.addEventListener("mouseup", (event) =>
+    event.stopPropagation()
+  );
+  mobilePopupContainer.addEventListener("mousedown", (event) =>
+    event.stopPropagation()
+  );
+  mobilePopupContainer.addEventListener("mouseup", (event) =>
+    event.stopPropagation()
+  );
 }
 
 function confirmOpenLink(event, url) {
