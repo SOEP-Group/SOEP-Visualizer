@@ -1,6 +1,9 @@
 import { fetchEvents } from "../api/events.js";
 import { getLocation } from "./utils.js";
 
+let userLatitude = null;
+let userLongitude = null;
+
 export function initEvents() {
     const eventsTab = document.getElementById("events-tab");
     const eventsContent = document.querySelector(".tab-content .tab-panel");
@@ -9,13 +12,13 @@ export function initEvents() {
         eventsContent.innerHTML = "<p>Loading events...</p>";
 
         try {
-            // const { latitude, longitude } = await getLocation();
+            const location = await getLocation(null);
+            userLatitude = location.latitude;
+            userLongitude = location.longitude;
 
             const [sunEvents, moonEvents] = await Promise.all([
-                // fetchEvents("sun", latitude, longitude),
-                // fetchEvents("moon", latitude, longitude),
-                fetchEvents("sun"), // Remove location if not applicable
-                fetchEvents("moon"),
+                fetchEvents("sun", userLatitude || 37.7749, userLongitude || -122.4194),
+                fetchEvents("moon", userLatitude || 37.7749, userLongitude || -122.4194),
             ]);
 
             if ((!sunEvents || sunEvents.length === 0) && (!moonEvents || moonEvents.length === 0)) {
