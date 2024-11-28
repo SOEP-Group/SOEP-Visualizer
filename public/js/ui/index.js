@@ -20,7 +20,7 @@ subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
 // const satellite_default = document.getElementById("satellite-info-default");
 // const satellite_content = document.getElementById("satellite-info-content");
-const satellite_mobile_revert = document.getElementById("mobile-popup-revert");
+// const satellite_mobile_revert = document.getElementById("mobile-popup-revert");
 
 function onStart() {
   initHeader();
@@ -43,9 +43,9 @@ function onStart() {
     });
   });
 
-  satellite_mobile_revert.addEventListener("click", (event) => {
-    glState.set({ clickedSatellite: undefined });
-  });
+  // satellite_mobile_revert.addEventListener("click", (event) => {
+  //   glState.set({ clickedSatellite: undefined });
+  // });
 }
 
 const initialUIState = { currentGraphics: undefined };

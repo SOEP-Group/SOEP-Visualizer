@@ -44,6 +44,10 @@ export let gltfLoader = new GLTFLoader(loadingManager);
 // not sure if this is good, since if we have alot of models it might over take the ram
 export let modelLibrary = {}; // path: model
 
+let isDraggingMouse = false;
+let startMouseX = 0;
+let startMouseY = 0;
+
 function onStart() {
   loadingManager.onStart = () => {};
   loadingManager.onLoad = onLoadFinished;
@@ -79,7 +83,27 @@ function onStart() {
     },
     false
   );
-  gl_viewport.addEventListener("click", onViewportClick, false);
+  gl_viewport.addEventListener("mousedown", (event) => {
+    isDraggingMouse = false;
+    startMouseX = event.clientX;
+    startMouseY = event.clientY;
+  });
+
+  gl_viewport.addEventListener("mousemove", (event) => {
+    const moveX = Math.abs(event.clientX - startMouseX);
+    const moveY = Math.abs(event.clientY - startMouseY);
+    const dragThreshold = 5;
+
+    if (moveX > dragThreshold || moveY > dragThreshold) {
+      isDraggingMouse = true;
+    }
+  });
+
+  gl_viewport.addEventListener("mouseup", (event) => {
+    if (!isDraggingMouse) {
+      onViewportClick(event);
+    }
+  });
 }
 
 function onViewportClick(event) {

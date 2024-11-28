@@ -10,7 +10,7 @@ import {
 } from "postprocessing";
 import { scene, reloadScene, sun, satellites } from "./scene.js";
 import { glState } from "./index.js";
-import { subscribe } from "../eventBuss.js";
+import { publish, subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
 import { ViewportGizmo } from "../utils/custom-gizmo.js";
 
@@ -180,6 +180,7 @@ function animate() {
   }
   glState.set({ rendererInfo: renderer_info, realTimeDump: renderer.info });
   orientationGizmo.render();
+  publish("rendererUpdate");
   requestAnimationFrame(animate);
 
   if (loadedImages) {
