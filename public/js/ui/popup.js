@@ -7,7 +7,6 @@ const popupContainer = document.getElementById("popup-container");
 const closeBtn = document.getElementById("close-popup");
 const skeleton = document.getElementById("popup-skeleton");
 const content = document.getElementById("popup-content");
-const mobileContent = document.getElementById("popup-content-mobile");
 const toggleArrow = document.getElementById("toggle-arrow");
 const arrowIcon = document.getElementById("arrow-icon");
 
@@ -18,9 +17,11 @@ function onGlStateChanged(changedStates) {
     const clicked_satellite = glState.get("clickedSatellite");
     if (clicked_satellite !== undefined && clicked_satellite !== null) {
       openPopup();
+      openMobilePopup();
       getContent(satellites.getIdByInstanceId(clicked_satellite));
     } else {
       closePopup();
+      closeMobilePopup();
     }
   }
 }
@@ -56,12 +57,14 @@ function openPopup() {
 }
 
 function getContent(satellite) {
-  // mobileContent.innerHTML = "";
+  mobileContent.innerHTML = "";
   fetchSatellite(satellite).then((res) => {
     content.classList.remove("hidden");
     skeleton.classList.add("hidden");
     content.innerHTML = res;
-    // mobileContent.innerHTML = res;
+    mobileContent.classList.remove("hidden");
+    mobileSkeleton.classList.add("hidden");
+    mobileContent.innerHTML = res;
   });
 }
 
@@ -83,8 +86,6 @@ export function initPopup() {
     glState.set({ clickedSatellite: undefined });
   });
 
-  toggleArrow.addEventListener("click", togglePopupSize);
-}
 
 function confirmOpenLink(event, url) {
   event.preventDefault();
