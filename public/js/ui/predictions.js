@@ -37,7 +37,6 @@ function loadContent(contentId) {
     contentContainer.innerHTML = getContent(contentId);
 }
 
-
 document.addEventListener("click", function (event) {
     let locationField = null;
 
