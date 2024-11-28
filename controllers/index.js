@@ -1,6 +1,4 @@
-const { mockSatelliteData, mockOrbitData } = require("../mockData.js");
 const pool = require("../db");
-const { scalePosition } = require("../public/js/utils/utils");
 const path = require("path");
 const fs = require("fs");
 
