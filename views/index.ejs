@@ -99,8 +99,7 @@
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
         <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
-          <div
-            class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center hidden md:blk"
+          <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
             title="Resize">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="size-6">
@@ -283,14 +282,15 @@
           <div class="tab-panel">
             <h2 class="text-2xl font-semibold">How to Use</h2>
             <!-- Description Text -->
-            <p class="text-base text-gray-400">
+            <p class="text-sm md:text-base text-gray-400">
               This project is designed to help you track and explore satellites around Earth. Click on a satellite to
               see more details about it.
             </p>
             <hr class="my-6 border-teal-300" />
 
             <!-- Toggle View -->
-            <h3 class="text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View</h3>
+            <h3 class="text-md md:text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View
+            </h3>
             <div class="flex flex-col space-y-2 mt-4">
               <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
                 Click the "Toggle View" button or use the "Alt + V" keyboard shortcut to switch views.
@@ -299,17 +299,16 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Events -->
-            <h3 class="text-lg text-white">What are the events?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What are the events?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
-              location.
-              These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
+              location. These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
             </p>
             <hr class="my-6 border-teal-300" />
 
             <!-- Predictions -->
-            <h3 class="text-lg text-white">What predictions do we have and how do they work?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
               satellites are visible from specific locations. These predictions help us track the movement of
               satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
@@ -319,8 +318,8 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Graphs -->
-            <h3 class="text-lg text-white">What do the graphs show?</h3>
-            <p class="mt-2 text-gray-400">
+            <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
               The graphs display detailed information about the selected satellite, including its
               speed, height above Earth, and other relevant data. They provide a visual representation of the
               satellite's position over time, both in the past 24 hours and into the future.
@@ -328,9 +327,9 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Blog -->
-            <h3 class="text-lg text-gray-200">Curious how the project is coming along?</h3>
-            <p class="mt-2 text-gray-400">For the latest updates on the project, check out our blog where we share
-              weekly progress and updates about our work.</p>
+            <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog
+              where we share weekly progress and updates about our work.</p>
             <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
               rel="noopener noreferrer">
               Check out our blog
@@ -338,17 +337,19 @@
           </div>
 
           <div class="tab-panel">
-            
+
             <!-- Graphics present -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin">Graphics preset:</h3>
-              <select id="graphics-settings" class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+              <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
+              <select id="graphics-settings"
+                class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
             </div>
 
             <!-- Timezone -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin">Time zone:</h3>
-              <select id="time-zone-settings" class="border p-2 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+              <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
+              <select id="time-zone-settings"
+                class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
             </div>
 
             <!-- Save settings button -->
@@ -363,7 +364,7 @@
 
       <div id="popup-container"
         class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
-        <div class="popup-window shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full"
           data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
           <div class="flex flex-row justify-end">
             <button id="close-popup" class="bg-transparent" title="Close">
@@ -391,21 +392,45 @@
         </div>
       </div>
 
-      <div id="mobile-popup-revert"
-        class="h-12 w-12 block md:hidden z-10 translate-y-full absolute bottom-0 left-0 transform transition-transform duration-500 ease-in-out">
-        <div class="flex items-center justify-center shadow-lg bg-sky-900/50 space-y-2 p-2 h-full w-full"
+      <!-- Mobile Popup Container -->
+      <div id="mobile-popup-container"
+        class="z-10 pb-4 rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-all duration-300 ease-in-out flex flex-col w-full px-1 h-[30%] text-base md:hidden">
+
+        <!-- Popup Window Content -->
+        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative"
           data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
-          <button>
-            <svg class="h-12 w-12 text-teal-300" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" />
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+
+          <!-- Close Button -->
+          <div class="absolute top-4 right-4 z-20">
+            <button id="mobile-close-popup" class="bg-transparent p-0" title="Close">
+              <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Expand Arrow -->
+          <div id="mobile-toggle-arrow"
+            class="flex justify-center items-center absolute -top-1 w-full z-10 cursor-pointer" title="More info">
+            <svg id="mobile-arrow-icon"
+              class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400 rotate-180"
+              stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5L12 17.25l-7.5-6.75" />
             </svg>
-          </button>
+          </div>
+
+          <!-- Loading Skeleton -->
+          <div id="mobile-popup-skeleton" class="space-y-4 text-teal-300">
+            <p class="loading-text">Loading</p>
+          </div>
+
+          <!-- Actual Content (Initially hidden) -->
+          <div id="mobile-popup-content" class="hidden space-y-4 text-teal-300 text-sm"></div>
         </div>
       </div>
-    </div>
 </body>
 <script type="module" src="js/main.js"></script>
 
