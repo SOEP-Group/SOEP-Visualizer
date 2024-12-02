@@ -32,6 +32,10 @@ body {
   --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
 }
 
+.popup-container-extended .popup-window {
+  overflow-y: auto;
+}
+
 .loading-text::after {
   content: "";
   animation: loadingDots 1s steps(4, end) infinite;
