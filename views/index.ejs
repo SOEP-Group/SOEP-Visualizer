@@ -67,26 +67,27 @@
           id="prediction-button">
           Predictions
         </button>
-
-        <!-- Satellite search -->
-        <div class="relative w-full md:w-72 hidden md:block md:ml-7">
-          <!-- Search Input -->
-          <input type="text" id="satellite-search" placeholder="Search for a satellite"
-            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
-          <!-- Search Button (magnifying glass) -->
-          <button id="satellite-search-button"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
-            title="Search">
-            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
-                d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-            </svg>
-          </button>
-        </div>
-
-      </div>
     </nav>
+
+    <!-- Satellite search -->
+    <div class="right-6 w-full md:w-72 hidden md:block md:ml-7 relative">
+      <!-- Search Input -->
+      <input type="text" id="satellite-search" placeholder="Search for a satellite"
+        class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
+      <!-- Search Button (magnifying glass) -->
+      <button id="satellite-search-button"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
+        title="Search">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+            d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+        </svg>
+      </button>
+    </div>
+
+    </div>
+
   </header>
 
   <div class="gl_viewport" id="gl_viewport">
