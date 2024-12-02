@@ -1,6 +1,8 @@
 <div class="flex justify-items-center items-center justify-between">
-  <h2 class="text-2xl"><%= name %></h2>
-  <p>(NoID: <%= satellite_id %>)</p>
+  <h2 class="text-2xl">
+    <%= name %>
+  </h2>
+  <p class="relative top-1">(NoID: <%= satellite_id %>)</p>
 </div>
 <hr class="border-teal-300" />
 <p>
@@ -13,20 +15,16 @@
   <strong>Latitude: <span id="satellite_lat_visualizer"></span></strong>
 </p>
 <p>
-  <strong
-    >Height: <%= farthest_orbit_distance %> km (Farthest) / <%=
-    lowest_orbit_distance %> km (Lowest)</strong
-  >
+  <strong>Height: <%= farthest_orbit_distance %> km (Farthest) / <%= lowest_orbit_distance %> km (Lowest)</strong>
 </p>
 <p>
-  <strong
-    >Coordinates: Inclination <%= inclination %>°, Revolution Time: <%=
-    revolution %> hours</strong
-  >
+  <strong>Coordinates: Inclination <%= inclination %>°, Revolution Time: <%= revolution %> hours</strong>
 </p>
 <p><strong>Launch Date: <%= launch_date %></strong></p>
 <p><strong>Launch Site: <%= launch_site %></strong></p>
 <p><strong>Owner: <%= owner %></strong></p>
 <p><strong>Status: <%= status %></strong></p>
 <p><strong>Object Type: <%= object_type %></strong></p>
-<p><strong>Description:</strong> <%= description %></p>
+<p><strong>Description:</strong>
+  <%= description %>
+</p>
