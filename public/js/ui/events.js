@@ -1,7 +1,7 @@
 import { fetchEvents } from "../api/events.js";
 import { getLocation } from "./utils.js";
 
-let cachedEvents = null;
+let cachedEvents = {};
 
 const bodies = [
   "sun",
@@ -17,106 +17,163 @@ const bodies = [
 ];
 
 export function initEvents() {
-  const eventsTab = document.getElementById("events-tab");
-  const eventsContent = document.querySelector(
-    ".tab-content .tab-panel"
-  );
+  document.getElementById("sun-events-header").addEventListener("click", async () => {
+    toggleSection("sun-content", "arrow-sun");
+    await fetchAndRenderEvents("sun", "sun-content");
+  });
 
-  eventsTab.addEventListener("click", async () => {
-    if (cachedEvents) {
-      renderCachedEvents(eventsContent, cachedEvents);
-      return;
-    }
+  document.getElementById("moon-events-header").addEventListener("click", async () => {
+    toggleSection("moon-content", "arrow-moon");
+    await fetchAndRenderEvents("moon", "moon-content");
+  });
 
-    eventsContent.innerHTML = "<p>Loading events...</p>";
-
-    try {
-      // const location = await getLocation(null);
-      const userLatitude = location.latitude;
-      const userLongitude = location.longitude;
-
-      const eventsPromises = bodies.map((body) =>
-        fetchEvents(
-          body,
-          userLatitude || 37.7749,
-          userLongitude || -122.4194
-        )
-      );
-
-      const eventsData = await Promise.all(eventsPromises);
-      cachedEvents = eventsData;
-
-      renderCachedEvents(eventsContent, eventsData);
-    } catch (error) {
-      eventsContent.innerHTML = `<p>Error loading events: ${error.message}</p>`;
-      console.error("Error fetching events:", error);
-    }
+  document.getElementById("planet-events-header").addEventListener("click", async () => {
+    toggleSection("planet-content", "arrow-planet");
+    await fetchAndRenderAllPlanets();
   });
 }
 
-function renderCachedEvents(eventsContent, eventsData) {
-  let contentHTML = "";
+function toggleSection(contentId, arrowId) {
+  const content = document.getElementById(contentId);
+  const arrow = document.getElementById(arrowId);
 
-  eventsData.forEach((eventData, index) => {
-    const bodyName = bodies[index];
-    contentHTML += renderEventDetails(
+  content.classList.toggle("hidden");
+  arrow.classList.toggle("rotate-90");
+}
+
+document.addEventListener("click", function (event) {
+  let locationField = null;
+  if (event.target && event.target.id === "get-location-button-events") {
+    const locationId = "location-event";
+    const locationField = document.getElementById(locationId);
+    if (locationField) {
+      getLocation(locationField);
+    }
+  }
+});
+
+async function fetchAndRenderEvents(bodyName, contentId) {
+  const contentElement = document.getElementById(contentId);
+
+  if (contentElement.dataset.loaded === "true") {
+    return;
+  }
+
+  contentElement.innerHTML = "<p>Loading events...</p>";
+
+  try {
+    //const location = await getLocation();
+    const userLatitude = location.latitude || 37.7749;
+    const userLongitude = location.longitude || -122.4194;
+
+    const eventData = await fetchEvents(bodyName, userLatitude, userLongitude);
+    cachedEvents[bodyName] = eventData;
+
+    const eventDetailsHTML = renderEventDetails(
       `${bodyName.charAt(0).toUpperCase() + bodyName.slice(1)} Events`,
       eventData,
       bodyName
     );
-  });
 
-  eventsContent.innerHTML = contentHTML;
+    contentElement.innerHTML = eventDetailsHTML;
+    contentElement.dataset.loaded = "true";
+  } catch (error) {
+    contentElement.innerHTML = `<p>Error loading events: ${error.message}</p>`;
+    console.error(`Error fetching ${bodyName} events:`, error);
+  }
+}
+
+async function fetchAndRenderAllPlanets() {
+  const contentElement = document.getElementById("planet-content");
+
+  if (contentElement.dataset.loaded === "true") {
+    return;
+  }
+
+  contentElement.innerHTML = "<p>Loading planet events...</p>";
+
+  try {
+    //const location = await getLocation();
+    const userLatitude = location.latitude || 37.7749;
+    const userLongitude = location.longitude || -122.4194;
+
+    const planetEvents = await Promise.all(
+      bodies.slice(2).map((planet) => fetchEvents(planet, userLatitude, userLongitude))
+    );
+
+    let planetHTML = "";
+    planetEvents.forEach((eventData, index) => {
+      const planetName = bodies[index + 2];
+      cachedEvents[planetName] = eventData;
+      planetHTML += renderEventDetails(
+        `${planetName.charAt(0).toUpperCase() + planetName.slice(1)} Events`,
+        eventData,
+        planetName
+      );
+    });
+
+    contentElement.innerHTML = planetHTML;
+    contentElement.dataset.loaded = "true";
+  } catch (error) {
+    contentElement.innerHTML = `<p>Error loading planet events: ${error.message}</p>`;
+    console.error("Error fetching planet events:", error);
+  }
 }
 
 function renderEventDetails(title, eventData, bodyName) {
   if (!eventData) {
-    return `<div class="event-details"><h2>${title}</h2><p>No events available.</p></div>`;
+    return `
+      <div class="event-details">
+        <h2>${title}</h2>
+        <p>No events available.</p>
+      </div>
+    `;
   }
 
   let content = `
-      <div class="event-details">
-        <h2>${title}</h2>
-        <ul>
-          <li><strong>Rise Time:</strong> ${eventData.rise
+  <div class="event-details">
+    <h2>${title}</h2>
+    <ul>
+      <li><strong>Rise Time:</strong> ${eventData.rise
       ? new Date(eventData.rise).toLocaleString()
       : "N/A"
     }</li>
-          <li><strong>Set Time:</strong> ${eventData.set
+      <li><strong>Set Time:</strong> ${eventData.set
       ? new Date(eventData.set).toLocaleString()
       : "N/A"
     }</li>
-          <li><strong>Culmination:</strong> ${eventData.culmination
+      <li><strong>Culmination:</strong> ${eventData.culmination
       ? new Date(eventData.culmination).toLocaleString()
       : "N/A"
     }</li>
-    `;
+     <br>
+`;
 
   // Moon
   if (bodyName.toLowerCase() === "moon") {
     content += `
-        <li><strong>Moon Phase Angle:</strong> ${eventData.moonPhaseAngle.toFixed(
+    <li><strong>Moon Phase Angle:</strong> ${eventData.moonPhaseAngle.toFixed(
       2
     )}°</li>
-        <li><strong>Next New Moon:</strong> ${new Date(
+    <li><strong>Next New Moon:</strong> ${new Date(
       eventData.nextNewMoon
     ).toLocaleString()}</li>
-        <li><strong>Next First Quarter:</strong> ${new Date(
+    <li><strong>Next First Quarter:</strong> ${new Date(
       eventData.nextFirstQuarter
     ).toLocaleString()}</li>
-        <li><strong>Next Full Moon:</strong> ${new Date(
+    <li><strong>Next Full Moon:</strong> ${new Date(
       eventData.nextFullMoon
     ).toLocaleString()}</li>
-        <li><strong>Next Last Quarter:</strong> ${new Date(
+    <li><strong>Next Last Quarter:</strong> ${new Date(
       eventData.nextLastQuarter
     ).toLocaleString()}</li>
-        <li><strong>Next Lunar Eclipse:</strong> ${eventData.nextLunarEclipse
+    <li><strong>Next Lunar Eclipse:</strong> ${eventData.nextLunarEclipse
         ? `${eventData.nextLunarEclipse.kind} on ${new Date(
           eventData.nextLunarEclipse.date
         ).toLocaleString()}`
         : "N/A"
       }</li>
-        <li><strong>Next Lunar Perigee/Apogee:</strong> ${eventData.nextLunarApsis
+    <li><strong>Next Lunar Perigee/Apogee:</strong> ${eventData.nextLunarApsis
         ? `${eventData.nextLunarApsis.kind} on ${new Date(
           eventData.nextLunarApsis.date
         ).toLocaleString()} at ${eventData.nextLunarApsis.distanceKm.toFixed(
@@ -124,21 +181,22 @@ function renderEventDetails(title, eventData, bodyName) {
         )} km`
         : "N/A"
       }</li>
-      `;
+  `;
   }
 
   // Sun
   if (bodyName.toLowerCase() === "sun") {
     const twilight = eventData.twilight;
     content += `
-        <li><strong>Next Solar Eclipse:</strong> ${eventData.nextSolarEclipse
+    <li><strong>Next Solar Eclipse:</strong> ${eventData.nextSolarEclipse
         ? `${eventData.nextSolarEclipse.kind} on ${new Date(
           eventData.nextSolarEclipse.date
         ).toLocaleString()}`
         : "N/A"
       }</li>
-      `;
+  `;
   }
+
 
   // if (["mercury", "venus"].includes(bodyName.toLowerCase())) {
   //   const maxElongation = eventData.nextMaxElongation;
@@ -239,9 +297,9 @@ function renderEventDetails(title, eventData, bodyName) {
   // }
 
   content += `
-        </ul>
-      </div>
-    `;
+      </ul>
+    </div>
+  `;
 
   return content;
 }
