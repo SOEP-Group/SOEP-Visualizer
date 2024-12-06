@@ -25,6 +25,7 @@ function onGlStateChanged(changedStates) {
                 const simulation = generateFutureSimData(tleData.first, tleData.second);
                 if (simulation) {
                     clearGraphs();
+                    // add satellite name here
                     addSeparatorLine(graphContainer);
                     renderGraph("Speed (km/h)", simulation.labels, simulation.speedData, simulation.times, graphContainer);
                     addSeparatorLine(graphContainer);
@@ -186,7 +187,7 @@ function generateFutureSimData(tleLine1, tleLine2) {
         const d = futureTime.getDate();
         const hh = String(futureTime.getHours()).padStart(2, '0');
         const mm = String(futureTime.getMinutes()).padStart(2, '0');
-        const displayTime = `${m}/${d} ${hh}:${mm}`;
+        const displayTime = `${d} ${m} ${hh}:${mm}`;
         times.push(displayTime);
 
         if (positionAndVelocity.position && positionAndVelocity.velocity) {
