@@ -223,8 +223,8 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(this.planetMesh);
-    // this.planetGroup.rotation.y = this.currRotation;
-    // this.planetGroup.rotation.z = this.planetAngle;
+    this.planetGroup.rotation.y = this.currRotation;
+    //this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
     const planetCloudsMaterial = new MeshStandardMaterial({
@@ -350,8 +350,8 @@ export class Earth {
       if (this.animate) {
         requestAnimationFrame(this.animate);
         const dt = clock.getDelta();
-        // this.updatePlanetRotation(dt);
-        // this.updatePlanetOrbit(dt);
+        this.updatePlanetRotation(dt);
+        this.updatePlanetOrbit(dt);
         this.updateCloudsRotation(dt);
         this.updateCloudsOpacity(dt);
       }
@@ -398,10 +398,29 @@ export class Earth {
       );
 
       let origin = new THREE.Vector3(0, 0, this.planetSize);
+
+      console.log(
+        `origin before rotation: x: ${origin.x}, y: ${origin.y}, z: ${origin.z}`
+      );
+
+      // Create a rotation matrix based on the desired rotation angles
+      let rotationMatrix = new THREE.Matrix4().makeRotationY(
+        this.planetGroup.rotation.y
+      ); // Rotate around Earth's vertical axis
+
+      // Apply the rotation to the origin
+      origin.applyMatrix4(rotationMatrix);
+
+      console.log(
+        `origin after rotation: x: ${origin.x}, y: ${origin.y}, z: ${origin.z}`
+      );
+
       local_copy.y = 0;
       local_copy.setLength(this.planetSize);
       let angle = origin.angleTo(local_copy);
-      let long = THREE.MathUtils.radToDeg(angle) - 90;
+      let long =
+        THREE.MathUtils.radToDeg(angle) -
+        (THREE.MathUtils.radToDeg(this.planetGroup.rotation.y) - 90);
 
       let normalized = local_coordinates.clone().normalize();
       let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
