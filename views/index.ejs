@@ -5,6 +5,7 @@
   <title>SOEP Visualizer</title>
   <link rel="icon" href="../images/logo/earth_logo.ico" type="image/x-icon">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script async src="./libs/es-shims/es-module-shims.js"></script>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
@@ -306,7 +307,7 @@
           </div>
 
           <div class="tab-panel">
-            <p>Add some graphs here</p>
+            <div id="graphs-container" class="text-white"></div>
           </div>
 
           <div class="tab-panel">
@@ -478,6 +479,7 @@
         </div>
       </div>
 </body>
+
 <script type="module" src="js/main.js"></script>
 
 </html>
