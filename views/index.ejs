@@ -98,7 +98,7 @@
       <!-- Sliding window left-->
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
-        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
+        <div id="resize" class="resizer-container absolute top-0 -right-[7px] h-full flex items-center justify-center">
           <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
             title="Resize">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -207,59 +207,59 @@
         <!-- Events -->
         <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
           <div class="tab-panel space-y-6">
-            <h2 class="text-2xl font-semibold">Events</h2>
-
-            <!-- Search Bar -->
-            <!--   <div class="mb-4">
-              <label for="search-events" class=" font-medium text-gray-600">Search:</label>
-              <input id="search-events" type="text" placeholder="Search for an event"
-                class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full mt-1 focus:border-gray-400 focus:outline-none" />
-            </div> -->
-
-            <!-- Location Selection -->
-            <div class="flex flex-col items-start w-full mt-4 space-y-2">
-              <input type="text" id="location-events" placeholder="Location"
-                class="bg-gray-500 text-white border border-gray-700 rounded space-y-4 p-2 text-l w-full box-border focus:border-gray-400 focus:outline-none">
-              <button data-ripple="true" id="get-location-button-2"
-                class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
-                Use Current Location
-              </button>
-              <button data-ripple="true" id="select-location-button-events"
-                class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
-                Select Location
+            <div class="flex items-center justify-between">
+              <h2 class="text-2xl font-semibold">Events</h2>
+              <button id="toggle-filters"
+                class="bg-gray-900 text-white py-2 px-3 rounded hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-500">
+                Filters
               </button>
             </div>
 
-            <!-- Start Date & Time -->
-            <div class="space-y-4 mb-4">
-              <div>
-                <label for="start-date" class="font-medium text-white">Start Date:</label>
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                  <input id="start-date" type="date"
-                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                  <input id="start-time" type="time"
-                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+            <div id="filter-section" class="mt-4 space-y-4 hidden">
+              <!-- Location Selection -->
+              <div class="flex flex-col items-start w-full mt-4 space-y-2">
+                <input type="text" id="location-events" placeholder="Location"
+                  class="bg-gray-500 text-white border border-gray-700 rounded space-y-4 p-2 text-l w-full box-border focus:border-gray-400 focus:outline-none">
+                <button data-ripple="true" id="get-location-button-events"
+                  class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
+                  Use Current Location
+                </button>
+                <button data-ripple="true" id="select-location-button-events"
+                  class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
+                  Select Location
+                </button>
+              </div>
+
+              <!-- Start Date & Time -->
+              <div class="space-y-4 mb-4">
+                <div>
+                  <label for="start-date" class="font-medium text-white">Start Date:</label>
+                  <div class="grid grid-cols-2 gap-2 mt-1">
+                    <input id="start-date" type="date"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                    <input id="start-time" type="time"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- End Date & Time -->
+                <div>
+                  <label for="end-date" class="font-medium text-white">End Date:</label>
+                  <div class="grid grid-cols-2 gap-2 mt-1">
+                    <input id="end-date" type="date"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                    <input id="end-time" type="time"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  </div>
                 </div>
               </div>
 
-              <!-- End Date & Time -->
-              <div>
-                <label for="end-date" class="font-medium text-white">End Date:</label>
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                  <input id="end-date" type="date"
-                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                  <input id="end-time" type="time"
-                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                </div>
+              <!-- Submit Button -->
+              <div class="text-right">
+                <button id="filter-events" class="btn-blue w-full">
+                  Filter
+                </button>
               </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="text-right">
-              <button id="filter-events"
-                class="bg-gray-900 text-white font-bold py-2 px-4 rounded hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-500 w-full">
-                Filter
-              </button>
             </div>
 
             <!-- Sun Events -->

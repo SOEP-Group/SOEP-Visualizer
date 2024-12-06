@@ -44,13 +44,25 @@ function toggleSection(contentId, arrowId) {
 document.addEventListener("click", function (event) {
   let locationField = null;
   if (event.target && event.target.id === "get-location-button-events") {
-    const locationId = "location-event";
-    const locationField = document.getElementById(locationId);
+    locationField = document.getElementById("location-events");
+
     if (locationField) {
       getLocation(locationField);
     }
   }
 });
+
+document.addEventListener("click", function (event) {
+  if (event.target && event.target.id === "select-location-button-events") {
+    // For future use
+  }
+});
+
+document.getElementById("toggle-filters").addEventListener("click", () => {
+  const filterSection = document.getElementById("filter-section");
+  filterSection.classList.toggle("hidden");
+});
+
 
 async function fetchAndRenderEvents(bodyName, contentId) {
   const contentElement = document.getElementById(contentId);
@@ -63,8 +75,8 @@ async function fetchAndRenderEvents(bodyName, contentId) {
 
   try {
     //const location = await getLocation();
-    const userLatitude = location.latitude || 37.7749;
-    const userLongitude = location.longitude || -122.4194;
+    const userLatitude = location.latitude;
+    const userLongitude = location.longitude;
 
     const eventData = await fetchEvents(bodyName, userLatitude, userLongitude);
     cachedEvents[bodyName] = eventData;
@@ -94,8 +106,8 @@ async function fetchAndRenderAllPlanets() {
 
   try {
     //const location = await getLocation();
-    const userLatitude = location.latitude || 37.7749;
-    const userLongitude = location.longitude || -122.4194;
+    const userLatitude = location.latitude;
+    const userLongitude = location.longitude;
 
     const planetEvents = await Promise.all(
       bodies.slice(2).map((planet) => fetchEvents(planet, userLatitude, userLongitude))
