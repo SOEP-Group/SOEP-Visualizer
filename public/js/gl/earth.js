@@ -5,12 +5,16 @@ import {
   SRGBColorSpace,
   Color,
   RepeatWrapping,
-  IcosahedronGeometry,
   MeshStandardMaterial,
   AdditiveBlending,
   BackSide,
   NormalBlending,
+  Raycaster,
+  SphereGeometry,
 } from "three";
+
+import * as THREE from "three";
+
 import { camera, clock, controls } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
 
@@ -24,6 +28,9 @@ export class Earth {
   orbitalSpeed;
   currentOrbitAngle;
   cloudsMesh;
+  isPickingLocation = false;
+  raycaster = new Raycaster();
+  planetMesh;
 
   constructor({
     planetSize = 1,
@@ -49,7 +56,7 @@ export class Earth {
     this.group = new Group();
     this.group.position.set(this.orbitalDistance, 0, 0);
     this.planetGroup = new Group();
-    this.planetGeometry = new IcosahedronGeometry(this.planetSize, 12);
+    this.planetGeometry = new SphereGeometry(this.planetSize, 64, 64);
 
     this.createPlanet();
     this.createAtmosphere();
@@ -214,10 +221,10 @@ export class Earth {
       );
     };
     planetMaterial.map.colorSpace = SRGBColorSpace;
-    const planetMesh = new Mesh(this.planetGeometry, planetMaterial);
-    this.planetGroup.add(planetMesh);
-    this.planetGroup.rotation.y = this.currRotation;
-    this.planetGroup.rotation.z = this.planetAngle;
+    this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
+    this.planetGroup.add(this.planetMesh);
+    // this.planetGroup.rotation.y = this.currRotation;
+    // this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
     const planetCloudsMaterial = new MeshStandardMaterial({
@@ -343,8 +350,8 @@ export class Earth {
       if (this.animate) {
         requestAnimationFrame(this.animate);
         const dt = clock.getDelta();
-        this.updatePlanetRotation(dt);
-        this.updatePlanetOrbit(dt);
+        // this.updatePlanetRotation(dt);
+        // this.updatePlanetOrbit(dt);
         this.updateCloudsRotation(dt);
         this.updateCloudsOpacity(dt);
       }
@@ -357,5 +364,49 @@ export class Earth {
 
   reload() {
     this.createPlanet();
+  }
+
+  togglePickingLocation() {
+    this.isPickingLocation = !this.isPickingLocation;
+  }
+
+  checkForClick(mouse, camera) {
+    if (!this.isPickingLocation) return null;
+    this.raycaster.setFromCamera(mouse, camera);
+
+    const intersects = this.raycaster.intersectObject(this.planetMesh);
+
+    if (intersects.length > 0) {
+      return { lat: 0.0, long: 0.0 };
+    }
+    return null;
+  }
+
+  getLocation(mouse, camera) {
+    if (!this.isPickingLocation) return null;
+    this.raycaster.setFromCamera(mouse, camera);
+
+    const intersects = this.raycaster.intersectObject(this.planetMesh);
+
+    if (intersects.length > 0) {
+
+
+      let local_coordinates = this.group.worldToLocal(intersects[0].point);
+
+      let local_copy = new THREE.Vector3(local_coordinates.x, local_coordinates.y, local_coordinates.z);
+
+      let origin = new THREE.Vector3(0, 0, this.planetSize);
+      local_copy.y = 0;
+      local_copy.setLength(this.planetSize);
+      let angle = origin.angleTo(local_copy);
+      let long = THREE.MathUtils.radToDeg(angle) - 90;
+
+      // let lat_angle = local_coordinates.angleTo(local_copy);
+      let normalized = local_coordinates.clone().normalize();
+      let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
+
+      return { lat: lat, long: long };
+    }
+    return null;
   }
 }

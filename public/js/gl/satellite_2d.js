@@ -31,6 +31,7 @@ export class Satellites {
   hoveredSatellite = -1;
   focusedSatellite = -1;
   isUpdating = false;
+  isHidden = false;
 
   constructor(data) {
     this.instanceCount = data.length;
@@ -89,6 +90,7 @@ export class Satellites {
   }
 
   checkForClick(mouse, camera) {
+    if (this.isHidden) return null;
     this.raycaster.setFromCamera(mouse, camera);
 
     const intersects = this.raycaster.intersectObject(earth.getGroup());
@@ -295,5 +297,10 @@ export class Satellites {
       this.speeds[index + 1],
       this.speeds[index + 2]
     );
+  }
+
+  hide(shoudHide) {
+    this.isHidden = shoudHide;
+    this.group.visible = !shoudHide;
   }
 }

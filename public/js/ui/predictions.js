@@ -1,4 +1,5 @@
 import { getLocation } from "./utils.js";
+import { globalState } from "../globalState.js";
 
 export function initPredictions() {
     document.getElementById("passing-prediction-header").addEventListener("click", function () {
@@ -12,15 +13,70 @@ export function initPredictions() {
     document.getElementById("re-entry-prediction-header").addEventListener("click", function () {
         toggleSection('re-entry-content', 'arrow-re-entry');
     });
+
+    const location_btns = document.querySelectorAll(".get-location-btn");
+
+    location_btns.forEach((btn) => {
+        btn.addEventListener("click", function (event) {
+
+            const locationField = event.target.parentElement.getElementsByClassName("location-field")[0];
+            getLocation(locationField);
+        });
+    });
+
+    const selectLocationBtn = document.querySelectorAll(".select-location-button");
+    selectLocationBtn.forEach((btn) => {
+        btn.addEventListener("click", function (event) {
+            let picking = globalState.get("pickingLocation");
+            if(picking == null) {
+                picking = false;
+            }
+            globalState.set({ pickingLocation: !picking });
+
+            for (let i = 0; i < selectLocationBtn.length; i++) {
+                if (picking) {
+                    selectLocationBtn[i].innerText = "Select Location";
+                } else {            
+                    selectLocationBtn[i].innerText = "Click on earth (Press here to Cancel)";
+                }
+            }
+
+            
+        });
+    });
+    
+    document.addEventListener("click", function (event) {
+        if (event.target && event.target.id === "select-location-button") {
+            let picking = globalState.get("pickingLocation");
+            if(picking == null) {
+                picking = false;
+            }
+            globalState.set({ pickingLocation: !picking });
+        }
+    });
+    
+    document.addEventListener("click", function (event) {
+        if (event.target && event.target.id === "calculate-pass-button") {
+            // Future API call
+        }
+    });
+    
+    document.addEventListener("click", function (event) {
+        if (event.target && event.target.id === "calculate-re-entry-button") {
+            // Future API call
+        }
+    });
+    
+    document.addEventListener("click", function (event) {
+        if (event.target.closest("#toggle-section")) {
+            toggleIconState();
+        }
+    });
 }
 
 function toggleSection(contentId, arrowId) {
     const contentElement = document.getElementById(contentId);
     const arrowElement = document.getElementById(arrowId);
-
-    if (contentElement.innerHTML.trim() === "") {
-        loadContent(contentId);
-    }
 
     contentElement.classList.toggle('hidden');
 
@@ -32,48 +88,6 @@ function toggleSection(contentId, arrowId) {
     }
 }
 
-function loadContent(contentId) {
-    const contentContainer = document.getElementById(contentId);
-    contentContainer.innerHTML = getContent(contentId);
-}
-
-
-document.addEventListener("click", function (event) {
-    let locationField = null;
-
-    if (event.target && (event.target.id === "get-location-button-1" || event.target.id === "get-location-button-2")) {
-        const locationId = event.target.id === "get-location-button-1" ? "location-1" : "location-2";
-        locationField = document.getElementById(locationId);
-        if (locationField) {
-            getLocation(locationField);
-        }
-    }
-});
-
-document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "select-location-button") {
-        // For future use
-    }
-});
-
-document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "calculate-pass-button") {
-        // Future API call
-    }
-});
-
-document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "calculate-re-entry-button") {
-        // Future API call
-    }
-});
-
-document.addEventListener("click", function (event) {
-    if (event.target.closest("#toggle-section")) {
-        toggleIconState();
-    }
-});
-
 export function toggleIconState() {
     const toggleText = document.getElementById("toggle-text");
     const togglePath = document.getElementById("toggle-path");
@@ -84,48 +98,5 @@ export function toggleIconState() {
     } else {
         toggleText.innerText = "Displaying All Satellites";
         togglePath.setAttribute("d", "M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z");
-    }
-}
-
-function getContent(itemId) {
-    const input_form_styling = "flex flex-col items-start w-full mt-4 space-y-2";
-    const input_styling =
-        "bg-gray-500 text-white border border-gray-700 rounded space-y-4 p-2 text-l w-full box-border focus:border-gray-400 focus:outline-none";
-    const button_styling = "btn-blue w-full";
-    const location_button_styling = "bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full";
-    switch (itemId) {
-        case "passing-content":
-            return `
-                    <div class="${input_form_styling}">
-                        <div id="toggle-section" class="flex items-center justify-between w-[250px]">
-                            <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto" id="toggle-svg">
-                                <path id="toggle-path" fill="#ffffff" d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/>
-                            </svg>
-                        </div>
-                        <input type="text" id="location-2" placeholder="Location" class="${input_styling}">
-                        <button data-ripple="true" id="get-location-button-2" class="${location_button_styling}">Use Current Location</button>
-                        <button data-ripple="true" id="select-location-button" class="${location_button_styling}">Select Location</button>
-                    </div>
-                `;
-        case "pass-content":
-            return `
-                <div class="${input_form_styling}">
-                    <input type="text" id="satellite-pass" placeholder="Satellite" class="${input_styling}">
-                    <input type="text" id="location-1" placeholder="Location" class="${input_styling}">
-                    <button data-ripple="true" id="get-location-button-1" class="${location_button_styling}">Use Current Location</button>
-                    <button data-ripple="true" id="select-location-button" class="${location_button_styling}">Select Location</button>
-                    <button data-ripple="true" id="calculate-pass-button" class="${button_styling}">Calculate</button>
-                </div>
-            `;
-        case "re-entry-content":
-            return `
-                <div class="${input_form_styling}">
-                    <input type="text" id="satellite-re-entry" placeholder="Satellite" class="${input_styling}">
-                    <button data-ripple="true" id="calculate-re-entry-button" class="${button_styling}">Calculate</button>
-                </div>
-            `;
-        default:
-            return "";
     }
 }

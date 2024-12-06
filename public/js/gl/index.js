@@ -5,7 +5,7 @@ import {
   CubeTextureLoader,
   Vector2,
 } from "three";
-import { State } from "../globalState.js";
+import { State, globalState } from "../globalState.js";
 import { initDebug } from "./debug.js";
 import {
   initRenderer,
@@ -25,6 +25,7 @@ export * from "./model-viewer.js";
 
 subscribe("appStartup", onStart);
 subscribe("glStateChanged", onStateChanged);
+subscribe("onGlobalStateChanged", onGlobalStateChanged);
 
 const initialGlState = {
   rendererInfo: { frames: 0, fps: 0 },
@@ -72,6 +73,18 @@ function onStart() {
       mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
       mouse.y =
         -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
+      if(globalState.get("pickingLocation")) {
+          const res = earth.checkForClick(mouse, camera);
+          if(res !== null) {
+            document.body.style.cursor = "pointer";
+          }else{
+            document.body.style.cursor = "default";
+          }
+          return;
+      }
+      if(!satellites){
+        return;
+      }
       let hovered_satellite = satellites.checkForClick(mouse, camera);
       if (hovered_satellite !== null) {
         document.body.style.cursor = "pointer";
@@ -113,6 +126,14 @@ function onViewportClick(event) {
   const rect = gl_viewport.getBoundingClientRect(); // Get viewport bounds
   mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
+  if(globalState.get("pickingLocation")) {
+    const res = earth.getLocation(mouse, camera);
+    if(res !== null) {
+      const { lat, long } = res;
+      console.log(`${lat}, ${long}`);
+    }
+    return;
+  }
   let clicked_satellite = satellites.checkForClick(mouse, camera);
   if (clicked_satellite !== null) {
     glState.set({
@@ -172,5 +193,14 @@ function onStateChanged(changedStates) {
       });
       satellites.setFocused(clicked_satellite);
     }
+  }
+}
+
+
+function onGlobalStateChanged(changedStates) {
+  if (changedStates["pickingLocation"]) {
+    const picking = globalState.get("pickingLocation");
+    satellites.hide(picking);
+    earth.togglePickingLocation(picking);
   }
 }
