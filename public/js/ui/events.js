@@ -52,6 +52,10 @@ document.addEventListener("click", function (event) {
   }
 });
 
+document.getElementById('toggle-filters').addEventListener('click', function () {
+  document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
+});
+
 document.addEventListener("click", function (event) {
   if (event.target && event.target.id === "select-location-button-events") {
     // For future use
