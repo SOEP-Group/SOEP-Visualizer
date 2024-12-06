@@ -5,7 +5,6 @@ import {
   SRGBColorSpace,
   Color,
   RepeatWrapping,
-  IcosahedronGeometry,
   MeshStandardMaterial,
   AdditiveBlending,
   BackSide,
