@@ -108,6 +108,15 @@ export class Satellites {
     return this.instanceIdToSatelliteIdMap[id];
   }
 
+  getInstanceIdById(id){
+    for(const [key, val] of Object.entries(this.instanceIdToSatelliteIdMap)){
+      if(val == id){
+        return key;
+      }
+    }
+    return null;
+  }
+
   resetColors() {
     const colors = this.points.geometry.attributes.color.array;
 
