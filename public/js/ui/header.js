@@ -1,4 +1,6 @@
-import { uiState } from "./index.js";
+import { subscribe } from "../eventBuss.js";
+import { globalState } from "../globalState.js";
+import { isMobileScreen } from "./utils.js";
 
 // burger menu
 const dropdownButton = document.getElementById("menu__toggle");
@@ -12,7 +14,21 @@ const predictionTab = document.getElementById("prediction-tab-icon");
 
 let firstMenuOpen = true;
 
+function onGlobalStateChanged(changedStates) {
+  if (changedStates["pickingLocation"]) {
+    const picking = globalState.get("pickingLocation");
+    if (isMobileScreen()) {
+      if (!picking) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }
+  }
+}
+
 export function initHeader() {
+  subscribe("onGlobalStateChanged", onGlobalStateChanged);
   const satelliteDropdown = document.getElementById("satellite-dropdown");
 
   const searchInput = document.getElementById("satellite-search");

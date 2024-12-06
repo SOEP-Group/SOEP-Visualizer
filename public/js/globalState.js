@@ -55,4 +55,10 @@ export class State {
   }
 }
 
-export let globalState = new State("onGlobalStateChanged", {});
+export let globalState = new State("onGlobalStateChanged", {
+  passing_location: null,
+  pass_prediction_location: null,
+  pickingLocation: false,
+  pick_passing: false,
+  pick_pass_prediction: false,
+});
