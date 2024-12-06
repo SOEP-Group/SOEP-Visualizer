@@ -30,7 +30,7 @@ export class State {
       return this.deepCopy(this.state[key]);
     }
     console.warn(`Key "${key}" does not exist in the state`);
-    return undefined;
+    return null;
   }
 
   set(updates) {

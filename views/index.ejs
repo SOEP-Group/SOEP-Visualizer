@@ -231,6 +231,17 @@
                 <span class="cursor-pointer">Passing Satellites</span>
               </h3>
               <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <div id="toggle-section" class="flex items-center justify-between w-[250px]">
+                      <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto" id="toggle-svg">
+                          <path id="toggle-path" fill="#ffffff" d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/>
+                      </svg>
+                  </div>
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select Location</button>
+              </div>
               </div>
             </div>
 
@@ -250,6 +261,13 @@
                 <span class="cursor-pointer">Pass Prediction</span>
               </h3>
               <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select Location</button>
+                  <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
+              </div>
               </div>
             </div>
 
@@ -269,6 +287,10 @@
                 <span class="cursor-pointer">Re-entry Prediction</span>
               </h3>
               <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-re-entry" placeholder="Satellite" class="input-styling">
+                  <button data-ripple="true" id="calculate-re-entry-button" class="btn-blue w-full">Calculate</button>
+              </div>
               </div>
             </div>
 
