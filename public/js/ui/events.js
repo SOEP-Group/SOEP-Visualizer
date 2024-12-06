@@ -41,6 +41,12 @@ function toggleSection(contentId, arrowId) {
   arrow.classList.toggle("rotate-90");
 }
 
+document.getElementById('toggle-filters').addEventListener('click', function () {
+  document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
+  const filterSection = document.getElementById("filter-section");
+  filterSection.classList.toggle("hidden");
+});
+
 document.addEventListener("click", function (event) {
   let locationField = null;
   if (event.target && event.target.id === "get-location-button-events") {
@@ -52,21 +58,11 @@ document.addEventListener("click", function (event) {
   }
 });
 
-document.getElementById('toggle-filters').addEventListener('click', function () {
-  document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
-});
-
 document.addEventListener("click", function (event) {
   if (event.target && event.target.id === "select-location-button-events") {
     // For future use
   }
 });
-
-document.getElementById("toggle-filters").addEventListener("click", () => {
-  const filterSection = document.getElementById("filter-section");
-  filterSection.classList.toggle("hidden");
-});
-
 
 async function fetchAndRenderEvents(bodyName, contentId) {
   const contentElement = document.getElementById(contentId);
