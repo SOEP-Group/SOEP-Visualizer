@@ -76,9 +76,11 @@ function onStart() {
       if (hovered_satellite !== null) {
         document.body.style.cursor = "pointer";
         satellites.setHovered(hovered_satellite);
+        publish("hoveredSatellite", { instanceId: hovered_satellite, mouseX: event.clientX, mouseY: event.clientY });
       } else {
         document.body.style.cursor = "default";
         satellites.setHovered(-1);
+        publish("hoveredSatellite", { instanceId: -1 });
       }
     },
     false
