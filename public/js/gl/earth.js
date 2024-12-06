@@ -389,11 +389,13 @@ export class Earth {
     const intersects = this.raycaster.intersectObject(this.planetMesh);
 
     if (intersects.length > 0) {
-
-
       let local_coordinates = this.group.worldToLocal(intersects[0].point);
 
-      let local_copy = new THREE.Vector3(local_coordinates.x, local_coordinates.y, local_coordinates.z);
+      let local_copy = new THREE.Vector3(
+        local_coordinates.x,
+        local_coordinates.y,
+        local_coordinates.z
+      );
 
       let origin = new THREE.Vector3(0, 0, this.planetSize);
       local_copy.y = 0;
@@ -401,7 +403,6 @@ export class Earth {
       let angle = origin.angleTo(local_copy);
       let long = THREE.MathUtils.radToDeg(angle) - 90;
 
-      // let lat_angle = local_coordinates.angleTo(local_copy);
       let normalized = local_coordinates.clone().normalize();
       let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
 

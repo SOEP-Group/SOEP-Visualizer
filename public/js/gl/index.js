@@ -15,7 +15,6 @@ import {
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites } from "./scene.js";
-import { initViewer } from "./model-viewer.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -73,16 +72,16 @@ function onStart() {
       mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
       mouse.y =
         -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
-      if(globalState.get("pickingLocation")) {
-          const res = earth.checkForClick(mouse, camera);
-          if(res !== null) {
-            document.body.style.cursor = "pointer";
-          }else{
-            document.body.style.cursor = "default";
-          }
-          return;
+      if (globalState.get("pickingLocation")) {
+        const res = earth.checkForClick(mouse, camera);
+        if (res !== null) {
+          document.body.style.cursor = "crosshair";
+        } else {
+          document.body.style.cursor = "default";
+        }
+        return;
       }
-      if(!satellites){
+      if (!satellites) {
         return;
       }
       let hovered_satellite = satellites.checkForClick(mouse, camera);
@@ -126,11 +125,16 @@ function onViewportClick(event) {
   const rect = gl_viewport.getBoundingClientRect(); // Get viewport bounds
   mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
-  if(globalState.get("pickingLocation")) {
+  if (globalState.get("pickingLocation")) {
     const res = earth.getLocation(mouse, camera);
-    if(res !== null) {
+    if (res !== null) {
       const { lat, long } = res;
-      console.log(`${lat}, ${long}`);
+      if (globalState.get("pick_passing")) {
+        globalState.set({ passing_location: { lat, long } });
+      } else if (globalState.get("pick_pass_prediction")) {
+        globalState.set({ pass_prediction_location: { lat, long } });
+      }
+      globalState.set({ pickingLocation: false });
     }
     return;
   }
@@ -195,7 +199,6 @@ function onStateChanged(changedStates) {
     }
   }
 }
-
 
 function onGlobalStateChanged(changedStates) {
   if (changedStates["pickingLocation"]) {
