@@ -64,6 +64,18 @@ export function initPredictions() {
       toggleSection("re-entry-content", "arrow-re-entry");
     });
 
+  document
+    .getElementById("calculate-pass-button")
+    .addEventListener("click", function () {
+
+    });
+
+  document
+    .getElementById("calculate-re-entry-button")
+    .addEventListener("click", function () {
+      // Future use
+    });
+
   const location_btns = document.querySelectorAll(".get-location-btn");
 
   location_btns.forEach(async (btn) => {
@@ -104,18 +116,6 @@ export function initPredictions() {
   });
 
   // Fix for later
-  document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "calculate-pass-button") {
-      // Future API call
-    }
-  });
-
-  document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "calculate-re-entry-button") {
-      // Future API call
-    }
-  });
-
   document.addEventListener("click", function (event) {
     if (event.target.closest("#toggle-section")) {
       toggleIconState();
