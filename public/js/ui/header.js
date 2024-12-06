@@ -1,4 +1,5 @@
 import { uiState } from "./index.js";
+import { satellites } from "../gl/scene.js";
 
 // burger menu
 const dropdownButton = document.getElementById("menu__toggle");
@@ -14,22 +15,45 @@ let firstMenuOpen = true;
 
 export function initHeader() {
   const satelliteDropdown = document.getElementById("satellite-dropdown");
-
   const searchInput = document.getElementById("satellite-search");
 
   searchInput.addEventListener("keyup", function () {
     const filter = searchInput.value.toUpperCase();
     const satelliteLinks = satelliteDropdown.getElementsByTagName("a");
 
-    for (let i = 0; i < satelliteLinks.length; i++) {
-      const txtValue =
-        satelliteLinks[i].textContent || satelliteLinks[i].innerText;
-
-      if (txtValue.toUpperCase().startsWith(filter)) {
-        satelliteLinks[i].style.display = ""; // show matching item
-      } else {
-        satelliteLinks[i].style.display = "none"; // hide non-matching item
+    if (!satellites || typeof satellites.instanceCount === "undefined") {
+      console.error("satellites manager is not initialized");
+      return;
+    } else {
+      function getAllSatellites() {
+        const satelliteList = [];
+        for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
+          const id = satellites.getIdByInstanceId(instanceId);
+          satelliteList.push({ id });
+        }
+        return satelliteList;
       }
+      let sats = getAllSatellites();
+      console.log(sats);
+    }
+
+    for (let i = 0; i < satelliteLinks.length; i++) {
+      const txtValue = satelliteLinks[i].textContent || satelliteLinks[i].innerText;
+      if (txtValue.toUpperCase().startsWith(filter)) {
+        satelliteLinks[i].style.display = "";
+      } else {
+        satelliteLinks[i].style.display = "none";
+      }
+    }
+  });
+
+  searchInput.addEventListener("focus", function () {
+    satelliteDropdown.classList.remove("hidden");
+  });
+
+  document.addEventListener("click", function (event) {
+    if (!satelliteDropdown.contains(event.target) && !searchInput.contains(event.target)) {
+      satelliteDropdown.classList.add("hidden");
     }
   });
 
