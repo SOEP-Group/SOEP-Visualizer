@@ -125,7 +125,14 @@ export function initPopup() {
   popupContainer.addEventListener("mouseup", (event) =>
     event.stopPropagation()
   );
+  popupContainer.addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
+  });
   mobilePopupContainer.addEventListener("mousedown", (event) =>
+    event.stopPropagation()
+  );
+  mobilePopupContainer.addEventListener("mousemove", (event) =>
     event.stopPropagation()
   );
   mobilePopupContainer.addEventListener("mouseup", (event) =>

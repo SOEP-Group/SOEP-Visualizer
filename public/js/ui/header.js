@@ -51,6 +51,17 @@ export function initHeader() {
     predictionTab.click();
   });
 
+  dropdownMenu.addEventListener("mouseup", (event) => {
+    event.stopPropagation();
+  });
+  dropdownMenu.addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
+  });
+  dropdownMenu.addEventListener("mousedown", (event) => {
+    event.stopPropagation();
+  });
+
   // document.addEventListener("click", function (event) {
   //   if (
   //     !dropdownButton.contains(event.target) &&
