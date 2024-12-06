@@ -223,7 +223,7 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(this.planetMesh);
-    this.planetGroup.rotation.y = this.currRotation;
+    //this.planetGroup.rotation.y = this.currRotation;
     this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
@@ -295,7 +295,7 @@ export class Earth {
 
   updatePlanetRotation(dt) {
     const rotationChange = this.planetRotationSpeed * dt;
-    const upVector = new THREE.Vector3(0, 1, 0).applyQuaternion(
+    const upVector = new THREE.Vector3(0, this.planetSize, 0).applyQuaternion(
       this.planetGroup.quaternion
     );
     const rotationQuaternion = new THREE.Quaternion();
@@ -389,43 +389,35 @@ export class Earth {
 
   getLocation(mouse, camera) {
     if (!this.isPickingLocation) return null;
+
     this.raycaster.setFromCamera(mouse, camera);
 
     const intersects = this.raycaster.intersectObject(this.planetMesh);
-
     if (intersects.length > 0) {
-      let local_coordinates = this.group.worldToLocal(intersects[0].point);
+      // Intersection in world space
+      const worldPoint = intersects[0].point.clone();
+      // Convert to planet's local space
+      const localPoint = this.planetGroup.worldToLocal(worldPoint);
 
-      let local_copy = new THREE.Vector3(
-        local_coordinates.x,
-        local_coordinates.y,
-        local_coordinates.z
-      );
+      // Normalize to unit sphere
+      localPoint.normalize();
 
-      let origin = new THREE.Vector3(0, 0, this.planetSize);
-      local_copy.y = 0;
-      local_copy.setLength(this.planetSize);
-      let angle = origin.angleTo(local_copy);
-      let long = THREE.MathUtils.radToDeg(angle) - 90;
+      // Invert the planet's rotation to get back to the reference frame
+      const inverseQuat = this.planetGroup.quaternion.clone().invert();
+      localPoint.applyQuaternion(inverseQuat);
 
-      const rotationAngle = THREE.MathUtils.radToDeg(
-        this.planetGroup.rotation.y
-      );
-      long = (long - rotationAngle + 360) % 360;
+      // Now we have removed the current rotation, but we still have the original tilt about Z.
+      // Rotate back by -planetAngle around Z to restore a frame where Y is the pole:
+      localPoint.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.planetAngle);
 
-      const tiltQuaternion = new THREE.Quaternion();
-      tiltQuaternion.setFromAxisAngle(
-        new THREE.Vector3(1, 0, 0),
-        this.planetGroup.rotation.z
-      );
+      // Now compute lat/lon:
+      const lat = THREE.MathUtils.radToDeg(Math.asin(localPoint.y));
+      const lon =
+        THREE.MathUtils.radToDeg(Math.atan2(localPoint.z, localPoint.x)) + 180;
 
-      let normalized = local_coordinates.clone().normalize();
-      normalized.applyQuaternion(tiltQuaternion.clone().invert());
-
-      let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
-
-      return { lat: lat, long: long };
+      return { lat, long: lon };
     }
+
     return null;
   }
 }
