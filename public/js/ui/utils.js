@@ -4,20 +4,28 @@ export function isMobileDevice() {
   );
 }
 
-export function getLocation(locationField) {
+export function isMobileScreen() {
+  return window.innerWidth < 768;
+}
 
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude = position.coords.latitude.toFixed(5);
-        const longitude = position.coords.longitude.toFixed(5);
-        locationField.value = `Lat: ${latitude}, Long: ${longitude}`;
-      },
-      (error) => {
-        locationField.value = "Unable to retrieve location. Please allow location access.";
-      }
-    );
-  } else {
-    locationField.value = "Geolocation not supported by your browser.";
-  }
+export function getLocation() {
+  return new Promise((resolve, reject) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const long = position.coords.longitude;
+          console.log(lat, long);
+          resolve({ lat, long });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          reject(null);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+      reject(null);
+    }
+  });
 }

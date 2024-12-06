@@ -103,6 +103,9 @@
       <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
       </div>
 
+      <!-- Hover Tooltip -->
+      <div id="hover-tooltip" class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50"></div>
+
       <!-- Sliding window left-->
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
@@ -240,6 +243,21 @@
                 <span class="cursor-pointer">Passing Satellites</span>
               </h3>
               <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <div id="toggle-section" class="flex items-center justify-between w-[250px]">
+                    <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
+                      id="toggle-svg">
+                      <path id="toggle-path" fill="#ffffff"
+                        d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
+                    </svg>
+                  </div>
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                    Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select
+                    Location</button>
+                </div>
               </div>
             </div>
 
@@ -259,6 +277,15 @@
                 <span class="cursor-pointer">Pass Prediction</span>
               </h3>
               <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                    Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select
+                    Location</button>
+                  <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
+                </div>
               </div>
             </div>
 
@@ -278,9 +305,12 @@
                 <span class="cursor-pointer">Re-entry Prediction</span>
               </h3>
               <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-re-entry" placeholder="Satellite" class="input-styling">
+                  <button data-ripple="true" id="calculate-re-entry-button" class="btn-blue w-full">Calculate</button>
+                </div>
               </div>
             </div>
-
           </div>
 
           <div class="tab-panel">
@@ -292,7 +322,7 @@
             <!-- Description Text -->
             <p class="text-sm md:text-base text-gray-400">
               This project is designed to help you track and explore satellites around Earth. Click on a satellite to
-              see more details about it.
+              see more details about it, including real-time speed, location, and other analytical data.
             </p>
             <hr class="my-6 border-teal-300" />
 
@@ -332,6 +362,22 @@
               speed, height above Earth, and other relevant data. They provide a visual representation of the
               satellite's position over time, both in the past 24 hours and into the future.
             </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Inclination Explanation -->
+            <h3 class="text-md md:text-lg text-white">What is Inclination?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
+              Inclination refers to the angle between a satellite's orbital plane and Earth's equatorial plane. It is
+              measured in degrees and determines the satellite's orbital behavior and coverage:
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+              <li><strong>0° Inclination:</strong> The satellite orbits directly above the equator (equatorial orbit).
+              </li>
+              <li><strong>90° Inclination:</strong> The satellite passes over the poles (polar orbit), covering the
+                entire Earth.</li>
+              <li><strong>Between 0° and 90°:</strong> Inclined orbits, ideal for regional coverage.</li>
+              <li><strong>Greater than 90°:</strong> Retrograde orbits, moving opposite to Earth's rotation.</li>
+            </ul>
             <hr class="my-6 border-teal-300" />
 
             <!-- Blog -->
