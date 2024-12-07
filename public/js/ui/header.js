@@ -64,7 +64,6 @@ export function initHeader() {
     const satellitesToShow = filteredSatellites.slice(0, 20);
     satellitesToShow.forEach((satellite) => {
       const option = document.createElement("a");
-      option.href = `#${satellite.id}`;
       option.textContent = satellite.name;
       option.dataset.satelliteId = satellite.id;
       option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700");
@@ -83,10 +82,15 @@ export function initHeader() {
   }
 
   function focusSatellite(id) {
+    let clicked_satellite = satellites.getInstanceIdById(id);
     glState.set({
-      clickedSatellite: satellites.getInstanceIdById(id),
+      clickedSatellite: clicked_satellite,
     });
-    satellites.setFocused(satellites.getGroup().id);
+
+    const searchInput = document.getElementById("satellite-search");
+    if (searchInput) {
+        searchInput.value = "";
+    }
     satelliteDropdown.classList.add("hidden");
   }
 
