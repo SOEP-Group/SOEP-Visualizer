@@ -27,7 +27,10 @@ function toggleView(view) {
 
     if (view === "earth" && currentView !== "earth") {
         changeView("earth");
-    } else if (view === "satellite" && currentView !== "satellite" && currentSatellite) {
+    } else if (view === "satellite" && currentView !== "satellite") {
+        alert("No satellite selected");
+    }
+    else if (view === "satellite" && currentView !== "satellite" && currentSatellite) {
         changeView("satellite");
     }
 }
