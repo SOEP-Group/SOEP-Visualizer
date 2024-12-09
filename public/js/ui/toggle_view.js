@@ -25,6 +25,7 @@ function toggleView(view) {
     else if (view === "satellite" && currentView !== "satellite") {
         if (!toggledSatellite) {
             alert("No satellite selected");
+            return;
         }
         changeView("satellite");
     }
