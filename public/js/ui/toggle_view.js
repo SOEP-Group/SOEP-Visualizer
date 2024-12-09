@@ -1,91 +1,65 @@
 import { subscribe } from "../eventBuss.js";
 import { camera, glState } from "../gl/index.js";
-import { satellites } from "../gl/scene.js";
+import { satellites, earth } from "../gl/scene.js";
 
 const earthView = document.getElementById("earth-view-button");
 const satelliteView = document.getElementById("satellite-view-button");
 
-let toggledSatellite = null;
+let toggledSatellite = false;
 
 export function initToggleView() {
     subscribe("glStateChanged", onGlStateChanged);
 
-    earthView.addEventListener("click", () => toggleView("earth"));
-    satelliteView.addEventListener("click", () => toggleView("satellite"));
-
-    changeView("earth");
-}
-
-function toggleView(view) {
-    const currentView = glState.get("selectedView");
-
-    if (view === "earth" && currentView !== "earth") {
-        changeView("earth");
-    }
-    else if (view === "satellite" && currentView !== "satellite") {
-        if (!toggledSatellite) {
-            alert("No satellite selected");
+    earthView.addEventListener("click", (event) => {
+        event.stopPropagation(); glState.set({
+            focusedTarget: { target: earth.getGroup().id },
+        });
+    });
+    satelliteView.addEventListener("click", (event) => {
+        event.stopPropagation(); if (!toggledSatellite) {
             return;
         }
-        changeView("satellite");
-    }
-}
-
-function changeView(view) {
-    if (glState.get("selectedView") === view) return;
-    glState.set({ selectedView: view });
-    updateViewButtons(view);
-    switchView(view);
+        glState.set({
+            focusedTarget: {
+                target: satellites.getGroup().id,
+                instanceIndex: glState.get("clickedSatellite"),
+            },
+        });
+    });
 }
 
 function updateViewButtons(selectedView) {
     earthView.classList.remove("bg-teal-500", "pointer-events-none");
     satelliteView.classList.remove("bg-teal-500", "pointer-events-none");
 
-    if (selectedView === "earth") {
+    if (selectedView.target === earth.getGroup().id) {
         earthView.classList.add("bg-teal-500", "pointer-events-none");
-    } else if (selectedView === "satellite") {
+
+    } else if (selectedView.target === satellites.getGroup().id) {
         satelliteView.classList.add("bg-teal-500", "pointer-events-none");
     }
 }
 
-function switchView(view) {
-    if (view === "earth") {
-        console.log("Switching to Earth view...");
-
-        const earthPosition = { x: 0, y: 0, z: 0 };
-        camera.position.set(earthPosition.x, earthPosition.y, earthPosition.z);
-    }
-    else if (view === "satellite" && toggledSatellite) {
-        console.log("Switching to Satellite view...");
-
-        const satellite = satellites.get(toggledSatellite);
-
-        camera.position.set(satellite.position.x, satellite.position.y, satellite.position.z);
-
-    }
-}
-
 function onGlStateChanged(changedStates) {
-    if (changedStates["selectedView"]) {
-        const selectedView = glState.get("selectedView");
+    if (changedStates["focusedTarget"]) {
+        const selectedView = glState.get("focusedTarget");
         updateViewButtons(selectedView);
-        switchView(selectedView);
     }
 
     if (changedStates["clickedSatellite"]) {
-        const clickedSatellite = glState.get("clickedSatellite");
-        if (clickedSatellite) {
-            toggledSatellite = clickedSatellite;
+        let clickedSatellite = glState.get("clickedSatellite");
 
-            if (glState.get("selectedView") !== "satellite") {
-                changeView("satellite");
-            }
-        } else {
-            toggledSatellite = null;
-            if (glState.get("selectedView") !== "earth") {
-                changeView("earth");
-            }
+        if (!clickedSatellite) {
+            toggledSatellite = false;
         }
+        else {
+            toggledSatellite = true;
+        }
+    }
+
+    if (!toggledSatellite) {
+        satelliteView.classList.add("cursor-not-allowed");
+    } else {
+        satelliteView.classList.remove("cursor-not-allowed");
     }
 }
