@@ -11,12 +11,14 @@ export function initToggleView() {
     subscribe("glStateChanged", onGlStateChanged);
 
     earthView.addEventListener("click", (event) => {
-        event.stopPropagation(); glState.set({
+        event.stopPropagation();
+        glState.set({
             focusedTarget: { target: earth.getGroup().id },
         });
     });
     satelliteView.addEventListener("click", (event) => {
-        event.stopPropagation(); if (!toggledSatellite) {
+        event.stopPropagation();
+        if (!toggledSatellite) {
             return;
         }
         glState.set({
@@ -37,6 +39,7 @@ function updateViewButtons(selectedView) {
 
     } else if (selectedView.target === satellites.getGroup().id) {
         satelliteView.classList.add("bg-teal-500", "pointer-events-none");
+        earthView.classList.add("bg-black");
     }
 }
 
