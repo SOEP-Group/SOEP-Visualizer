@@ -5,21 +5,15 @@ import { satellites } from "../gl/scene.js";
 const earthView = document.getElementById("earth-view-button");
 const satelliteView = document.getElementById("satellite-view-button");
 
-let currentSatellite = null;
+let toggledSatellite = null;
 
 export function initToggleView() {
-    if (!glState.get("selectedView")) {
-        glState.set({ selectedView: "earth" });
-    }
-
     subscribe("glStateChanged", onGlStateChanged);
 
     earthView.addEventListener("click", () => toggleView("earth"));
     satelliteView.addEventListener("click", () => toggleView("satellite"));
 
-    const selectedView = glState.get("selectedView");
-    updateViewButtons(selectedView);
-    switchView(selectedView);
+    changeView("earth");
 }
 
 function toggleView(view) {
@@ -27,10 +21,11 @@ function toggleView(view) {
 
     if (view === "earth" && currentView !== "earth") {
         changeView("earth");
-    } else if (view === "satellite" && currentView !== "satellite") {
-        alert("No satellite selected");
     }
-    else if (view === "satellite" && currentView !== "satellite" && currentSatellite) {
+    else if (view === "satellite" && currentView !== "satellite") {
+        if (!toggledSatellite) {
+            alert("No satellite selected");
+        }
         changeView("satellite");
     }
 }
@@ -56,11 +51,17 @@ function updateViewButtons(selectedView) {
 function switchView(view) {
     if (view === "earth") {
         console.log("Switching to Earth view...");
-        glState.set({ clickedSatellite: null });
-    } else if (view === "satellite" && currentSatellite) {
+
+        const earthPosition = { x: 0, y: 0, z: 0 };
+        camera.position.set(earthPosition.x, earthPosition.y, earthPosition.z);
+    }
+    else if (view === "satellite" && toggledSatellite) {
         console.log("Switching to Satellite view...");
-        const satellite = satellites.get(currentSatellite);
+
+        const satellite = satellites.get(toggledSatellite);
+
         camera.position.set(satellite.position.x, satellite.position.y, satellite.position.z);
+
     }
 }
 
@@ -74,11 +75,16 @@ function onGlStateChanged(changedStates) {
     if (changedStates["clickedSatellite"]) {
         const clickedSatellite = glState.get("clickedSatellite");
         if (clickedSatellite) {
-            currentSatellite = clickedSatellite;
-            glState.set({ selectedView: "satellite" });
+            toggledSatellite = clickedSatellite;
+
+            if (glState.get("selectedView") !== "satellite") {
+                changeView("satellite");
+            }
         } else {
-            currentSatellite = null;
-            glState.set({ selectedView: "earth" });
+            toggledSatellite = null;
+            if (glState.get("selectedView") !== "earth") {
+                changeView("earth");
+            }
         }
     }
 }
