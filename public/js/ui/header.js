@@ -41,7 +41,11 @@ export function initHeader() {
     }
 
     const satelliteList = [];
-    for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
+    for (
+      let instanceId = 0;
+      instanceId < satellites.instanceCount;
+      instanceId++
+    ) {
       const id = satellites.getIdByInstanceId(instanceId);
       const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
       satelliteList.push({ id, name });
@@ -89,7 +93,7 @@ export function initHeader() {
 
     const searchInput = document.getElementById("satellite-search");
     if (searchInput) {
-        searchInput.value = "";
+      searchInput.value = "";
     }
     satelliteDropdown.classList.add("hidden");
   }
@@ -106,7 +110,10 @@ export function initHeader() {
   });
 
   document.addEventListener("click", (event) => {
-    if (!satelliteDropdown.contains(event.target) && !searchInput.contains(event.target)) {
+    if (
+      !satelliteDropdown.contains(event.target) &&
+      !searchInput.contains(event.target)
+    ) {
       satelliteDropdown.classList.add("hidden");
     }
   });
@@ -117,6 +124,17 @@ export function initHeader() {
       return openMenu();
     }
     closeMenu();
+  });
+
+  dropdownMenu.addEventListener("mouseup", (event) => {
+    event.stopPropagation();
+  });
+  dropdownMenu.addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
+  });
+  dropdownMenu.addEventListener("mousedown", (event) => {
+    event.stopPropagation();
   });
 
   eventsButton.addEventListener("click", function () {

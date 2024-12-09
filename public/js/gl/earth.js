@@ -11,6 +11,7 @@ import {
   NormalBlending,
   Raycaster,
   SphereGeometry,
+  Vector3,
 } from "three";
 
 import * as THREE from "three";
@@ -223,7 +224,7 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(this.planetMesh);
-    //this.planetGroup.rotation.y = this.currRotation;
+    this.planetGroup.rotation.y = this.currRotation;
     this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
@@ -389,35 +390,34 @@ export class Earth {
 
   getLocation(mouse, camera) {
     if (!this.isPickingLocation) return null;
-
     this.raycaster.setFromCamera(mouse, camera);
 
     const intersects = this.raycaster.intersectObject(this.planetMesh);
+
     if (intersects.length > 0) {
-      // Intersection in world space
-      const worldPoint = intersects[0].point.clone();
-      // Convert to planet's local space
-      const localPoint = this.planetGroup.worldToLocal(worldPoint);
+      let local_coordinates = this.group.worldToLocal(intersects[0].point);
 
-      // Normalize to unit sphere
-      localPoint.normalize();
+      const inverseQuaternion = this.planetGroup.quaternion.clone().invert();
+      local_coordinates.applyQuaternion(inverseQuaternion);
 
-      // Invert the planet's rotation to get back to the reference frame
-      const inverseQuat = this.planetGroup.quaternion.clone().invert();
-      localPoint.applyQuaternion(inverseQuat);
+      let local_copy = new THREE.Vector3(
+        local_coordinates.x,
+        local_coordinates.y,
+        local_coordinates.z
+      );
 
-      // Now we have removed the current rotation, but we still have the original tilt about Z.
-      // Rotate back by -planetAngle around Z to restore a frame where Y is the pole:
-      localPoint.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.planetAngle);
+      let origin = new THREE.Vector3(0, 0, this.planetSize);
+      local_copy.y = 0;
+      local_copy.setLength(this.planetSize);
+      let angle = origin.angleTo(local_copy);
+      let long = THREE.MathUtils.radToDeg(angle) - 90;
 
-      // Now compute lat/lon:
-      const lat = THREE.MathUtils.radToDeg(Math.asin(localPoint.y));
-      const lon =
-        THREE.MathUtils.radToDeg(Math.atan2(localPoint.z, localPoint.x)) + 180;
+      // let lat_angle = local_coordinates.angleTo(local_copy);
+      let normalized = local_coordinates.clone().normalize();
+      let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
 
-      return { lat, long: lon };
+      return { lat: lat, long: long };
     }
-
     return null;
   }
 }
