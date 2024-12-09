@@ -26,11 +26,12 @@ export class Satellites {
   ids;
   speeds;
   instanceIdToSatelliteIdMap = {};
-  baseColor = new Color(1, 0, 0);
+  baseColor = new Color().setHex(0x289dba);
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
   focusedSatellite = -1;
   isUpdating = false;
+  isHidden = false;
 
   constructor(data) {
     this.instanceCount = data.length;
@@ -45,6 +46,11 @@ export class Satellites {
 
     this.animate = this.createAnimateFunction();
     this.animate();
+
+    this.instanceIdToDataMap = {};
+    data.forEach((satellite, index) => {
+      this.instanceIdToDataMap[index] = satellite;
+    });
   }
 
   createPoints(data) {
@@ -84,6 +90,7 @@ export class Satellites {
   }
 
   checkForClick(mouse, camera) {
+    if (this.isHidden) return null;
     this.raycaster.setFromCamera(mouse, camera);
 
     const intersects = this.raycaster.intersectObject(earth.getGroup());
@@ -99,6 +106,15 @@ export class Satellites {
 
   getIdByInstanceId(id) {
     return this.instanceIdToSatelliteIdMap[id];
+  }
+
+  getInstanceIdById(id){
+    for(const [key, val] of Object.entries(this.instanceIdToSatelliteIdMap)){
+      if(val == id){
+        return key;
+      }
+    }
+    return null;
   }
 
   resetColors() {
@@ -129,11 +145,21 @@ export class Satellites {
       const colorIndex = id * 3;
       const colors = this.points.geometry.attributes.color.array;
 
-      colors[colorIndex] = this.hoverColor.r;
-      colors[colorIndex + 1] = this.hoverColor.g;
-      colors[colorIndex + 2] = this.hoverColor.b;
-
+      if (id !== this.focusedSatellite) {
+        colors[colorIndex] = this.hoverColor.r;
+        colors[colorIndex + 1] = this.hoverColor.g;
+        colors[colorIndex + 2] = this.hoverColor.b;
+      }
       this.hoveredSatellite = id;
+      this.points.geometry.attributes.color.needsUpdate = true;
+    }
+
+    if (this.focusedSatellite > -1) {
+      const focusedIndex = this.focusedSatellite * 3;
+      const colors = this.points.geometry.attributes.color.array;
+      colors[focusedIndex] = this.hoverColor.r;
+      colors[focusedIndex + 1] = this.hoverColor.g;
+      colors[focusedIndex + 2] = this.hoverColor.b;
       this.points.geometry.attributes.color.needsUpdate = true;
     }
   }
@@ -290,5 +316,10 @@ export class Satellites {
       this.speeds[index + 1],
       this.speeds[index + 2]
     );
+  }
+
+  hide(shoudHide) {
+    this.isHidden = shoudHide;
+    this.group.visible = !shoudHide;
   }
 }

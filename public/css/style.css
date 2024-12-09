@@ -17,7 +17,7 @@ body {
   width: 100%;
 }
 
-.mobile-close {
+.ui-nav-buttons {
   --aug-border-y: 1px;
   --aug-border-x: 1px;
   --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
@@ -30,6 +30,10 @@ body {
   --aug-border-y: 1px;
   --aug-border-x: 1px;
   --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
+}
+
+.popup-container-extended .popup-window {
+  overflow-y: auto;
 }
 
 .loading-text::after {

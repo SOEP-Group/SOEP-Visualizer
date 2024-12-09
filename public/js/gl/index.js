@@ -5,7 +5,7 @@ import {
   CubeTextureLoader,
   Vector2,
 } from "three";
-import { State } from "../globalState.js";
+import { State, globalState } from "../globalState.js";
 import { initDebug } from "./debug.js";
 import {
   initRenderer,
@@ -15,7 +15,6 @@ import {
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites } from "./scene.js";
-import { initViewer } from "./model-viewer.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -25,6 +24,7 @@ export * from "./model-viewer.js";
 
 subscribe("appStartup", onStart);
 subscribe("glStateChanged", onStateChanged);
+subscribe("onGlobalStateChanged", onGlobalStateChanged);
 
 const initialGlState = {
   rendererInfo: { frames: 0, fps: 0 },
@@ -72,13 +72,27 @@ function onStart() {
       mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
       mouse.y =
         -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
+      if (globalState.get("pickingLocation")) {
+        const res = earth.checkForClick(mouse, camera);
+        if (res !== null) {
+          document.body.style.cursor = "crosshair";
+        } else {
+          document.body.style.cursor = "default";
+        }
+        return;
+      }
+      if (!satellites) {
+        return;
+      }
       let hovered_satellite = satellites.checkForClick(mouse, camera);
       if (hovered_satellite !== null) {
         document.body.style.cursor = "pointer";
         satellites.setHovered(hovered_satellite);
+        publish("hoveredSatellite", { instanceId: hovered_satellite, mouseX: event.clientX, mouseY: event.clientY });
       } else {
         document.body.style.cursor = "default";
         satellites.setHovered(-1);
+        publish("hoveredSatellite", { instanceId: -1 });
       }
     },
     false
@@ -111,6 +125,19 @@ function onViewportClick(event) {
   const rect = gl_viewport.getBoundingClientRect(); // Get viewport bounds
   mouse.x = ((event.clientX - rect.left) / gl_viewport.clientWidth) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / gl_viewport.clientHeight) * 2 + 1;
+  if (globalState.get("pickingLocation")) {
+    const res = earth.getLocation(mouse, camera);
+    if (res !== null) {
+      const { lat, long } = res;
+      if (globalState.get("pick_passing")) {
+        globalState.set({ passing_location: { lat, long } });
+      } else if (globalState.get("pick_pass_prediction")) {
+        globalState.set({ pass_prediction_location: { lat, long } });
+      }
+      globalState.set({ pickingLocation: false });
+    }
+    return;
+  }
   let clicked_satellite = satellites.checkForClick(mouse, camera);
   if (clicked_satellite !== null) {
     glState.set({
@@ -170,5 +197,13 @@ function onStateChanged(changedStates) {
       });
       satellites.setFocused(clicked_satellite);
     }
+  }
+}
+
+function onGlobalStateChanged(changedStates) {
+  if (changedStates["pickingLocation"]) {
+    const picking = globalState.get("pickingLocation");
+    satellites.hide(picking);
+    earth.togglePickingLocation(picking);
   }
 }

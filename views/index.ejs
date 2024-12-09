@@ -3,7 +3,9 @@
 
 <head>
   <title>SOEP Visualizer</title>
+  <link rel="icon" href="../images/logo/earth_logo.ico" type="image/x-icon">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script async src="./libs/es-shims/es-module-shims.js"></script>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
@@ -29,7 +31,6 @@
   <div id="loading-screen"
     class="top-0 left-0 fixed w-full h-full bg-loading-screen bg-cover bg-center flex justify-center items-center z-50 opacity-100 transition-opacity duration-500">
     <div class="flex flex-col items-center space-y-4 text-white">
-      <h2 class="font-bold text-4xl">Launching</h2>
       <div alt="Logo" class="logo animated-logo h-[150px] w-auto drop-shadow-[4px_4px_10px_rgba(0,0,0,0.5)]">
         <object type="image/svg+xml" data="../images/logo/animated_logo.svg" height="150"></object>
       </div>
@@ -57,36 +58,28 @@
           <img src="../images/logo/logo.svg" alt="Logo" class="h-[60px] w-auto">
         </a>
 
-        <!-- Events Button -->
-        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded hover:text-gray-400" id="events-button">
-          Events
-        </button>
-
-        <!-- Prediction dropdown -->
-        <button class="bg-black menu-hover text-white px-3 py-2 md:ml-7 rounded hover:text-gray-400"
-          id="prediction-button">
-          Predictions
-        </button>
-
-        <!-- Satellite search -->
-        <div class="relative w-full md:w-72 hidden md:block md:ml-7">
-          <!-- Search Input -->
-          <input type="text" id="satellite-search" placeholder="Search for a satellite"
-            class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
-          <!-- Search Button (magnifying glass) -->
-          <button id="satellite-search-button"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
-            title="Search">
-            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
-                d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-            </svg>
-          </button>
-        </div>
-
-      </div>
     </nav>
+
+    <!-- Satellite search -->
+    <div class="right-6 w-full md:w-[32rem] hidden md:block md:ml-7 relative">
+      <!-- Search Input -->
+      <input type="text" id="satellite-search" placeholder="Search for a satellite"
+        class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
+      <!-- Search Button (magnifying glass) -->
+      <button id="satellite-search-button"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white rounded-full p-2 focus:outline-none hover:bg-gray-700 transition duration-200 ease-in-out"
+        title="Search">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+            d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+        </svg>
+      </button>
+      <!-- dropdown suck it ivan -->
+      <div id="satellite-dropdown" class="absolute top-full left-0 bg-black text-white w-full border border-gray-700 mt-1 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden"></div>
+    </div>
+
+
   </header>
 
   <div class="gl_viewport" id="gl_viewport">
@@ -94,6 +87,9 @@
 
       <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
       </div>
+
+      <!-- Hover Tooltip -->
+      <div id="hover-tooltip" class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50"></div>
 
       <!-- Sliding window left-->
       <div id="ham_menu"
@@ -232,6 +228,21 @@
                 <span class="cursor-pointer">Passing Satellites</span>
               </h3>
               <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <div id="toggle-section" class="flex items-center justify-between w-[250px]">
+                    <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
+                      id="toggle-svg">
+                      <path id="toggle-path" fill="#ffffff"
+                        d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
+                    </svg>
+                  </div>
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                    Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select
+                    Location</button>
+                </div>
               </div>
             </div>
 
@@ -251,6 +262,15 @@
                 <span class="cursor-pointer">Pass Prediction</span>
               </h3>
               <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
+                  <input type="text" placeholder="Location" class="location-field input-styling">
+                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                    Location</button>
+                  <button data-ripple="true" class="select-location-button location-button-styling">Select
+                    Location</button>
+                  <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
+                </div>
               </div>
             </div>
 
@@ -270,13 +290,16 @@
                 <span class="cursor-pointer">Re-entry Prediction</span>
               </h3>
               <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-re-entry" placeholder="Satellite" class="input-styling">
+                  <button data-ripple="true" id="calculate-re-entry-button" class="btn-blue w-full">Calculate</button>
+                </div>
               </div>
             </div>
-
           </div>
 
           <div class="tab-panel">
-            <p>Add some graphs here</p>
+            <div id="graphs-container" class="text-white"></div>
           </div>
 
           <div class="tab-panel">
@@ -284,7 +307,7 @@
             <!-- Description Text -->
             <p class="text-sm md:text-base text-gray-400">
               This project is designed to help you track and explore satellites around Earth. Click on a satellite to
-              see more details about it.
+              see more details about it, including real-time speed, location, and other analytical data.
             </p>
             <hr class="my-6 border-teal-300" />
 
@@ -324,6 +347,22 @@
               speed, height above Earth, and other relevant data. They provide a visual representation of the
               satellite's position over time, both in the past 24 hours and into the future.
             </p>
+            <hr class="my-6 border-teal-300" />
+
+            <!-- Inclination Explanation -->
+            <h3 class="text-md md:text-lg text-white">What is Inclination?</h3>
+            <p class="mt-2 text-sm md:text-base text-gray-400">
+              Inclination refers to the angle between a satellite's orbital plane and Earth's equatorial plane. It is
+              measured in degrees and determines the satellite's orbital behavior and coverage:
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+              <li><strong>0° Inclination:</strong> The satellite orbits directly above the equator (equatorial orbit).
+              </li>
+              <li><strong>90° Inclination:</strong> The satellite passes over the poles (polar orbit), covering the
+                entire Earth.</li>
+              <li><strong>Between 0° and 90°:</strong> Inclined orbits, ideal for regional coverage.</li>
+              <li><strong>Greater than 90°:</strong> Retrograde orbits, moving opposite to Earth's rotation.</li>
+            </ul>
             <hr class="my-6 border-teal-300" />
 
             <!-- Blog -->
@@ -379,7 +418,7 @@
           <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
             <p class="loading-text">Loading</p>
           </div>
-          <div id="popup-content" class="hidden space-y-4 p-4 text-teal-300"></div>
+          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300"></div>
         </div>
 
         <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
@@ -397,11 +436,11 @@
         class="z-10 pb-4 rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-all duration-300 ease-in-out flex flex-col w-full px-1 h-[30%] text-base md:hidden">
 
         <!-- Popup Window Content -->
-        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative"
+        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative pt-6"
           data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
 
           <!-- Close Button -->
-          <div class="absolute top-4 right-4 z-20">
+          <div class="absolute top-2 right-2 z-20">
             <button id="mobile-close-popup" class="bg-transparent p-0" title="Close">
               <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -428,10 +467,11 @@
           </div>
 
           <!-- Actual Content (Initially hidden) -->
-          <div id="mobile-popup-content" class="hidden space-y-4 text-teal-300 text-sm"></div>
+          <div id="mobile-popup-content" class="hidden space-y-2 text-teal-300 text-sm"></div>
         </div>
       </div>
 </body>
+
 <script type="module" src="js/main.js"></script>
 
 </html>

@@ -7,12 +7,34 @@ import { initResizer } from "./resizer.js";
 import { initPopup } from "./popup.js";
 import { glState } from "../gl/index.js";
 import { initOrbit } from "../gl/orbit.js";
+import { satellites } from "../gl/scene.js";
+import { initGraphs } from "./graphs.js";
 
 export * from "./settings.js";
 export * from "./header.js";
 export * from "./resizer.js";
 export * from "./predictions.js";
 export * from "./popup.js";
+
+const hoverTooltip = document.getElementById("hover-tooltip");
+
+subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
+  if (instanceId === -1) {
+    hoverTooltip.classList.add("hidden");
+  } else {
+    const satData = satellites.instanceIdToDataMap[instanceId];
+
+    if (satData && satData.name) {
+      hoverTooltip.innerHTML = `<strong>${satData.name}</strong>`;
+    } else {
+      hoverTooltip.innerHTML = "Unknown Satellite";
+    }
+
+    hoverTooltip.style.left = `${mouseX + 10}px`;
+    hoverTooltip.style.top = `${mouseY + 10}px`;
+    hoverTooltip.classList.remove("hidden");
+  }
+});
 
 subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
@@ -27,6 +49,7 @@ function onStart() {
   initResizer();
   initPopup();
   initOrbit();
+  initGraphs();
 
   const tabs = document.querySelectorAll(".tab");
   const panels = document.querySelectorAll(".tab-panel");
