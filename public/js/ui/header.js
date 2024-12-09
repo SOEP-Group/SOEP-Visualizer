@@ -8,11 +8,7 @@ import { glState } from "../gl/index.js";
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
 
-const eventsButton = document.getElementById("events-button");
 const eventsTab = document.getElementById("events-tab");
-
-const predictionButton = document.getElementById("prediction-button");
-const predictionTab = document.getElementById("prediction-tab-icon");
 
 let firstMenuOpen = true;
 
@@ -135,16 +131,6 @@ export function initHeader() {
   });
   dropdownMenu.addEventListener("mousedown", (event) => {
     event.stopPropagation();
-  });
-
-  eventsButton.addEventListener("click", function () {
-    openMenu();
-    eventsTab.click();
-  });
-
-  predictionButton.addEventListener("click", function () {
-    openMenu();
-    predictionTab.click();
   });
 }
 

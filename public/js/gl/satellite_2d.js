@@ -26,7 +26,7 @@ export class Satellites {
   ids;
   speeds;
   instanceIdToSatelliteIdMap = {};
-  baseColor = new Color(1, 0, 0);
+  baseColor = new Color().setHex(0x289dba);
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
   focusedSatellite = -1;
