@@ -16,6 +16,7 @@
     "@gltf-transform/core": "^4.0.10",
     "@gltf-transform/extensions": "^4.0.10",
     "@gltf-transform/functions": "^4.0.10",
+    "chart.js": "^4.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",

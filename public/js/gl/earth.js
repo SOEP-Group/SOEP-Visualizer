@@ -93,25 +93,47 @@ export class Earth {
 
   calculateEarthRotationInRadians() {
     const now = new Date();
+
+    // Reference time: start of the day (UTC)
     const referenceTime = new Date(
       now.getUTCFullYear(),
       now.getUTCMonth(),
       now.getUTCDate(),
-      0,
+      0, // Midnight UTC
       0,
       0
     );
+
+    // Time elapsed since midnight (in seconds)
     const elapsedTimeInSeconds = (now - referenceTime) / 1000;
-    const angularSpeed = (2 * Math.PI) / 86164;
+
+    // Earth's angular speed for rotation (sidereal day in seconds)
+    const angularSpeed = (2 * Math.PI) / 86164; // radians per second
+
+    // Rotation angle since midnight
     const rotationAngle = angularSpeed * elapsedTimeInSeconds;
 
+    // Ensure angle is within [0, 2π]
     return rotationAngle % (2 * Math.PI);
   }
+
   calculateInitialOrbitAngle() {
     const now = new Date();
+
+    // Reference time: start of the year (UTC)
     const startOfYear = new Date(now.getUTCFullYear(), 0, 1);
+
+    // Time elapsed since the start of the year (in seconds)
     const elapsedTimeInSeconds = (now - startOfYear) / 1000;
-    return (this.orbitalSpeed * elapsedTimeInSeconds) % (2 * Math.PI);
+
+    // Earth's orbital angular speed (one full orbit per year)
+    const angularSpeed = (2 * Math.PI) / (365.25 * 24 * 60 * 60); // radians per second
+
+    // Orbit angle since the start of the year
+    const orbitAngle = angularSpeed * elapsedTimeInSeconds;
+
+    // Ensure angle is within [0, 2π]
+    return orbitAngle % (2 * Math.PI);
   }
 
   async createPlanet() {
@@ -296,27 +318,29 @@ export class Earth {
 
   updatePlanetRotation(dt) {
     const rotationChange = this.planetRotationSpeed * dt;
-    const upVector = new THREE.Vector3(0, this.planetSize, 0).applyQuaternion(
-      this.planetGroup.quaternion
+
+    const tiltAxis = new THREE.Vector3(0, 1, 0).applyAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      THREE.MathUtils.degToRad(23.5)
     );
+
     const rotationQuaternion = new THREE.Quaternion();
     rotationQuaternion.setFromAxisAngle(
-      upVector,
+      tiltAxis,
       this.planetRotationDirection === "clockwise"
         ? -rotationChange
         : rotationChange
     );
+
     this.planetGroup.quaternion.premultiply(rotationQuaternion);
   }
 
   updatePlanetOrbit(dt) {
-    // Update Earth's position in orbit (annual cycle)
     this.currentOrbitAngle += this.orbitalSpeed * dt;
-    this.group.position.set(
-      this.orbitalDistance * Math.cos(this.currentOrbitAngle),
-      0,
-      this.orbitalDistance * Math.sin(this.currentOrbitAngle)
-    );
+    const x = this.orbitalDistance * Math.cos(this.currentOrbitAngle);
+    const z = this.orbitalDistance * Math.sin(this.currentOrbitAngle);
+
+    this.group.position.set(x, 0, z);
   }
 
   updateCloudsRotation(dt) {
@@ -412,7 +436,6 @@ export class Earth {
       let angle = origin.angleTo(local_copy);
       let long = THREE.MathUtils.radToDeg(angle) - 90;
 
-      // let lat_angle = local_coordinates.angleTo(local_copy);
       let normalized = local_coordinates.clone().normalize();
       let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
 
