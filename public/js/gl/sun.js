@@ -101,8 +101,8 @@ export class Sun {
       emissive: this.color,
       emissiveIntensity: 3.2,
     });
-    const sunMesh = new Mesh(sunGeometry, sunMaterial);
-    this.group.add(sunMesh);
+    this.sun_mesh = new Mesh(sunGeometry, sunMaterial);
+    this.group.add(this.sun_mesh);
 
     this.group.add(this.sunRim);
 
@@ -267,17 +267,14 @@ export class Sun {
     const sunLight = new PointLight(0xffffff, 10000);
     sunLight.position.set(0, 0, 0);
     this.group.add(sunLight);
-
     this.flare = new Flare({
       position: new Vector3(),
       colorGain: this.color,
       angle: Math.PI * 2,
     });
-
     this.flare.flareSpeed = 0.0; // change this if you wanna animate the flare
     this.flare.glareSize = 0.1;
     this.flare.flareSize = 0.001;
-
     this.group.add(this.flare);
   }
 
@@ -291,6 +288,10 @@ export class Sun {
 
   getGroup() {
     return this.group;
+  }
+
+  getMesh() {
+    return this.sun_mesh;
   }
 
   getFlare() {
