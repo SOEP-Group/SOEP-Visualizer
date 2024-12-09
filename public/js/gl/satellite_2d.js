@@ -108,6 +108,15 @@ export class Satellites {
     return this.instanceIdToSatelliteIdMap[id];
   }
 
+  getInstanceIdById(id){
+    for(const [key, val] of Object.entries(this.instanceIdToSatelliteIdMap)){
+      if(val == id){
+        return key;
+      }
+    }
+    return null;
+  }
+
   resetColors() {
     const colors = this.points.geometry.attributes.color.array;
 
@@ -136,11 +145,21 @@ export class Satellites {
       const colorIndex = id * 3;
       const colors = this.points.geometry.attributes.color.array;
 
-      colors[colorIndex] = this.hoverColor.r;
-      colors[colorIndex + 1] = this.hoverColor.g;
-      colors[colorIndex + 2] = this.hoverColor.b;
-
+      if (id !== this.focusedSatellite) {
+        colors[colorIndex] = this.hoverColor.r;
+        colors[colorIndex + 1] = this.hoverColor.g;
+        colors[colorIndex + 2] = this.hoverColor.b;
+      }
       this.hoveredSatellite = id;
+      this.points.geometry.attributes.color.needsUpdate = true;
+    }
+
+    if (this.focusedSatellite > -1) {
+      const focusedIndex = this.focusedSatellite * 3;
+      const colors = this.points.geometry.attributes.color.array;
+      colors[focusedIndex] = this.hoverColor.r;
+      colors[focusedIndex + 1] = this.hoverColor.g;
+      colors[focusedIndex + 2] = this.hoverColor.b;
       this.points.geometry.attributes.color.needsUpdate = true;
     }
   }
