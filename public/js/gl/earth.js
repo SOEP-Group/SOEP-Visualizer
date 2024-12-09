@@ -11,6 +11,7 @@ import {
   NormalBlending,
   Raycaster,
   SphereGeometry,
+  Vector3,
 } from "three";
 
 import * as THREE from "three";
@@ -223,8 +224,8 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(this.planetMesh);
-    // this.planetGroup.rotation.y = this.currRotation;
-    // this.planetGroup.rotation.z = this.planetAngle;
+    this.planetGroup.rotation.y = this.currRotation;
+    this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
     const planetCloudsMaterial = new MeshStandardMaterial({
@@ -294,13 +295,18 @@ export class Earth {
   }
 
   updatePlanetRotation(dt) {
-    // Update Earth's rotation (daily cycle)
     const rotationChange = this.planetRotationSpeed * dt;
-    if (this.planetRotationDirection === "clockwise") {
-      this.planetGroup.rotation.y -= rotationChange;
-    } else {
-      this.planetGroup.rotation.y += rotationChange;
-    }
+    const upVector = new THREE.Vector3(0, this.planetSize, 0).applyQuaternion(
+      this.planetGroup.quaternion
+    );
+    const rotationQuaternion = new THREE.Quaternion();
+    rotationQuaternion.setFromAxisAngle(
+      upVector,
+      this.planetRotationDirection === "clockwise"
+        ? -rotationChange
+        : rotationChange
+    );
+    this.planetGroup.quaternion.premultiply(rotationQuaternion);
   }
 
   updatePlanetOrbit(dt) {
@@ -350,8 +356,8 @@ export class Earth {
       if (this.animate) {
         requestAnimationFrame(this.animate);
         const dt = clock.getDelta();
-        // this.updatePlanetRotation(dt);
-        // this.updatePlanetOrbit(dt);
+        this.updatePlanetRotation(dt);
+        this.updatePlanetOrbit(dt);
         this.updateCloudsRotation(dt);
         this.updateCloudsOpacity(dt);
       }
@@ -391,6 +397,9 @@ export class Earth {
     if (intersects.length > 0) {
       let local_coordinates = this.group.worldToLocal(intersects[0].point);
 
+      const inverseQuaternion = this.planetGroup.quaternion.clone().invert();
+      local_coordinates.applyQuaternion(inverseQuaternion);
+
       let local_copy = new THREE.Vector3(
         local_coordinates.x,
         local_coordinates.y,
@@ -403,6 +412,7 @@ export class Earth {
       let angle = origin.angleTo(local_copy);
       let long = THREE.MathUtils.radToDeg(angle) - 90;
 
+      // let lat_angle = local_coordinates.angleTo(local_copy);
       let normalized = local_coordinates.clone().normalize();
       let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
 
