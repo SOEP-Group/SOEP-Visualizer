@@ -20,7 +20,6 @@ function onGlobalStateChanged(changedStates) {
     const passing_location = globalState.get("passing_location");
     if (passing_location !== null) {
       const grandparent_element = document.getElementById("passing-content");
-      console.log(grandparent_element.children);
       for (const child of grandparent_element.children) {
         child.getElementsByClassName(
           "location-field"
@@ -66,9 +65,7 @@ export function initPredictions() {
 
   document
     .getElementById("calculate-pass-button")
-    .addEventListener("click", function () {
-
-    });
+    .addEventListener("click", function () {});
 
   document
     .getElementById("calculate-re-entry-button")
