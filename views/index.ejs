@@ -4,6 +4,8 @@
 <head>
   <title>SOEP Visualizer</title>
   <link rel="icon" href="../images/logo/earth_logo.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.css" integrity="sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" integrity="sha512-g/feAizmeiVKSwvfW0Xk3ZHZqv5Zs8PEXEBKzL15pM0SevEvoX8eJ4yFWbqakvRj7vtw1Q97bLzEpG2IVWX0Mg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script async src="./libs/es-shims/es-module-shims.js"></script>
@@ -40,7 +42,7 @@
 
   <header
     class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-teal-300 sticky top-0">
-    <nav class="flex items-center max-w-full px-4 w-full">
+    <nav class="flex items-center ml-4 mr-4 max-w-full px-4 w-full relative">
 
       <!-- Burger menu -->
       <div id="menu__toggle"
@@ -60,6 +62,134 @@
 
     </nav>
 
+    <!-- Filters Button -->
+    <div class="flex items-center ml-4 mr-4 relative">
+      <button id="filters-button" class="flex items-center bg-black border border-gray-700 rounded-lg px-4 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
+        title="Filters">
+        <!-- Icon (funnel) -->
+        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z"></path>
+        </svg>
+        <span>Filters</span>
+      </button>
+
+      <div id="filters-dropdown"
+        class="invisible absolute top-[calc(100%+1rem)] right-0 w-[20rem] bg-black/80 text-white rounded-md shadow-lg border border-teal-300 p-4 z-50 opacity-0 transform translate-y-2 transition-all duration-300 ease-in-out">
+        
+        <div class="flex justify-end mb-2">
+          <button id="close-filters-button"
+            class="text-teal-300 hover:text-teal-200 transition ease-in-out duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M18 6 6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+          <!-- Speed Slider -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="speed-slider" class="block mb-1 text-sm font-medium">Speed (km/s)</label>
+            <div id="speed-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="speed-min-label">0</span>
+              <span id="speed-max-label">12</span>
+            </div>
+          </div>
+
+          <!-- Longitude -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="longitude-slider" class="block mb-1 text-sm font-medium">Longitude (°)</label>
+            <div id="longitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="longitude-min-label">-180</span>
+              <span id="longitude-max-label">180</span>
+            </div>
+          </div>
+
+          <!-- Latitude -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="latitude-slider" class="block mb-1 text-sm font-medium">Latitude (°)</label>
+            <div id="latitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="latitude-min-label">-90</span>
+              <span id="latitude-max-label">90</span>
+            </div>
+          </div>
+
+          <!-- Orbit Distance -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="orbit-distance-slider" class="block mb-1 text-sm font-medium">Orbit Distance (km)</label>
+            <div id="orbit-distance-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="orbit-distance-min-label">100</span>
+              <span id="orbit-distance-max-label">500000</span>
+            </div>
+          </div>
+
+          <!-- Inclination -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="inclination-slider" class="block mb-1 text-sm font-medium">Inclination (°)</label>
+            <div id="inclination-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="inclination-min-label">0</span>
+              <span id="inclination-max-label">180</span>
+            </div>
+          </div>
+
+          <!-- Revolution Time -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="revolution-time-slider" class="block mb-1 text-sm font-medium">Revolution Time (hours)</label>
+            <div id="revolution-time-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="revolution-time-min-label">80</span>
+              <span id="revolution-time-max-label">40000</span>
+            </div>
+          </div>
+
+          <!-- Launch Date -->
+          <div>
+            <label for="launch-date" class="block mb-1 text-sm font-medium">Launch Date</label>
+            <input type="date" id="launch-date" class="w-full bg-black text-white border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1" />
+          </div>
+
+          <!-- Launch Site -->
+          <div>
+            <label for="launch-site" class="block mb-1 text-sm font-medium">Launch Site</label>
+            <select id="launch-site" class="w-full bg-black border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1 transition">
+              <option value="">Any</option>
+              <option value="AFETR">AFETR</option>
+              <option value="KSC">KSC</option>
+            </select>
+          </div>
+
+          <!-- Owner -->
+          <div>
+            <label for="owner" class="block mb-1 text-sm font-medium">Owner</label>
+            <select id="owner" class="w-full bg-black border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1">
+              <option value="">Any</option>
+              <option value="US">US</option>
+              <option value="RU">RU</option>
+              <option value="CN">CN</option>
+              <option value="EU">EU</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-center space-x-2 mt-4 border-t border-gray-700 pt-4">
+          <button id="clear-filters-button"
+            class="border border-teal-300 text-teal-300 px-4 py-1 rounded hover:bg-teal-300 hover:text-black transition">
+            Clear Filters
+          </button>
+          <button id="apply-filters-button"
+            class="bg-teal-300 text-black px-4 py-1 rounded font-semibold hover:bg-teal-400 transition">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Satellite search -->
     <div class="right-6 w-full md:w-[32rem] hidden md:block md:ml-7 relative">
       <!-- Search Input -->
@@ -78,7 +208,6 @@
       <!-- dropdown suck it ivan -->
       <div id="satellite-dropdown" class="absolute top-full left-0 bg-black text-white w-full border border-gray-700 mt-1 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden"></div>
     </div>
-
 
   </header>
 

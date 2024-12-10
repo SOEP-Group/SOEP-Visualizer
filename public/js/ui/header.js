@@ -149,3 +149,150 @@ function closeMenu() {
   dropdownButton.classList.remove("tham-active");
   dropdownMenu.classList.add("-translate-x-full");
 }
+
+// Filter
+const filtersButton = document.getElementById("filters-button");
+const filtersDropdown = document.getElementById("filters-dropdown");
+const closeFiltersButton = document.getElementById("close-filters-button");
+
+function toggleDropdown(isOpen) {
+  if (isOpen) {
+    filtersDropdown.classList.remove(
+      "invisible",
+      "opacity-0",
+      "translate-y-2",
+      "pointer-events-none"
+    );
+    filtersDropdown.classList.add("opacity-100", "translate-y-0");
+  } else {
+    filtersDropdown.classList.remove("opacity-100", "translate-y-0");
+    filtersDropdown.classList.add(
+      "opacity-0",
+      "translate-y-2",
+      "pointer-events-none"
+    );
+    setTimeout(() => filtersDropdown.classList.add("invisible"), 300); // Match duration
+  }
+}
+
+function logEvent(event, value) {
+  console.log(`${event}: ${value}`);
+}
+
+filtersButton.addEventListener("click", () => {
+  const isCurrentlyClosed = filtersDropdown.classList.contains("invisible");
+  toggleDropdown(isCurrentlyClosed);
+  console.log("Filters button clicked");
+});
+
+closeFiltersButton.addEventListener("click", () => {
+  toggleDropdown(false);
+  console.log("Close filters panel");
+});
+
+// const inputs = [
+//   { id: "speed-range", event: "Speed range" },
+//   { id: "longitude-range", event: "Longitude range" },
+//   { id: "latitude-range", event: "Latitude range" },
+//   { id: "orbit-distance", event: "Orbit distance" },
+//   { id: "inclination", event: "Inclination" },
+//   { id: "revolution-time", event: "Revolution Time" },
+//   { id: "launch-date", event: "Launch Date" },
+//   { id: "launch-site", event: "Launch Site" },
+//   { id: "owner", event: "Owner" },
+// ];
+
+// inputs.forEach(({ id, event }) => {
+//   document.getElementById(id).addEventListener("change", function () {
+//     logEvent(event, this.value);
+//   });
+// });
+
+const buttons = [
+  { id: "clear-filters-button", action: "Clear filters clicked" },
+  { id: "apply-filters-button", action: "Apply filters clicked" },
+];
+
+buttons.forEach(({ id, action }) => {
+  document.getElementById(id).addEventListener("click", () => {
+    console.log(action);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sliderConfigs = [
+    {
+      id: "speed-slider",
+      minLabel: "speed-min-label",
+      maxLabel: "speed-max-label",
+      range: [0, 12],
+      step: 0.1,
+    },
+    {
+      id: "longitude-slider",
+      minLabel: "longitude-min-label",
+      maxLabel: "longitude-max-label",
+      range: [-180, 180],
+      step: 1,
+    },
+    {
+      id: "latitude-slider",
+      minLabel: "latitude-min-label",
+      maxLabel: "latitude-max-label",
+      range: [-90, 90],
+      step: 1,
+    },
+    {
+      id: "orbit-distance-slider",
+      minLabel: "orbit-distance-min-label",
+      maxLabel: "orbit-distance-max-label",
+      range: [100, 500000],
+      step: 100,
+    },
+    {
+      id: "inclination-slider",
+      minLabel: "inclination-min-label",
+      maxLabel: "inclination-max-label",
+      range: [0, 180],
+      step: 1,
+    },
+    {
+      id: "revolution-time-slider",
+      minLabel: "revolution-time-min-label",
+      maxLabel: "revolution-time-max-label",
+      range: [80, 40000],
+      step: 10,
+    },
+  ];
+
+  sliderConfigs.forEach(({ id, minLabel, maxLabel, range, step }) => {
+    const slider = document.getElementById(id);
+    const minLabelElem = document.getElementById(minLabel);
+    const maxLabelElem = document.getElementById(maxLabel);
+
+    if (slider.noUiSlider) {
+      console.warn(`Slider with ID "${id}" is already initialized.`);
+      return;
+    }
+
+    noUiSlider.create(slider, {
+      start: range,
+      connect: true,
+      range: {
+        min: range[0],
+        max: range[1],
+      },
+      step: step,
+      tooltips: false,
+      format: {
+        to: (value) => parseFloat(value).toFixed(step < 1 ? 1 : 0),
+        from: (value) => parseFloat(value),
+      },
+    });
+
+    slider.noUiSlider.on("update", (values) => {
+      minLabelElem.textContent = values[0];
+      maxLabelElem.textContent = values[1];
+    });
+  });
+});
