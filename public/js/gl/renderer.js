@@ -7,6 +7,9 @@ import {
   RenderPass,
   SMAAEffect,
   SMAAPreset,
+  ToneMappingEffect,
+  ToneMappingMode,
+  BlendFunction,
 } from "postprocessing";
 import { scene, reloadScene, sun, satellites } from "./scene.js";
 import { glState } from "./index.js";
@@ -21,8 +24,10 @@ export const graphicalSettings = {
       skybox: "/images/skybox/Mobile/",
       earth: "/images/earth/Mobile/",
     },
-    resolution_divider: 2, // How much will the resolution be divided to when doing post process effects, higher number means lower quality, better performance
-    optional_render_passes: { SSAA: false, Bloom: true }, // Post processing really messes the fps on mobile
+    msaa_samples: 1,
+    optional_render_passes: { SSAA: false, Bloom: true, ToneMapping: true }, // Post processing really messes the fps on mobile
+    smaa_preset: SMAAPreset.LOW,
+    resolution_divider: 4,
   },
   low: {
     tag: "Low",
@@ -30,8 +35,10 @@ export const graphicalSettings = {
       skybox: "/images/skybox/1k/",
       earth: "/images/earth/1k/",
     },
-    resolution_divider: 2,
-    optional_render_passes: { SSAA: false, Bloom: true },
+    msaa_samples: 1,
+    optional_render_passes: { SSAA: false, Bloom: true, ToneMapping: true },
+    smaa_preset: SMAAPreset.LOW,
+    resolution_divider: 4,
   },
   medium: {
     tag: "Medium",
@@ -39,8 +46,10 @@ export const graphicalSettings = {
       skybox: "/images/skybox/2k/",
       earth: "/images/earth/2k/",
     },
+    msaa_samples: 1, // Currently too much of a performance hit
+    optional_render_passes: { SSAA: true, Bloom: true, ToneMapping: true },
+    smaa_preset: SMAAPreset.MEDIUM,
     resolution_divider: 2,
-    optional_render_passes: { SSAA: true, Bloom: true },
   },
   high: {
     tag: "High",
@@ -48,8 +57,10 @@ export const graphicalSettings = {
       skybox: "/images/skybox/2k/",
       earth: "/images/earth/4k/",
     },
+    msaa_samples: 1,
+    optional_render_passes: { SSAA: true, Bloom: true, ToneMapping: true },
+    smaa_preset: SMAAPreset.HIGH,
     resolution_divider: 1,
-    optional_render_passes: { SSAA: true, Bloom: true },
   },
 };
 export const clock = new THREE.Clock();
@@ -220,13 +231,30 @@ function initEffectComposer() {
   lensFlarePass.doTransparency = false;
   composer.addPass(lensFlarePass);
 
-  if (glState.get("currentGraphics").optional_render_passes.SSAA) {
-    composer.addPass(new EffectPass(camera, new SMAAEffect(SMAAPreset.ULTRA))); // Better than FXAA, remember all the homies hate FXAA
+  const curr_graphics_settings = glState.get("currentGraphics");
+
+  if (curr_graphics_settings.optional_render_passes.SSAA) {
+    composer.addPass(
+      new EffectPass(camera, new SMAAEffect(curr_graphics_settings.smaa_preset))
+    ); // Better than FXAA, remember all the homies hate FXAA
+    //composer.multisampling = curr_graphics_settings.msaa_samples;
   }
   const gl_viewport = document.getElementById("gl_viewport");
   composer.setSize(gl_viewport.clientWidth, gl_viewport.clientHeight);
-  if (glState.get("currentGraphics").optional_render_passes.Bloom) {
+  if (curr_graphics_settings.optional_render_passes.Bloom) {
     composer.addPass(new EffectPass(camera, new BloomEffect()));
+  }
+  if (curr_graphics_settings.optional_render_passes.ToneMapping) {
+    const toneMappingEffect = new ToneMappingEffect({
+      mode: ToneMappingMode.ACES_FILMIC,
+      resolution: 258 / curr_graphics_settings.resolution_divider,
+      whitePoint: 16.0,
+      middleGrey: 0.6,
+      minLuminance: 0.001,
+      averageLuminance: 0.01,
+      adaptationRate: 2.0,
+    });
+    composer.addPass(new EffectPass(camera, toneMappingEffect));
   }
 }
 
