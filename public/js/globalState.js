@@ -30,7 +30,7 @@ export class State {
       return this.deepCopy(this.state[key]);
     }
     console.warn(`Key "${key}" does not exist in the state`);
-    return undefined;
+    return null;
   }
 
   set(updates) {
@@ -55,4 +55,10 @@ export class State {
   }
 }
 
-export let globalState = new State("onGlobalStateChanged", {});
+export let globalState = new State("onGlobalStateChanged", {
+  passing_location: null,
+  pass_prediction_location: null,
+  pickingLocation: false,
+  pick_passing: false,
+  pick_pass_prediction: false,
+});

@@ -1,36 +1,117 @@
-import { uiState } from "./index.js";
+import { subscribe } from "../eventBuss.js";
+import { globalState } from "../globalState.js";
+import { isMobileScreen } from "./utils.js";
+import { satellites } from "../gl/scene.js";
+import { glState } from "../gl/index.js";
 
 // burger menu
 
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
 
-const eventsButton = document.getElementById("events-button");
 const eventsTab = document.getElementById("events-tab");
-
-const predictionButton = document.getElementById("prediction-button");
-const predictionTab = document.getElementById("prediction-tab-icon");
 
 let firstMenuOpen = true;
 
-export function initHeader() {
-  const satelliteDropdown = document.getElementById("satellite-dropdown");
+function onGlobalStateChanged(changedStates) {
+  if (changedStates["pickingLocation"]) {
+    const picking = globalState.get("pickingLocation");
+    if (isMobileScreen()) {
+      if (!picking) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }
+  }
+}
 
+export function initHeader() {
+  subscribe("onGlobalStateChanged", onGlobalStateChanged);
+  const satelliteDropdown = document.getElementById("satellite-dropdown");
   const searchInput = document.getElementById("satellite-search");
 
-  searchInput.addEventListener("keyup", function () {
-    const filter = searchInput.value.toUpperCase();
-    const satelliteLinks = satelliteDropdown.getElementsByTagName("a");
+  function getAllSatellites() {
+    if (!satellites || typeof satellites.instanceCount === "undefined") {
+      //console.warn("satellites are not initialized");
+      return [];
+    }
 
-    for (let i = 0; i < satelliteLinks.length; i++) {
-      const txtValue =
-        satelliteLinks[i].textContent || satelliteLinks[i].innerText;
+    const satelliteList = [];
+    for (
+      let instanceId = 0;
+      instanceId < satellites.instanceCount;
+      instanceId++
+    ) {
+      const id = satellites.getIdByInstanceId(instanceId);
+      const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
+      satelliteList.push({ id, name });
+    }
+    return satelliteList;
+  }
 
-      if (txtValue.toUpperCase().startsWith(filter)) {
-        satelliteLinks[i].style.display = ""; // show matching item
-      } else {
-        satelliteLinks[i].style.display = "none"; // hide non-matching item
-      }
+  function populateDropdown(filteredSatellites) {
+    satelliteDropdown.innerHTML = "";
+
+    if (!filteredSatellites || filteredSatellites.length === 0) {
+      const noResult = document.createElement("a");
+      noResult.textContent = "No satellites found";
+      noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
+      satelliteDropdown.appendChild(noResult);
+      satelliteDropdown.classList.remove("hidden");
+      return;
+    }
+
+    const satellitesToShow = filteredSatellites.slice(0, 20);
+    satellitesToShow.forEach((satellite) => {
+      const option = document.createElement("a");
+      option.textContent = satellite.name;
+      option.dataset.satelliteId = satellite.id;
+      option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700");
+      option.addEventListener("click", () => focusSatellite(satellite.id));
+      satelliteDropdown.appendChild(option);
+    });
+
+    satelliteDropdown.classList.remove("hidden");
+  }
+
+  function filterSatellites(query) {
+    const allSatellites = getAllSatellites();
+    return allSatellites.filter((satellite) =>
+      satellite.name.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  function focusSatellite(id) {
+    let clicked_satellite = satellites.getInstanceIdById(id);
+    glState.set({
+      clickedSatellite: clicked_satellite,
+    });
+
+    const searchInput = document.getElementById("satellite-search");
+    if (searchInput) {
+      searchInput.value = "";
+    }
+    satelliteDropdown.classList.add("hidden");
+  }
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim();
+    const filtered = filterSatellites(query);
+    populateDropdown(filtered);
+  });
+
+  searchInput.addEventListener("focus", () => {
+    const allSatellites = getAllSatellites();
+    populateDropdown(allSatellites);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      !satelliteDropdown.contains(event.target) &&
+      !searchInput.contains(event.target)
+    ) {
+      satelliteDropdown.classList.add("hidden");
     }
   });
 
@@ -42,30 +123,16 @@ export function initHeader() {
     closeMenu();
   });
 
-  eventsButton.addEventListener("click", function () {
-    openMenu();
-    eventsTab.click();
+  dropdownMenu.addEventListener("mouseup", (event) => {
+    event.stopPropagation();
   });
-
-  predictionButton.addEventListener("click", function () {
-    openMenu();
-    predictionTab.click();
+  dropdownMenu.addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
   });
-
-  // document.addEventListener("click", function (event) {
-  //   if (
-  //     !dropdownButton.contains(event.target) &&
-  //     !dropdownMenu.contains(event.target)
-  //   ) {
-  //     closeMenu();
-  //   }
-  // });
-
-  // document
-  //   .getElementById("settings-modal-close")
-  //   .addEventListener("click", function (event) {
-  //     document.getElementById("settings-modal").classList.add("hidden");
-  //   });
+  dropdownMenu.addEventListener("mousedown", (event) => {
+    event.stopPropagation();
+  });
 }
 
 function openMenu() {

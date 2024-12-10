@@ -84,6 +84,12 @@ function closePopup() {
 function togglePopupSize(event) {
   event.stopPropagation();
   popupContainer.classList.toggle("h-[95%]"); // extend the height
+
+  if (popupContainer.classList.contains("h-[95%]")) {
+    popupContainer.classList.add("popup-container-extended");
+  } else {
+    popupContainer.classList.remove("popup-container-extended");
+  }
   arrowIcon.classList.toggle("rotate-180");
 }
 
@@ -119,7 +125,14 @@ export function initPopup() {
   popupContainer.addEventListener("mouseup", (event) =>
     event.stopPropagation()
   );
+  popupContainer.addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
+  });
   mobilePopupContainer.addEventListener("mousedown", (event) =>
+    event.stopPropagation()
+  );
+  mobilePopupContainer.addEventListener("mousemove", (event) =>
     event.stopPropagation()
   );
   mobilePopupContainer.addEventListener("mouseup", (event) =>

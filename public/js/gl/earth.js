@@ -5,12 +5,17 @@ import {
   SRGBColorSpace,
   Color,
   RepeatWrapping,
-  IcosahedronGeometry,
   MeshStandardMaterial,
   AdditiveBlending,
   BackSide,
   NormalBlending,
+  Raycaster,
+  SphereGeometry,
+  Vector3,
 } from "three";
+
+import * as THREE from "three";
+
 import { camera, clock, controls } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
 
@@ -24,6 +29,9 @@ export class Earth {
   orbitalSpeed;
   currentOrbitAngle;
   cloudsMesh;
+  isPickingLocation = false;
+  raycaster = new Raycaster();
+  planetMesh;
 
   constructor({
     planetSize = 1,
@@ -49,7 +57,7 @@ export class Earth {
     this.group = new Group();
     this.group.position.set(this.orbitalDistance, 0, 0);
     this.planetGroup = new Group();
-    this.planetGeometry = new IcosahedronGeometry(this.planetSize, 12);
+    this.planetGeometry = new SphereGeometry(this.planetSize, 64, 64);
 
     this.createPlanet();
     this.createAtmosphere();
@@ -85,25 +93,47 @@ export class Earth {
 
   calculateEarthRotationInRadians() {
     const now = new Date();
+
+    // Reference time: start of the day (UTC)
     const referenceTime = new Date(
       now.getUTCFullYear(),
       now.getUTCMonth(),
       now.getUTCDate(),
-      0,
+      0, // Midnight UTC
       0,
       0
     );
+
+    // Time elapsed since midnight (in seconds)
     const elapsedTimeInSeconds = (now - referenceTime) / 1000;
-    const angularSpeed = (2 * Math.PI) / 86164;
+
+    // Earth's angular speed for rotation (sidereal day in seconds)
+    const angularSpeed = (2 * Math.PI) / 86164; // radians per second
+
+    // Rotation angle since midnight
     const rotationAngle = angularSpeed * elapsedTimeInSeconds;
 
+    // Ensure angle is within [0, 2π]
     return rotationAngle % (2 * Math.PI);
   }
+
   calculateInitialOrbitAngle() {
     const now = new Date();
+
+    // Reference time: start of the year (UTC)
     const startOfYear = new Date(now.getUTCFullYear(), 0, 1);
+
+    // Time elapsed since the start of the year (in seconds)
     const elapsedTimeInSeconds = (now - startOfYear) / 1000;
-    return (this.orbitalSpeed * elapsedTimeInSeconds) % (2 * Math.PI);
+
+    // Earth's orbital angular speed (one full orbit per year)
+    const angularSpeed = (2 * Math.PI) / (365.25 * 24 * 60 * 60); // radians per second
+
+    // Orbit angle since the start of the year
+    const orbitAngle = angularSpeed * elapsedTimeInSeconds;
+
+    // Ensure angle is within [0, 2π]
+    return orbitAngle % (2 * Math.PI);
   }
 
   async createPlanet() {
@@ -214,8 +244,8 @@ export class Earth {
       );
     };
     planetMaterial.map.colorSpace = SRGBColorSpace;
-    const planetMesh = new Mesh(this.planetGeometry, planetMaterial);
-    this.planetGroup.add(planetMesh);
+    this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
+    this.planetGroup.add(this.planetMesh);
     this.planetGroup.rotation.y = this.currRotation;
     this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
@@ -287,23 +317,30 @@ export class Earth {
   }
 
   updatePlanetRotation(dt) {
-    // Update Earth's rotation (daily cycle)
     const rotationChange = this.planetRotationSpeed * dt;
-    if (this.planetRotationDirection === "clockwise") {
-      this.planetGroup.rotation.y -= rotationChange;
-    } else {
-      this.planetGroup.rotation.y += rotationChange;
-    }
+
+    const tiltAxis = new THREE.Vector3(0, 1, 0).applyAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      THREE.MathUtils.degToRad(23.5)
+    );
+
+    const rotationQuaternion = new THREE.Quaternion();
+    rotationQuaternion.setFromAxisAngle(
+      tiltAxis,
+      this.planetRotationDirection === "clockwise"
+        ? -rotationChange
+        : rotationChange
+    );
+
+    this.planetGroup.quaternion.premultiply(rotationQuaternion);
   }
 
   updatePlanetOrbit(dt) {
-    // Update Earth's position in orbit (annual cycle)
     this.currentOrbitAngle += this.orbitalSpeed * dt;
-    this.group.position.set(
-      this.orbitalDistance * Math.cos(this.currentOrbitAngle),
-      0,
-      this.orbitalDistance * Math.sin(this.currentOrbitAngle)
-    );
+    const x = this.orbitalDistance * Math.cos(this.currentOrbitAngle);
+    const z = this.orbitalDistance * Math.sin(this.currentOrbitAngle);
+
+    this.group.position.set(x, 0, z);
   }
 
   updateCloudsRotation(dt) {
@@ -357,5 +394,53 @@ export class Earth {
 
   reload() {
     this.createPlanet();
+  }
+
+  togglePickingLocation() {
+    this.isPickingLocation = !this.isPickingLocation;
+  }
+
+  checkForClick(mouse, camera) {
+    if (!this.isPickingLocation) return null;
+    this.raycaster.setFromCamera(mouse, camera);
+
+    const intersects = this.raycaster.intersectObject(this.planetMesh);
+
+    if (intersects.length > 0) {
+      return { lat: 0.0, long: 0.0 };
+    }
+    return null;
+  }
+
+  getLocation(mouse, camera) {
+    if (!this.isPickingLocation) return null;
+    this.raycaster.setFromCamera(mouse, camera);
+
+    const intersects = this.raycaster.intersectObject(this.planetMesh);
+
+    if (intersects.length > 0) {
+      let local_coordinates = this.group.worldToLocal(intersects[0].point);
+
+      const inverseQuaternion = this.planetGroup.quaternion.clone().invert();
+      local_coordinates.applyQuaternion(inverseQuaternion);
+
+      let local_copy = new THREE.Vector3(
+        local_coordinates.x,
+        local_coordinates.y,
+        local_coordinates.z
+      );
+
+      let origin = new THREE.Vector3(0, 0, this.planetSize);
+      local_copy.y = 0;
+      local_copy.setLength(this.planetSize);
+      let angle = origin.angleTo(local_copy);
+      let long = THREE.MathUtils.radToDeg(angle) - 90;
+
+      let normalized = local_coordinates.clone().normalize();
+      let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
+
+      return { lat: lat, long: long };
+    }
+    return null;
   }
 }
