@@ -53,6 +53,30 @@ export class Satellites {
     });
   }
 
+  dispose() {
+    // ever heard of the tragedy of darth plagueis the wise?
+    this.workers.forEach(({ worker }) => worker.terminate());
+    this.workers = [];
+
+    // we want to dispose the geometry ivan thought
+    if (this.points) {
+      this.points.geometry.dispose();
+      this.points.material.dispose();
+      this.group.remove(this.points);
+      this.points = null;
+    }
+
+    // and we also want to clear other references ivan imagined
+    this.positions = null;
+    this.positions_read = null;
+    this.positions_write = null;
+    this.positions_longlatalt = null;
+    this.speeds = null;
+    this.ids = null;
+    this.tle_lines = [];
+    this.instanceIdToSatelliteIdMap = {};
+  }
+
   createPoints(data) {
     const colors = new Float32Array(this.instanceCount * 3);
 
@@ -250,11 +274,13 @@ export class Satellites {
         this.positions_read,
       ];
 
-      this.points.geometry.attributes.position.array = this.positions_read;
-      this.points.geometry.attributes.position.needsUpdate = true;
-      // This needs to be recomputed everytime. Might be a bottleneck depending on how threejs does this
-      this.points.geometry.computeBoundingSphere();
-      this.isUpdating = false;
+      if (this.points && this.points.geometry) {
+        this.points.geometry.attributes.position.array = this.positions_read;
+        this.points.geometry.attributes.position.needsUpdate = true;
+        // This needs to be recomputed everytime. Might be a bottleneck depending on how threejs does this
+        this.points.geometry.computeBoundingSphere();
+        this.isUpdating = false;
+      }
     });
   }
 
@@ -321,5 +347,51 @@ export class Satellites {
   hide(shoudHide) {
     this.isHidden = shoudHide;
     this.group.visible = !shoudHide;
+  }
+
+  getPassingSatellites(location, radius) {
+    const id = this.getInstanceIdById(45696);
+
+    console.log(this.getGeodeticCoordinates(id));
+    const passing = Object.keys(this.instanceIdToSatelliteIdMap).filter((key) => {
+      const { lat, long } = this.getGeodeticCoordinates(key);
+      return this.isWithinRadius(location, { lat, long }, radius);
+    }).map(Number);
+    
+    console.log(this.getGeodeticCoordinates(passing[0]));
+    const id_d = this.getIdByInstanceId(passing[0]);
+    console.log(id_d)
+    return passing;
+  }
+
+  toRad(deg) {
+    return (deg * Math.PI) / 180;
+  }
+
+  isWithinRadius(location1, location2, radius) {
+    const R = 6371;
+
+    const lat1 = this.toRad(location1.lat);
+    const lon1 = this.toRad(location1.long);
+    const lat2 = location2.lat;
+    const lon2 = location2.long;
+
+    const dLat = lat2 - lat1;
+    const dLong = lon2 - lon1;
+
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLong / 2) ** 2;
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    /*console.log(
+      `Distance between:`,
+      {lat1, lon1},
+      location2,
+      `is:`,
+      distance
+  );*/
+
+    return distance <= radius;
   }
 }
