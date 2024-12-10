@@ -28,6 +28,35 @@ export function initToggleView() {
             },
         });
     });
+
+    document.addEventListener("keydown", keyboardToggle);
+}
+
+function keyboardToggle(event) {
+    const isShiftT = event.shiftKey && event.key.toLowerCase() === 'v';
+
+    if (isShiftT) {
+        event.preventDefault();
+        toggleView();
+    }
+}
+
+function toggleView() {
+    const currentTarget = glState.get("focusedTarget").target;
+    if (currentTarget === earth.getGroup().id) {
+        if (toggledSatellite) {
+            glState.set({
+                focusedTarget: {
+                    target: satellites.getGroup().id,
+                    instanceIndex: glState.get("clickedSatellite"),
+                },
+            });
+        }
+    } else {
+        glState.set({
+            focusedTarget: { target: earth.getGroup().id },
+        });
+    }
 }
 
 function updateViewButtons(selectedView) {
