@@ -9,6 +9,7 @@ import { initToggleView } from "./toggle_view.js";
 import { glState } from "../gl/index.js";
 import { initOrbit } from "../gl/orbit.js";
 import { satellites } from "../gl/scene.js";
+import { initGraphs } from "./graphs.js";
 
 export * from "./settings.js";
 export * from "./header.js";
@@ -52,6 +53,7 @@ function onStart() {
   initPopup();
   initOrbit();
   initToggleView();
+  initGraphs();
 
   const tabs = document.querySelectorAll(".tab");
   const panels = document.querySelectorAll(".tab-panel");
