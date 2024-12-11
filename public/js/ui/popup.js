@@ -48,8 +48,12 @@ function onRendererUpdate() {
           Math.pow(speed.x, 2) + Math.pow(speed.y, 2) + Math.pow(speed.z, 2)
         );
         speed_visual.innerHTML = `${single_speed.toFixed(3)}km/s`;
-        long_visual.innerHTML = `${location.long.toFixed(2)}°`;
-        lat_visual.innerHTML = `${location.lat.toFixed(2)}°`;
+        long_visual.innerHTML = location.long
+          ? `${location.long.toFixed(2)}°`
+          : "Error";
+        lat_visual.innerHTML = location.lat
+          ? `${location.lat.toFixed(2)}°`
+          : "Error";
       }
     }
   }

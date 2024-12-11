@@ -37,7 +37,6 @@ export class Satellites {
     this.instanceCount = data.length;
     this.group = new Group();
     this.group.position.set(0, 0, 0);
-    this.group.rotation.y = Math.PI / 2;
     this.raycaster = new Raycaster();
     this.raycaster.params.Points.threshold = 0.015;
 
@@ -354,10 +353,12 @@ export class Satellites {
   }
 
   getPassingSatellites(location, radius) {
-    return Object.keys(this.instanceIdToSatelliteIdMap).filter((key) => {
-      const { lat, long } = this.getGeodeticCoordinates(key);
-      return this.isWithinRadius(location, { lat, long }, radius);
-    }).map(Number);
+    return Object.keys(this.instanceIdToSatelliteIdMap)
+      .filter((key) => {
+        const { lat, long } = this.getGeodeticCoordinates(key);
+        return this.isWithinRadius(location, { lat, long }, radius);
+      })
+      .map(Number);
   }
 
   toRad(deg) {
@@ -375,7 +376,9 @@ export class Satellites {
     const dLat = lat2 - lat1;
     const dLong = lon2 - lon1;
 
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLong / 2) ** 2;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLong / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;

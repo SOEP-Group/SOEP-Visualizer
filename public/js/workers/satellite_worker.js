@@ -60,7 +60,7 @@ self.onmessage = async function (event) {
         geogedicView[idx + 1] = degreesLong(longitude);
         geogedicView[idx + 2] = altitude;
 
-        position = scalePosition(eciCoords);
+        position = scalePosition(position);
         positionsWriteView[idx] = position.x;
         positionsWriteView[idx + 1] = position.z;
         positionsWriteView[idx + 2] = -position.y;
