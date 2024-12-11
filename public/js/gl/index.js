@@ -14,7 +14,7 @@ import {
   camera,
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { initScene, earth, satellites, rebuildSatellitesWithSubset, addSatellites } from "./scene.js";
+import { initScene, earth, satellites, addSatellites } from "./scene.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -207,20 +207,45 @@ function onStateChanged(changedStates) {
 function onGlobalStateChanged(changedStates) {
   if (changedStates["pickingLocation"]) {
     const picking = globalState.get("pickingLocation");
-    //satellites.hide(picking);
+    if (picking) {
+      satellites.hide();
+    } else {
+      satellites.show();
+    }
     earth.togglePickingLocation(picking);
   }
   if (changedStates["togglePassing"]) {
+    const radius = 500;
     const isDisplayingPassing = globalState.get("togglePassing");
     const location = globalState.get("passing_location");
+    let out_of_range = satellites
+      .getSatellitesOutOfRange(location, radius)
+      .sort();
+    function updateSatelliteVisibility() {
+      if (!globalState.get("togglePassing")) return;
+      const current_location = globalState.get("passing_location");
+      const current_out_of_range = satellites
+        .getSatellitesOutOfRange(current_location, radius)
+        .sort();
+
+      const arraysDiffer =
+        current_out_of_range.length !== out_of_range.length ||
+        current_out_of_range.some(
+          (satellite, index) => satellite !== out_of_range[index]
+        );
+
+      if (arraysDiffer) {
+        satellites.show();
+        satellites.mask(current_out_of_range);
+        out_of_range = current_out_of_range;
+      }
+      requestAnimationFrame(updateSatelliteVisibility);
+    }
 
     if (isDisplayingPassing && location) {
-      const radius = 500;
-      const passingSatellites = satellites.getPassingSatellites(location, radius);
-      //console.log(passingSatellites);
-      rebuildSatellitesWithSubset(passingSatellites);
+      updateSatelliteVisibility();
     } else {
-      addSatellites(globalState.get("satellites"));
+      satellites.show();
     }
   }
 }

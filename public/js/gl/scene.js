@@ -57,7 +57,8 @@ export function addSatellites(satellites_obj) {
   }
 
   const earthGroup = earth.getGroup();
-  if (satellites) { // rebuilding
+  if (satellites) {
+    // rebuilding
     satellites.dispose();
     earthGroup.remove(satellites.getGroup());
     satellites = null;
@@ -83,13 +84,6 @@ export function initScene() {
   fetchSatellites().then((res) => {
     globalState.set({ satellites: res });
   });
-}
-
-export function rebuildSatellitesWithSubset(instanceIds) {
-  if (!satellites || !Array.isArray(instanceIds)) return;
-
-  const subset = instanceIds.map((id) => satellites.instanceIdToDataMap[id]);
-  addSatellites(subset);
 }
 
 export function getEarth() {
