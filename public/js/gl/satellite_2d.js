@@ -37,6 +37,7 @@ export class Satellites {
     this.instanceCount = data.length;
     this.group = new Group();
     this.group.position.set(0, 0, 0);
+    this.group.rotation.y = Math.PI / 2;
     this.raycaster = new Raycaster();
     this.raycaster.params.Points.threshold = 0.015;
 

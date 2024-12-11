@@ -84,6 +84,9 @@ export function displayOrbit(satellite) {
     dynamicLineMaterial
   );
 
+  currentOrbitLine.rotation.y = Math.PI / 2;
+  currentSatelliteCenterLine.rotation.y = Math.PI / 2;
+
   getEarth().getGroup().add(currentOrbitLine);
   getEarth().getGroup().add(currentSatelliteCenterLine);
 
