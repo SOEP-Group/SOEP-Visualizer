@@ -32,6 +32,7 @@ export class Satellites {
   focusedSatellite = -1;
   isUpdating = false;
   isHidden = false;
+  visible_satellites = new Set();
 
   constructor(data) {
     this.instanceCount = data.length;
@@ -79,6 +80,7 @@ export class Satellites {
 
   createPoints(data) {
     const colors = new Float32Array(this.instanceCount * 3);
+    const alphas = new Float32Array(this.instanceCount);
 
     data.forEach((satellite, index) => {
       const baseColorArray = [
@@ -89,8 +91,10 @@ export class Satellites {
 
       this.positions.set([0, 0, 0], index * 3);
       colors.set(baseColorArray, index * 3);
+      alphas.set([1.0], index);
 
       this.instanceIdToSatelliteIdMap[index] = satellite.satellite_id;
+      this.visible_satellites.add(index);
     });
 
     const geometry = new BufferGeometry();
@@ -99,6 +103,7 @@ export class Satellites {
       new Float32BufferAttribute(this.positions, 3)
     );
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    geometry.setAttribute("alpha", new Float32BufferAttribute(alphas, 1));
 
     const material = new PointsMaterial({
       size: 0.015,
@@ -108,6 +113,32 @@ export class Satellites {
       opacity: 1.0,
       alphaTest: 0.1,
     });
+
+    material.onBeforeCompile = function (shader) {
+      shader.vertexShader = shader.vertexShader.replace(
+        `uniform float size;`,
+        `uniform float size;
+        attribute float alpha;
+        varying float vAlpha;`
+      );
+
+      shader.vertexShader = shader.vertexShader.replace(
+        `#include <color_vertex>`,
+        `#include <color_vertex>
+        vAlpha = alpha;`
+      );
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        `#include <color_pars_fragment>`,
+        `#include <color_pars_fragment>
+        varying float vAlpha;`
+      );
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        `vec4 diffuseColor = vec4( diffuse, opacity );`,
+        `vec4 diffuseColor = vec4( diffuse, opacity * vAlpha );`
+      );
+    };
 
     this.points = new Points(geometry, material);
     this.group.add(this.points);
@@ -120,7 +151,10 @@ export class Satellites {
     const intersects = this.raycaster.intersectObject(earth.getGroup());
     for (const interesection of intersects) {
       if (interesection.object.type === "Points") {
-        return interesection.index;
+        const satellite_index = interesection.index;
+        if (this.visible_satellites.has(satellite_index)) {
+          return satellite_index;
+        }
       } else if (interesection.object.type === "Mesh") {
         return null;
       }
@@ -347,18 +381,76 @@ export class Satellites {
     );
   }
 
-  hide(shoudHide) {
-    this.isHidden = shoudHide;
-    this.group.visible = !shoudHide;
+  getVisible() {
+    return Array.from(this.visible_satellites);
+  }
+
+  mask(satellites) {
+    const alphaArray = this.points.geometry.attributes.alpha.array;
+
+    satellites.forEach((satelliteIndex) => {
+      if (satelliteIndex >= 0 && satelliteIndex < this.instanceCount) {
+        alphaArray[satelliteIndex] = 0.0;
+        this.visible_satellites.delete(satelliteIndex);
+      }
+    });
+
+    this.points.geometry.attributes.alpha.needsUpdate = true;
+  }
+
+  unmask(satellites) {
+    const alphaArray = this.points.geometry.attributes.alpha.array;
+
+    satellites.forEach((satelliteIndex) => {
+      if (satelliteIndex >= 0 && satelliteIndex < this.instanceCount) {
+        alphaArray[satelliteIndex] = 1.0;
+        this.visible_satellites.add(satelliteIndex);
+      }
+    });
+
+    this.points.geometry.attributes.alpha.needsUpdate = true;
+  }
+
+  hide() {
+    const alphaArray = this.points.geometry.attributes.alpha.array;
+
+    for (let i = 0; i < this.instanceCount; i++) {
+      alphaArray[i] = 0.0;
+      this.visible_satellites.delete(i);
+    }
+    this.points.geometry.attributes.alpha.needsUpdate = true;
+  }
+
+  show() {
+    const alphaArray = this.points.geometry.attributes.alpha.array;
+
+    for (let i = 0; i < this.instanceCount; i++) {
+      alphaArray[i] = 1.0;
+      this.visible_satellites.add(i);
+    }
+    this.points.geometry.attributes.alpha.needsUpdate = true;
   }
 
   getPassingSatellites(location, radius) {
-    return Object.keys(this.instanceIdToSatelliteIdMap)
-      .filter((key) => {
-        const { lat, long } = this.getGeodeticCoordinates(key);
-        return this.isWithinRadius(location, { lat, long }, radius);
-      })
-      .map(Number);
+    const passingSatellites = [];
+    for (let i = 0; i < this.instanceCount; i++) {
+      const { lat, long } = this.getGeodeticCoordinates(i);
+      if (this.isWithinRadius(location, { lat, long }, radius)) {
+        passingSatellites.push(i);
+      }
+    }
+    return passingSatellites;
+  }
+
+  getSatellitesOutOfRange(location, radius) {
+    const out_of_range = [];
+    for (let i = 0; i < this.instanceCount; i++) {
+      const { lat, long } = this.getGeodeticCoordinates(i);
+      if (!this.isWithinRadius(location, { lat, long }, radius)) {
+        out_of_range.push(i);
+      }
+    }
+    return out_of_range;
   }
 
   toRad(deg) {
