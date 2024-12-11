@@ -82,7 +82,7 @@ async function fetchAndRenderEvents(bodyName, contentId) {
     cachedEvents[bodyName] = eventData;
 
     const eventDetailsHTML = renderEventDetails(
-      `${bodyName.charAt(0).toUpperCase() + bodyName.slice(1)} Events`,
+      "",
       eventData,
       bodyName
     );
