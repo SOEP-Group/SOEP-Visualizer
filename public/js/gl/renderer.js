@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "./camera.js";
 import {
   BloomEffect,
   EffectComposer,
@@ -411,11 +411,11 @@ export function initRenderer() {
     size: 110,
   });
 
-  orientationGizmo.enabled = false; // Currently we get some weird gimbal lock issues...
+  orientationGizmo.enabled = true; // Currently we get some weird gimbal lock issues...
   const viewport_div = document.getElementById("gl_viewport");
   viewport_div.appendChild(renderer.domElement);
 
-  controls = new TrackballControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.noPan = true;
   controls.minDistance = 0.65;
   controls.maxDistance = 10;
