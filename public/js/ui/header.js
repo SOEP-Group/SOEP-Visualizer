@@ -5,6 +5,7 @@ import { satellites } from "../gl/scene.js";
 import { glState } from "../gl/index.js";
 
 // burger menu
+
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
 

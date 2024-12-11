@@ -76,7 +76,9 @@
         </svg>
       </button>
       <!-- dropdown suck it ivan -->
-      <div id="satellite-dropdown" class="absolute top-full left-0 bg-black text-white w-full border border-gray-700 mt-1 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden"></div>
+      <div id="satellite-dropdown"
+        class="absolute top-full left-0 bg-black text-white w-full border border-gray-700 mt-1 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
+      </div>
     </div>
 
 
@@ -89,12 +91,14 @@
       </div>
 
       <!-- Hover Tooltip -->
-      <div id="hover-tooltip" class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50"></div>
+      <div id="hover-tooltip"
+        class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50">
+      </div>
 
       <!-- Sliding window left-->
       <div id="ham_menu"
         class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
-        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
+        <div id="resize" class="resizer-container absolute top-0 -right-[7px] h-full flex items-center justify-center">
           <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
             title="Resize">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -200,18 +204,133 @@
         </div>
 
         <!-- Content -->
+        <!-- Events -->
         <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
-          <div class="tab-panel">
-            <p id="satellite-info-default">Events</p>
-            <!-- <h4 id="debug-ui-fps-counter"></h4>
-            <h4>Renderer stats:</h4>
-            <p id="debug-ui-renderer-info"></p>
-            <h4>GPU info:</h4>
-            <p id="debug-ui-gpu-info"></p> -->
+          <div class="tab-panel space-y-6">
+            <div class="flex items-center justify-between">
+              <h2 class="text-2xl font-semibold">Events</h2>
+              <button id="toggle-filters"
+                class="flex items-center bg-gray-900 text-white py-2 px-3 rounded hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-500">
+                Filters
+                <!-- Down Arrow Icon -->
+                <div id="arrow-filter" class="mr-2">
+                  <svg class="ml-2 w-5 h-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m5 9 7 7 7-7" />
+                  </svg>
+                </div>
+              </button>
+            </div>
+
+            <div id="filter-section" class="mt-4 space-y-4 hidden">
+              <!-- Location Selection -->
+              <div class="flex flex-col items-start w-full mt-4 space-y-2">
+                <input type="text" placeholder="Location" class="location-field-events input-styling">
+                <button data-ripple="true" class="get-location-btn_events location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button_events location-button-styling">Select
+                  Location</button>
+              </div>
+
+              <!-- Start Date & Time -->
+              <div class="space-y-4 mb-4">
+                <div>
+                  <label for="start-date" class="font-medium text-white">Start Date:</label>
+                  <div class="grid grid-cols-2 gap-2 mt-1">
+                    <input id="start-date" type="date"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                    <input id="start-time" type="time"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- End Date & Time -->
+                <div>
+                  <label for="end-date" class="font-medium text-white">End Date:</label>
+                  <div class="grid grid-cols-2 gap-2 mt-1">
+                    <input id="end-date" type="date"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                    <input id="end-time" type="time"
+                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="text-right">
+                <button id="filter-events" class="btn-blue w-full">
+                  Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Sun Events -->
+            <div class="expandable-section">
+              <h3 id="sun-events-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-sun" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Sun Events</span>
+              </h3>
+              <div id="sun-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
+            </div>
+
+            <!-- Moon Events -->
+            <div class="expandable-section">
+              <h3 id="moon-events-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-moon" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Moon Events</span>
+              </h3>
+              <div id="moon-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
+            </div>
+
+            <!-- Planet Events -->
+            <div class="expandable-section">
+              <h3 id="planet-events-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-planet" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Planet Events</span>
+              </h3>
+              <div id="planet-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              </div>
+            </div>
           </div>
 
+          <!-- Predictions -->
           <div id="prediction-tab" class="tab-panel space-y-6">
-
+            <div class="flex items-center justify-between">
+              <h2 class="text-2xl font-semibold">Predictions</h2>
+              <button class="flex items-center py-2 px-3 cursor-default">
+                <span class="text-transparent">Placeholder</span>
+              </button>
+            </div>
             <!-- Passing Satellites -->
             <div class="expandable-section">
               <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
@@ -298,10 +417,13 @@
             </div>
           </div>
 
+          <!-- Graphs -->
           <div class="tab-panel">
+            <h2 class="text-2xl font-semibold">Graphs</h2>
             <div id="graphs-container" class="text-white"></div>
           </div>
 
+          <!-- How to -->
           <div class="tab-panel">
             <h2 class="text-2xl font-semibold">How to Use</h2>
             <!-- Description Text -->
@@ -375,7 +497,9 @@
             </a>
           </div>
 
+          <!-- Settings -->
           <div class="tab-panel">
+            <h2 class="text-2xl font-semibold">Settings</h2>
 
             <!-- Graphics present -->
             <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
@@ -396,11 +520,10 @@
               Save settings
             </button>
           </div>
-
         </div>
-
       </div>
 
+      <!-- Popup -->
       <div id="popup-container"
         class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
         <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full"
