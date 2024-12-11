@@ -51,15 +51,15 @@ function onGlobalStateChanged(changedStates) {
       }
     }
   } else if (changedStates["togglePassing"]) {
-    const isDisplayingPassing = globalState.get("togglePassing");
-    const dropdown = document.getElementById("passing-satellites-dropdown");
-    if (isDisplayingPassing) {
-      const passingSatellites = getPassingSatellites();
-      populateDropdown(passingSatellites, dropdown);
-      dropdown.classList.remove("hidden");
-    } else {
-      dropdown.classList.add("hidden");
-    }
+    // const isDisplayingPassing = globalState.get("togglePassing");
+    // const dropdown = document.getElementById("passing-satellites-dropdown");
+    // if (isDisplayingPassing) {
+    //   const passingSatellites = getPassingSatellites();
+    //   populateDropdown(passingSatellites, dropdown);
+    //   dropdown.classList.remove("hidden");
+    // } else {
+    //   dropdown.classList.add("hidden");
+    // }
   }
 }
 
@@ -69,10 +69,14 @@ function getPassingSatellites() {
   }
 
   const passingSatellites = [];
-  for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
+  for (
+    let instanceId = 0;
+    instanceId < satellites.instanceCount;
+    instanceId++
+  ) {
     const id = satellites.getIdByInstanceId(instanceId);
     const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
-    passingSatellites.push({id, name});
+    passingSatellites.push({ id, name });
   }
   return passingSatellites;
 }
@@ -91,10 +95,16 @@ function populateDropdown(satellites, dropdown) {
     const option = document.createElement("a");
     option.textContent = satellite.name;
     option.dataset.satelliteId = satellite.id;
-    option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
+    option.classList.add(
+      "block",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-700",
+      "cursor-pointer"
+    );
     option.addEventListener("click", () => focusSatellite(satellite.id));
     dropdown.appendChild(option);
-  })
+  });
 }
 
 function focusSatellite(id) {
@@ -231,5 +241,5 @@ export function toggleIconState() {
     );
     globalState.set({ togglePassing: false });
   }
-  glState.set({clickedSatellite: null});
+  glState.set({ clickedSatellite: null });
 }
