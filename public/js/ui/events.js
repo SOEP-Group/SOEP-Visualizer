@@ -1,7 +1,11 @@
 import { fetchEvents } from "../api/events.js";
 import { getLocation } from "./utils.js";
+import { globalState } from "../globalState.js";
+import { subscribe } from "../eventBuss.js";
 
 let cachedEvents = {};
+const selectLocationBtn = document.querySelectorAll(".select-location-button-events");
+const getLocationBtn = document.querySelectorAll(".get-location-btn-events");
 
 const bodies = [
   "sun",
@@ -16,7 +20,33 @@ const bodies = [
   "pluto",
 ];
 
+function onGlobalStateChanged(changedStates) {
+  if (changedStates["pickingLocation"]) {
+    const picking = globalState.get("pickingLocation");
+
+    for (let i = 0; i < selectLocationBtn.length; i++) {
+      if (!picking) {
+        selectLocationBtn[i].innerText = "Select Location";
+      } else {
+        selectLocationBtn[i].innerText =
+          "Click on earth (Press here to Cancel)";
+      }
+    }
+  } else if (changedStates["events_location"]) {
+    const events_location = globalState.get("events_location");
+    if (events_location !== null) {
+      const parent_element = document.getElementById("events-content");
+      const locationField = parent_element.querySelector(".location-field-events");
+      if (locationField) {
+        locationField.value = `${events_location.lat}, ${events_location.long}`;
+      }
+    }
+  }
+}
+
 export function initEvents() {
+  subscribe("onGlobalStateChanged", onGlobalStateChanged);
+
   document.getElementById("sun-events-header").addEventListener("click", async () => {
     toggleSection("sun-content", "arrow-sun");
     await fetchAndRenderEvents("sun", "sun-content");
@@ -31,287 +61,318 @@ export function initEvents() {
     toggleSection("planet-content", "arrow-planet");
     await fetchAndRenderAllPlanets();
   });
-}
 
-function toggleSection(contentId, arrowId) {
-  const content = document.getElementById(contentId);
-  const arrow = document.getElementById(arrowId);
+  document.getElementById("filter-events").addEventListener("click", async () => {
+    await fetchAndRenderEvents("sun", "sun-content");
+    await fetchAndRenderEvents("moon", "moon-content");
+    await fetchAndRenderAllPlanets();
+  });
 
-  content.classList.toggle("hidden");
-  arrow.classList.toggle("rotate-90");
-}
+  getLocationBtn.forEach((btn) => {
+    btn.addEventListener("click", function (event) {
+      getLocation().then((location) => {
+        const parent_id = btn.parentElement.id;
+        if (parent_id === "events-content") {
+          globalState.set({ events_location: location });
+        }
+      });
+    });
+  });
 
-document.getElementById('toggle-filters').addEventListener('click', function () {
-  document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
-  const filterSection = document.getElementById("filter-section");
-  filterSection.classList.toggle("hidden");
-});
+  selectLocationBtn.forEach((btn) => {
+    btn.addEventListener("click", function (event) {
+      let picking = globalState.get("pickingLocation");
+      if (picking == null) {
+        picking = false;
+      }
+      globalState.set({ pickingLocation: !picking });
+      let pick_events = false;
+      if (!picking) {
+        const parent_id = btn.parentElement.id;
+        if (parent_id === "events-content") {
+          pick_events = true;
+        }
+      }
+      globalState.set({
+        pick_events: pick_events,
+      });
+    });
+  });
 
-document.addEventListener("click", function (event) {
-  let locationField = null;
-  if (event.target && event.target.id === "get-location-button-events") {
-    locationField = document.getElementById("location-events");
+  function toggleSection(contentId, arrowId) {
+    const content = document.getElementById(contentId);
+    const arrow = document.getElementById(arrowId);
 
-    if (locationField) {
-      getLocation(locationField);
+    content.classList.toggle("hidden");
+    arrow.classList.toggle("rotate-90");
+  }
+
+  document.getElementById('toggle-filters').addEventListener('click', function () {
+    document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
+    const filterSection = document.getElementById("filter-section");
+    filterSection.classList.toggle("hidden");
+  });
+
+  function filterEvents() {
+
+  }
+  async function fetchAndRenderEvents(bodyName, contentId) {
+    const contentElement = document.getElementById(contentId);
+
+    if (contentElement.dataset.loaded === "true") {
+      return;
+    }
+
+    contentElement.innerHTML = "<p>Loading events...</p>";
+
+    try {
+      const loc = globalState.get("events_location");
+      console.log(loc);
+      const userLatitude = loc.lat;
+      const userLongitude = loc.long;
+
+      const eventData = await fetchEvents(bodyName, userLatitude, userLongitude);
+      cachedEvents[bodyName] = eventData;
+
+      const eventDetailsHTML = renderEventDetails(
+        "",
+        eventData,
+        bodyName
+      );
+
+      contentElement.innerHTML = eventDetailsHTML;
+      contentElement.dataset.loaded = "true";
+    } catch (error) {
+      contentElement.innerHTML = `<p>Error loading events: ${error.message}</p>`;
+      console.error(`Error fetching ${bodyName} events:`, error);
     }
   }
-});
 
-document.addEventListener("click", function (event) {
-  if (event.target && event.target.id === "select-location-button-events") {
-    // For future use
-  }
-});
+  async function fetchAndRenderAllPlanets() {
+    const contentElement = document.getElementById("planet-content");
 
-async function fetchAndRenderEvents(bodyName, contentId) {
-  const contentElement = document.getElementById(contentId);
+    if (contentElement.dataset.loaded === "true") {
+      return;
+    }
 
-  if (contentElement.dataset.loaded === "true") {
-    return;
-  }
+    contentElement.innerHTML = "<p>Loading planet events...</p>";
 
-  contentElement.innerHTML = "<p>Loading events...</p>";
+    try {
 
-  try {
-    //const location = await getLocation();
-    const userLatitude = location.latitude;
-    const userLongitude = location.longitude;
+      const loc = globalState.get("events_location");
+      let userLongitude = -122.4194;
+      let userLatitude = -122.4194;
 
-    const eventData = await fetchEvents(bodyName, userLatitude, userLongitude);
-    cachedEvents[bodyName] = eventData;
+      if (loc != null) {
+        console.log(loc);
+        userLongitude = loc.long;
+        userLatitude = loc.lat;
+      }
 
-    const eventDetailsHTML = renderEventDetails(
-      "",
-      eventData,
-      bodyName
-    );
-
-    contentElement.innerHTML = eventDetailsHTML;
-    contentElement.dataset.loaded = "true";
-  } catch (error) {
-    contentElement.innerHTML = `<p>Error loading events: ${error.message}</p>`;
-    console.error(`Error fetching ${bodyName} events:`, error);
-  }
-}
-
-async function fetchAndRenderAllPlanets() {
-  const contentElement = document.getElementById("planet-content");
-
-  if (contentElement.dataset.loaded === "true") {
-    return;
-  }
-
-  contentElement.innerHTML = "<p>Loading planet events...</p>";
-
-  try {
-    //const location = await getLocation();
-    const userLatitude = location.latitude;
-    const userLongitude = location.longitude;
-
-    const planetEvents = await Promise.all(
-      bodies.slice(2).map((planet) => fetchEvents(planet, userLatitude, userLongitude))
-    );
-
-    let planetHTML = "";
-    planetEvents.forEach((eventData, index) => {
-      const planetName = bodies[index + 2];
-      cachedEvents[planetName] = eventData;
-      planetHTML += renderEventDetails(
-        `${planetName.charAt(0).toUpperCase() + planetName.slice(1)}`,
-        eventData,
-        planetName
+      const planetEvents = await Promise.all(
+        bodies.slice(2).map((planet) => fetchEvents(planet, userLatitude, userLongitude))
       );
-    });
 
-    contentElement.innerHTML = planetHTML;
-    contentElement.dataset.loaded = "true";
-  } catch (error) {
-    contentElement.innerHTML = `<p>Error loading planet events: ${error.message}</p>`;
-    console.error("Error fetching planet events:", error);
+      let planetHTML = "";
+      planetEvents.forEach((eventData, index) => {
+        const planetName = bodies[index + 2];
+        cachedEvents[planetName] = eventData;
+        planetHTML += renderEventDetails(
+          `${planetName.charAt(0).toUpperCase() + planetName.slice(1)}`,
+          eventData,
+          planetName
+        );
+      });
+
+      contentElement.innerHTML = planetHTML;
+      contentElement.dataset.loaded = "true";
+    } catch (error) {
+      contentElement.innerHTML = `<p>Error loading planet events: ${error.message}</p>`;
+      console.error("Error fetching planet events:", error);
+    }
   }
-}
 
-function renderEventDetails(title, eventData, bodyName) {
-  if (!eventData) {
-    return `
+  function renderEventDetails(title, eventData, bodyName) {
+    if (!eventData) {
+      return `
       <div class="event-details">
         <h2>${title}</h2>
         <p>No events available.</p>
       </div>
     `;
-  }
+    }
 
-  let content = `
+    let content = `
   <div class="event-details">
     <h2>${title}</h2>
     <ul>
       <li><strong>Rise Time:</strong> ${eventData.rise
-      ? new Date(eventData.rise).toLocaleString()
-      : "N/A"
-    }</li>
+        ? new Date(eventData.rise).toLocaleString()
+        : "N/A"
+      }</li>
       <li><strong>Set Time:</strong> ${eventData.set
-      ? new Date(eventData.set).toLocaleString()
-      : "N/A"
-    }</li>
+        ? new Date(eventData.set).toLocaleString()
+        : "N/A"
+      }</li>
       <li><strong>Culmination:</strong> ${eventData.culmination
-      ? new Date(eventData.culmination).toLocaleString()
-      : "N/A"
-    }</li>
+        ? new Date(eventData.culmination).toLocaleString()
+        : "N/A"
+      }</li>
      <br>
 `;
 
-  // Moon
-  if (bodyName.toLowerCase() === "moon") {
-    content += `
+    // Moon
+    if (bodyName.toLowerCase() === "moon") {
+      content += `
     <li><strong>Moon Phase Angle:</strong> ${eventData.moonPhaseAngle.toFixed(
-      2
-    )}°</li>
+        2
+      )}°</li>
     <li><strong>Next New Moon:</strong> ${new Date(
-      eventData.nextNewMoon
-    ).toLocaleString()}</li>
+        eventData.nextNewMoon
+      ).toLocaleString()}</li>
     <li><strong>Next First Quarter:</strong> ${new Date(
-      eventData.nextFirstQuarter
-    ).toLocaleString()}</li>
+        eventData.nextFirstQuarter
+      ).toLocaleString()}</li>
     <li><strong>Next Full Moon:</strong> ${new Date(
-      eventData.nextFullMoon
-    ).toLocaleString()}</li>
+        eventData.nextFullMoon
+      ).toLocaleString()}</li>
     <li><strong>Next Last Quarter:</strong> ${new Date(
-      eventData.nextLastQuarter
-    ).toLocaleString()}</li>
+        eventData.nextLastQuarter
+      ).toLocaleString()}</li>
     <li><strong>Next Lunar Eclipse:</strong> ${eventData.nextLunarEclipse
-        ? `${eventData.nextLunarEclipse.kind} on ${new Date(
-          eventData.nextLunarEclipse.date
-        ).toLocaleString()}`
-        : "N/A"
-      }</li>
+          ? `${eventData.nextLunarEclipse.kind} on ${new Date(
+            eventData.nextLunarEclipse.date
+          ).toLocaleString()}`
+          : "N/A"
+        }</li>
     <li><strong>Next Lunar Perigee/Apogee:</strong> ${eventData.nextLunarApsis
-        ? `${eventData.nextLunarApsis.kind} on ${new Date(
-          eventData.nextLunarApsis.date
-        ).toLocaleString()} at ${eventData.nextLunarApsis.distanceKm.toFixed(
-          0
-        )} km`
-        : "N/A"
-      }</li>
+          ? `${eventData.nextLunarApsis.kind} on ${new Date(
+            eventData.nextLunarApsis.date
+          ).toLocaleString()} at ${eventData.nextLunarApsis.distanceKm.toFixed(
+            0
+          )} km`
+          : "N/A"
+        }</li>
   `;
-  }
+    }
 
-  // Sun
-  if (bodyName.toLowerCase() === "sun") {
-    const twilight = eventData.twilight;
-    content += `
+    // Sun
+    if (bodyName.toLowerCase() === "sun") {
+      const twilight = eventData.twilight;
+      content += `
     <li><strong>Next Solar Eclipse:</strong> ${eventData.nextSolarEclipse
-        ? `${eventData.nextSolarEclipse.kind} on ${new Date(
-          eventData.nextSolarEclipse.date
-        ).toLocaleString()}`
-        : "N/A"
-      }</li>
+          ? `${eventData.nextSolarEclipse.kind} on ${new Date(
+            eventData.nextSolarEclipse.date
+          ).toLocaleString()}`
+          : "N/A"
+        }</li>
   `;
-  }
+    }
 
 
-  // if (["mercury", "venus"].includes(bodyName.toLowerCase())) {
-  //   const maxElongation = eventData.nextMaxElongation;
-  //   if (maxElongation) {
-  //     content += `
-  //       <li><strong>Next Maximum Elongation:</strong> ${new Date(
-  //         maxElongation.date
-  //       ).toLocaleString()}</li>
-  //       <li><strong>Elongation:</strong> ${maxElongation.elongation.toFixed(
-  //         2
-  //       )}°</li>
-  //       <li><strong>Visibility:</strong> ${maxElongation.visibility}</li>
-  //     `;
-  //   }
-  //   if (eventData.nextInferiorConjunction) {
-  //     content += `
-  //       <li><strong>Next Inferior Conjunction:</strong> ${new Date(
-  //         eventData.nextInferiorConjunction
-  //       ).toLocaleString()}</li>
-  //     `;
-  //   }
-  //   if (eventData.nextSuperiorConjunction) {
-  //     content += `
-  //       <li><strong>Next Superior Conjunction:</strong> ${new Date(
-  //         eventData.nextSuperiorConjunction
-  //       ).toLocaleString()}</li>
-  //     `;
-  //   }
-  //   if (eventData.nextTransit) {
-  //     content += `
-  //       <li><strong>Next Transit:</strong> ${new Date(
-  //         eventData.nextTransit.date
-  //       ).toLocaleString()}</li>
-  //       <li><strong>Separation:</strong> ${eventData.nextTransit.separationArcmin.toFixed(
-  //         2
-  //       )} arcminutes</li>
-  //     `;
-  //   }
-  //   if (eventData.currentMagnitude !== undefined) {
-  //     content += `
-  //       <li><strong>Current Magnitude:</strong> ${eventData.currentMagnitude.toFixed(
-  //         2
-  //       )}</li>
-  //       <li><strong>Current Elongation:</strong> ${eventData.currentElongation.toFixed(
-  //         2
-  //       )}°</li>
-  //     `;
-  //   }
-  //   if (eventData.nextApsis) {
-  //     content += `
-  //       <li><strong>Next Perihelion/Aphelion:</strong> ${
-  //         eventData.nextApsis.kind
-  //       } on ${new Date(eventData.nextApsis.date).toLocaleString()} at ${
-  //       eventData.nextApsis.distanceAu
-  //     } AU</li>
-  //     `;
-  //   }
-  // }
+    // if (["mercury", "venus"].includes(bodyName.toLowerCase())) {
+    //   const maxElongation = eventData.nextMaxElongation;
+    //   if (maxElongation) {
+    //     content += `
+    //       <li><strong>Next Maximum Elongation:</strong> ${new Date(
+    //         maxElongation.date
+    //       ).toLocaleString()}</li>
+    //       <li><strong>Elongation:</strong> ${maxElongation.elongation.toFixed(
+    //         2
+    //       )}°</li>
+    //       <li><strong>Visibility:</strong> ${maxElongation.visibility}</li>
+    //     `;
+    //   }
+    //   if (eventData.nextInferiorConjunction) {
+    //     content += `
+    //       <li><strong>Next Inferior Conjunction:</strong> ${new Date(
+    //         eventData.nextInferiorConjunction
+    //       ).toLocaleString()}</li>
+    //     `;
+    //   }
+    //   if (eventData.nextSuperiorConjunction) {
+    //     content += `
+    //       <li><strong>Next Superior Conjunction:</strong> ${new Date(
+    //         eventData.nextSuperiorConjunction
+    //       ).toLocaleString()}</li>
+    //     `;
+    //   }
+    //   if (eventData.nextTransit) {
+    //     content += `
+    //       <li><strong>Next Transit:</strong> ${new Date(
+    //         eventData.nextTransit.date
+    //       ).toLocaleString()}</li>
+    //       <li><strong>Separation:</strong> ${eventData.nextTransit.separationArcmin.toFixed(
+    //         2
+    //       )} arcminutes</li>
+    //     `;
+    //   }
+    //   if (eventData.currentMagnitude !== undefined) {
+    //     content += `
+    //       <li><strong>Current Magnitude:</strong> ${eventData.currentMagnitude.toFixed(
+    //         2
+    //       )}</li>
+    //       <li><strong>Current Elongation:</strong> ${eventData.currentElongation.toFixed(
+    //         2
+    //       )}°</li>
+    //     `;
+    //   }
+    //   if (eventData.nextApsis) {
+    //     content += `
+    //       <li><strong>Next Perihelion/Aphelion:</strong> ${
+    //         eventData.nextApsis.kind
+    //       } on ${new Date(eventData.nextApsis.date).toLocaleString()} at ${
+    //       eventData.nextApsis.distanceAu
+    //     } AU</li>
+    //     `;
+    //   }
+    // }
 
-  // if (
-  //   ["mars", "jupiter", "saturn", "uranus", "neptune", "pluto"].includes(
-  //     bodyName.toLowerCase()
-  //   )
-  // ) {
-  //   if (eventData.nextOpposition) {
-  //     content += `
-  //       <li><strong>Next Opposition:</strong> ${new Date(
-  //         eventData.nextOpposition
-  //       ).toLocaleString()}</li>
-  //     `;
-  //   }
-  //   if (eventData.nextConjunction) {
-  //     content += `
-  //       <li><strong>Next Conjunction:</strong> ${new Date(
-  //         eventData.nextConjunction
-  //       ).toLocaleString()}</li>
-  //     `;
-  //   }
-  //   if (eventData.currentMagnitude !== undefined) {
-  //     content += `
-  //       <li><strong>Current Magnitude:</strong> ${eventData.currentMagnitude.toFixed(
-  //         2
-  //       )}</li>
-  //       <li><strong>Current Elongation:</strong> ${eventData.currentElongation.toFixed(
-  //         2
-  //       )}°</li>
-  //     `;
-  //   }
-  //   if (eventData.nextApsis) {
-  //     content += `
-  //       <li><strong>Next Perihelion/Aphelion:</strong> ${
-  //         eventData.nextApsis.kind
-  //       } on ${new Date(eventData.nextApsis.date).toLocaleString()} at ${
-  //       eventData.nextApsis.distanceAu
-  //     } AU</li>
-  //     `;
-  //   }
-  // }
+    // if (
+    //   ["mars", "jupiter", "saturn", "uranus", "neptune", "pluto"].includes(
+    //     bodyName.toLowerCase()
+    //   )
+    // ) {
+    //   if (eventData.nextOpposition) {
+    //     content += `
+    //       <li><strong>Next Opposition:</strong> ${new Date(
+    //         eventData.nextOpposition
+    //       ).toLocaleString()}</li>
+    //     `;
+    //   }
+    //   if (eventData.nextConjunction) {
+    //     content += `
+    //       <li><strong>Next Conjunction:</strong> ${new Date(
+    //         eventData.nextConjunction
+    //       ).toLocaleString()}</li>
+    //     `;
+    //   }
+    //   if (eventData.currentMagnitude !== undefined) {
+    //     content += `
+    //       <li><strong>Current Magnitude:</strong> ${eventData.currentMagnitude.toFixed(
+    //         2
+    //       )}</li>
+    //       <li><strong>Current Elongation:</strong> ${eventData.currentElongation.toFixed(
+    //         2
+    //       )}°</li>
+    //     `;
+    //   }
+    //   if (eventData.nextApsis) {
+    //     content += `
+    //       <li><strong>Next Perihelion/Aphelion:</strong> ${
+    //         eventData.nextApsis.kind
+    //       } on ${new Date(eventData.nextApsis.date).toLocaleString()} at ${
+    //       eventData.nextApsis.distanceAu
+    //     } AU</li>
+    //     `;
+    //   }
+    // }
 
-  content += `
+    content += `
       </ul>
     </div>
   `;
 
-  return content;
+    return content;
+  }
 }
