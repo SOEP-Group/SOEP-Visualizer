@@ -118,7 +118,7 @@ async function fetchAndRenderAllPlanets() {
       const planetName = bodies[index + 2];
       cachedEvents[planetName] = eventData;
       planetHTML += renderEventDetails(
-        `${planetName.charAt(0).toUpperCase() + planetName.slice(1)} Events`,
+        `${planetName.charAt(0).toUpperCase() + planetName.slice(1)}`,
         eventData,
         planetName
       );
