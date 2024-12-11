@@ -51,11 +51,11 @@ function onGlobalStateChanged(changedStates) {
       }
     }
   } else if (changedStates["togglePassing"]) {
+    toggleIconState();
     const isDisplayingPassing = globalState.get("togglePassing");
     const dropdown = document.getElementById("passing-satellites-dropdown");
     if (isDisplayingPassing) {
-      const passingSatellites = getPassingSatellites();
-      populateDropdown(passingSatellites, dropdown);
+      onNewVisibleSatellites();
       dropdown.classList.remove("hidden");
     } else {
       dropdown.classList.add("hidden");
@@ -63,49 +63,49 @@ function onGlobalStateChanged(changedStates) {
   }
 }
 
-function getPassingSatellites() {
-  if (!satellites || typeof satellites.instanceCount === "undefined") {
-    return [];
-  }
-
-  const passingSatellites = [];
-  for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
-    const id = satellites.getIdByInstanceId(instanceId);
-    const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
-    passingSatellites.push({id, name});
-  }
-  return passingSatellites;
-}
-
-function populateDropdown(satellites, dropdown) {
+function populateDropdown(satellite_ids, dropdown) {
   dropdown.innerHTML = "";
 
-  if (!satellites || satellites.length === 0) {
+  if (!satellite_ids || satellite_ids.length === 0) {
     const noPassingSatellites = document.createElement("a");
     noPassingSatellites.textContent = "No passing satellites";
     noPassingSatellites.classList.add("block", "px-4", "py-2", "text-gray-500");
     dropdown.appendChild(noPassingSatellites);
     return;
   }
-  satellites.forEach((satellite) => {
+  const satellite_data = globalState.get("satellites");
+  satellite_ids.forEach((satellite) => {
     const option = document.createElement("a");
-    option.textContent = satellite.name;
-    option.dataset.satelliteId = satellite.id;
-    option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
-    option.addEventListener("click", () => focusSatellite(satellite.id));
+    option.textContent = satellite_data[satellite].name;
+    option.dataset.satelliteId = satellites.getInstanceIdById(satellite);
+    option.classList.add(
+      "block",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-700",
+      "cursor-pointer"
+    );
+    option.addEventListener("click", () => focusSatellite(satellite));
     dropdown.appendChild(option);
-  })
+  });
 }
 
 function focusSatellite(id) {
-  let clicked_satellite = satellites.getInstanceIdById(id);
+  let clicked_satellite = id;
   glState.set({
     clickedSatellite: clicked_satellite,
   });
 }
 
+function onNewVisibleSatellites() {
+  const dropdown = document.getElementById("passing-satellites-dropdown");
+  const passingSatellites = satellites ? satellites.getVisible() : [];
+  populateDropdown(passingSatellites, dropdown);
+}
+
 export function initPredictions() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
+  subscribe("newVisibleSatellites", onNewVisibleSatellites);
 
   const toggleButton = document.getElementById("toggle-section");
   const passing_location = globalState.get("passing_location");
@@ -186,11 +186,11 @@ export function initPredictions() {
   });
 
   // Fix for later
-  document.addEventListener("click", function (event) {
-    if (event.target.closest("#toggle-section")) {
-      toggleIconState();
-    }
-  });
+  document
+    .getElementById("toggle-section")
+    .addEventListener("click", function (event) {
+      globalState.set({ togglePassing: !globalState.get("togglePassing") });
+    });
 }
 
 function toggleSection(contentId, arrowId) {
@@ -212,7 +212,7 @@ export function toggleIconState() {
   const togglePath = document.getElementById("toggle-path");
   const isDisplayingPassing = globalState.get("togglePassing");
 
-  if (!isDisplayingPassing) {
+  if (isDisplayingPassing) {
     const location = globalState.get("passing_location");
     if (!location) {
       return;
@@ -222,14 +222,12 @@ export function toggleIconState() {
       "d",
       "M192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192s-86-192-192-192L192 64zm192 96a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"
     );
-    globalState.set({ togglePassing: true });
   } else {
     toggleText.innerText = "Displaying All Satellites";
     togglePath.setAttribute(
       "d",
       "M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
     );
-    globalState.set({ togglePassing: false });
   }
-  glState.set({clickedSatellite: null});
+  glState.set({ clickedSatellite: null });
 }

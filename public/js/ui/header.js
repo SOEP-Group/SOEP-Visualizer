@@ -100,6 +100,7 @@ export function initHeader() {
   }
 
   function focusSatellite(id) {
+    globalState.set({ togglePassing: false });
     let clicked_satellite = satellites.getInstanceIdById(id);
     glState.set({
       clickedSatellite: clicked_satellite,
