@@ -414,32 +414,26 @@ export class Earth {
   getLocation(mouse, camera) {
     if (!this.isPickingLocation) return null;
     this.raycaster.setFromCamera(mouse, camera);
-
     const intersects = this.raycaster.intersectObject(this.planetMesh);
 
     if (intersects.length > 0) {
-      let local_coordinates = this.group.worldToLocal(intersects[0].point);
-
-      const inverseQuaternion = this.planetGroup.quaternion.clone().invert();
-      local_coordinates.applyQuaternion(inverseQuaternion);
-
-      let local_copy = new THREE.Vector3(
-        local_coordinates.x,
-        local_coordinates.y,
-        local_coordinates.z
-      );
-
-      let origin = new THREE.Vector3(0, 0, this.planetSize);
-      local_copy.y = 0;
-      local_copy.setLength(this.planetSize);
-      let angle = origin.angleTo(local_copy);
-      let long = THREE.MathUtils.radToDeg(angle) - 90;
+      let world_coordinates = intersects[0].point;
+      let local_coordinates = this.group.worldToLocal(world_coordinates);
 
       let normalized = local_coordinates.clone().normalize();
+
       let lat = THREE.MathUtils.radToDeg(Math.asin(normalized.y));
+
+      let long =
+        THREE.MathUtils.radToDeg(Math.atan2(normalized.x, normalized.z)) - 90;
+
+      // Ensure longitude is within [-180, 180] range
+      if (long < -180) long += 360;
+      if (long > 180) long -= 360;
 
       return { lat: lat, long: long };
     }
+
     return null;
   }
 }
