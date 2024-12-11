@@ -207,7 +207,7 @@ function onStateChanged(changedStates) {
 function onGlobalStateChanged(changedStates) {
   if (changedStates["pickingLocation"]) {
     const picking = globalState.get("pickingLocation");
-    //satellites.hide(picking);
+    satellites.hide(picking);
     earth.togglePickingLocation(picking);
   }
   if (changedStates["togglePassing"]) {

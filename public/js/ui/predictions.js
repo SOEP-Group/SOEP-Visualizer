@@ -20,6 +20,14 @@ function onGlobalStateChanged(changedStates) {
     }
   } else if (changedStates["passing_location"]) {
     const passing_location = globalState.get("passing_location");
+    const toggleButton = document.getElementById("toggle-section");
+
+    if (passing_location) {
+      toggleButton.classList.remove("opacity-50");
+    } else {
+      toggleButton.classList.add("opacity-50");
+    }
+
     if (passing_location !== null) {
       const grandparent_element = document.getElementById("passing-content");
       for (const child of grandparent_element.children) {
@@ -98,6 +106,15 @@ function focusSatellite(id) {
 
 export function initPredictions() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
+
+  const toggleButton = document.getElementById("toggle-section");
+  const passing_location = globalState.get("passing_location");
+
+  if (passing_location) {
+    toggleButton.classList.remove("opacity-50");
+  } else {
+    toggleButton.classList.add("opacity-50");
+  }
   document
     .getElementById("passing-prediction-header")
     .addEventListener("click", function () {
@@ -198,7 +215,6 @@ export function toggleIconState() {
   if (!isDisplayingPassing) {
     const location = globalState.get("passing_location");
     if (!location) {
-      alert("select passing location uwu");
       return;
     }
     toggleText.innerText = "Displaying Passing Satellites";
