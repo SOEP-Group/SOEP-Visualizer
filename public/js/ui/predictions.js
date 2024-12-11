@@ -215,4 +215,5 @@ export function toggleIconState() {
     );
     globalState.set({ togglePassing: false });
   }
+  glState.set({clickedSatellite: null});
 }
