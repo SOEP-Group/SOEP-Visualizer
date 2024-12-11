@@ -2,6 +2,7 @@ import { getLocation } from "./utils.js";
 import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
 import { satellites } from "../gl/scene.js";
+import { glState } from "../gl/index.js";
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
 
@@ -41,7 +42,58 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
+  } else if (changedStates["togglePassing"]) {
+    const isDisplayingPassing = globalState.get("togglePassing");
+    const dropdown = document.getElementById("passing-satellites-dropdown");
+    if (isDisplayingPassing) {
+      const passingSatellites = getPassingSatellites();
+      populateDropdown(passingSatellites, dropdown);
+      dropdown.classList.remove("hidden");
+    } else {
+      dropdown.classList.add("hidden");
+    }
   }
+}
+
+function getPassingSatellites() {
+  if (!satellites || typeof satellites.instanceCount === "undefined") {
+    return [];
+  }
+
+  const passingSatellites = [];
+  for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
+    const id = satellites.getIdByInstanceId(instanceId);
+    const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
+    passingSatellites.push({id, name});
+  }
+  return passingSatellites;
+}
+
+function populateDropdown(satellites, dropdown) {
+  dropdown.innerHTML = "";
+
+  if (!satellites || satellites.length === 0) {
+    const noPassingSatellites = document.createElement("a");
+    noPassingSatellites.textContent = "No passing satellites";
+    noPassingSatellites.classList.add("block", "px-4", "py-2", "text-gray-500");
+    dropdown.appendChild(noPassingSatellites);
+    return;
+  }
+  satellites.forEach((satellite) => {
+    const option = document.createElement("a");
+    option.textContent = satellite.name;
+    option.dataset.satelliteId = satellite.id;
+    option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
+    option.addEventListener("click", () => focusSatellite(satellite.id));
+    dropdown.appendChild(option);
+  })
+}
+
+function focusSatellite(id) {
+  let clicked_satellite = satellites.getInstanceIdById(id);
+  glState.set({
+    clickedSatellite: clicked_satellite,
+  });
 }
 
 export function initPredictions() {
@@ -75,6 +127,9 @@ export function initPredictions() {
     });
 
   const location_btns = document.querySelectorAll(".get-location-btn");
+
+  const dropdown = document.getElementById("passing-satellites-dropdown");
+  dropdown.classList.add("hidden");
 
   location_btns.forEach(async (btn) => {
     btn.addEventListener("click", function (event) {
