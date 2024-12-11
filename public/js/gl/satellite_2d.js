@@ -353,18 +353,10 @@ export class Satellites {
   }
 
   getPassingSatellites(location, radius) {
-    const id = this.getInstanceIdById(45696);
-
-    console.log(this.getGeodeticCoordinates(id));
-    const passing = Object.keys(this.instanceIdToSatelliteIdMap).filter((key) => {
+    return Object.keys(this.instanceIdToSatelliteIdMap).filter((key) => {
       const { lat, long } = this.getGeodeticCoordinates(key);
       return this.isWithinRadius(location, { lat, long }, radius);
     }).map(Number);
-    
-    console.log(this.getGeodeticCoordinates(passing[0]));
-    const id_d = this.getIdByInstanceId(passing[0]);
-    console.log(id_d)
-    return passing;
   }
 
   toRad(deg) {
@@ -376,8 +368,8 @@ export class Satellites {
 
     const lat1 = this.toRad(location1.lat);
     const lon1 = this.toRad(location1.long);
-    const lat2 = location2.lat;
-    const lon2 = location2.long;
+    const lat2 = this.toRad(location2.lat);
+    const lon2 = this.toRad(location2.long);
 
     const dLat = lat2 - lat1;
     const dLong = lon2 - lon1;
@@ -387,13 +379,7 @@ export class Satellites {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
-    /*console.log(
-      `Distance between:`,
-      {lat1, lon1},
-      location2,
-      `is:`,
-      distance
-  );*/
+    //console.log(`Distance between:`, {lat1, lon1}, location2, `is:`, distance);
 
     return distance <= radius;
   }

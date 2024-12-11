@@ -217,10 +217,7 @@ function onGlobalStateChanged(changedStates) {
     if (isDisplayingPassing && location) {
       const radius = 500;
       const passingSatellites = satellites.getPassingSatellites(location, radius);
-      console.log(passingSatellites);
-      /*for (var i=1;i<=500;i++) {
-        passingSatellites[i] = i;
-      }*/
+      //console.log(passingSatellites);
       rebuildSatellitesWithSubset(passingSatellites);
     } else {
       addSatellites(globalState.get("satellites"));
