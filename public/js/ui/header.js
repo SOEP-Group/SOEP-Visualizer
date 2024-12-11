@@ -10,6 +10,7 @@ import {
   getFilterData,
   getFilterValues,
   resetFiltersToDefault,
+  getUnmatchedSatellites,
 } from "./filter.js";
 
 // burger menu
@@ -186,5 +187,6 @@ clearFiltersButton.addEventListener("click", () => {
 
 applyFiltersButton.addEventListener("click", () => {
   const selectedFilters = getFilterValues();
-  console.log("Applied Filters:", selectedFilters);
+  const unmatchedSatellites = getUnmatchedSatellites(selectedFilters);
+  console.log("Satellites that do not match the filters:", unmatchedSatellites);
 });

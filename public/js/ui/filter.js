@@ -35,6 +35,7 @@ export async function fetchFilterData() {
     console.error("Failed to fetch filter data");
     return null;
   }
+
   return await response.json();
 }
 
@@ -42,10 +43,15 @@ function createSlider(id, range, step, minLabelElem, maxLabelElem) {
   const slider = document.getElementById(id);
   if (slider.noUiSlider) slider.noUiSlider.destroy();
 
+  const adjustedRange = [
+    Math.floor(range[0] * 10) / 10,
+    Math.ceil(range[1] * 10) / 10,
+  ];
+
   noUiSlider.create(slider, {
-    start: range,
+    start: adjustedRange,
     connect: true,
-    range: { min: range[0], max: range[1] },
+    range: { min: adjustedRange[0], max: adjustedRange[1] },
     step,
     tooltips: false,
     format: {
@@ -132,8 +138,19 @@ export async function initializeFilters(filterData) {
     createSlider(id, range, step, minLabelElem, maxLabelElem);
   });
 
+  const launchDateStart = document.getElementById("launch-date-start");
+  const launchDateEnd = document.getElementById("launch-date-end");
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
+
+  const minLaunchDate = filterData.min_launch_date || "1957-01-01";
+  const maxLaunchDate = filterData.max_launch_date || "2025-12-31";
+
+  launchDateStart.value = minLaunchDate;
+  launchDateEnd.value = maxLaunchDate;
+
+  launchDateStart.dataset.minValue = minLaunchDate;
+  launchDateEnd.dataset.maxValue = maxLaunchDate;
 
   const populateSelect = (selectElement, options) => {
     selectElement.innerHTML = '<option value="">Any</option>';
@@ -162,6 +179,8 @@ export async function getFilterData() {
   let minLong = Infinity,
     maxLong = -Infinity;
 
+  const ids = [];
+
   for (
     let instanceId = 0;
     instanceId < satellites.instanceCount;
@@ -169,6 +188,7 @@ export async function getFilterData() {
   ) {
     const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
     const speedVector = satellites.getSpeed(instanceId);
+    const id = satellites.getIdByInstanceId(instanceId);
 
     const speed = Math.sqrt(
       speedVector.x ** 2 + speedVector.y ** 2 + speedVector.z ** 2
@@ -180,6 +200,7 @@ export async function getFilterData() {
     maxLat = Math.max(maxLat, geodeticCoords.lat);
     minLong = Math.min(minLong, geodeticCoords.long);
     maxLong = Math.max(maxLong, geodeticCoords.long);
+    ids.push(id);
   }
 
   return {
@@ -189,6 +210,7 @@ export async function getFilterData() {
     maxLat,
     minLong,
     maxLong,
+    ids,
   };
 }
 
@@ -211,8 +233,10 @@ export function getFilterValues() {
     }
   });
 
-  filterValues["Launch Date"] =
-    document.getElementById("launch-date").value || "Any";
+  filterValues["Launch Date"] = {
+    start: document.getElementById("launch-date-start").value || "1957-01-01",
+    end: document.getElementById("launch-date-end").value || "2025-12-31",
+  };
   filterValues["Launch Site"] =
     document.getElementById("launch-site").value || "Any";
   filterValues["Owner"] = document.getElementById("owner").value || "Any";
@@ -264,7 +288,82 @@ export function resetFiltersToDefault() {
     }
   });
 
-  document.getElementById("launch-site").value = "";
-  document.getElementById("owner").value = "";
-  document.getElementById("launch-date").value = "";
+  const launchDateStart = document.getElementById("launch-date-start");
+  const launchDateEnd = document.getElementById("launch-date-end");
+
+  if (launchDateStart && launchDateEnd) {
+    launchDateStart.value = launchDateStart.dataset.minValue || "1957-01-01";
+    launchDateEnd.value = launchDateEnd.dataset.maxValue || "2025-12-31";
+  }
+
+  const launchSiteSelect = document.getElementById("launch-site");
+  const ownerSelect = document.getElementById("owner");
+
+  if (launchSiteSelect) launchSiteSelect.value = "";
+  if (ownerSelect) ownerSelect.value = "";
+}
+
+export function getUnmatchedSatellites(selectedFilters) {
+  if (!satellites || typeof satellites.instanceCount === "undefined") {
+    console.warn("Satellites are not initialized.");
+    return [];
+  }
+
+  const unmatchedSatellites = [];
+
+  for (
+    let instanceId = 0;
+    instanceId < satellites.instanceCount;
+    instanceId++
+  ) {
+    const id = satellites.getIdByInstanceId(instanceId);
+    const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
+    const speedVector = satellites.getSpeed(instanceId);
+    const speed = Math.sqrt(
+      speedVector.x ** 2 + speedVector.y ** 2 + speedVector.z ** 2
+    );
+    const orbitDistance = satellites.getOrbitDistance(instanceId);
+    const inclination = satellites.getInclination(instanceId);
+    const revolutionTime = satellites.getRevolutionTime(instanceId);
+    const launchDate = satellites.getLaunchDate(instanceId);
+    const owner = satellites.getOwner(instanceId);
+    const launchSite = satellites.getLaunchSite(instanceId);
+
+    const filters = selectedFilters;
+    const speedRange = filters["Speed (km/s)"].map(Number);
+    const latRange = filters["Latitude (°)"].map(Number);
+    const longRange = filters["Longitude (°)"].map(Number);
+    const orbitDistanceRange = filters["Orbit Distance (km)"].map(Number);
+    const inclinationRange = filters["Inclination (°)"].map(Number);
+    const revolutionTimeRange = filters["Revolution Time (hours)"].map(Number);
+
+    const launchDateStart = new Date(filters["Launch Date"].start);
+    const launchDateEnd = new Date(filters["Launch Date"].end);
+    const satelliteLaunchDate = new Date(launchDate);
+
+    const isWithinFilters =
+      speed >= speedRange[0] &&
+      speed <= speedRange[1] &&
+      geodeticCoords.lat >= latRange[0] &&
+      geodeticCoords.lat <= latRange[1] &&
+      geodeticCoords.long >= longRange[0] &&
+      geodeticCoords.long <= longRange[1] &&
+      orbitDistance.min >= orbitDistanceRange[0] &&
+      orbitDistance.max <= orbitDistanceRange[1] &&
+      inclination >= inclinationRange[0] &&
+      inclination <= inclinationRange[1] &&
+      revolutionTime >= revolutionTimeRange[0] &&
+      revolutionTime <= revolutionTimeRange[1] &&
+      satelliteLaunchDate >= launchDateStart &&
+      satelliteLaunchDate <= launchDateEnd &&
+      (filters["Owner"] === "Any" || owner === filters["Owner"]) &&
+      (filters["Launch Site"] === "Any" ||
+        launchSite === filters["Launch Site"]);
+
+    if (!isWithinFilters) {
+      unmatchedSatellites.push(id);
+    }
+  }
+
+  return unmatchedSatellites;
 }
