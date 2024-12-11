@@ -98,7 +98,7 @@ export function displayOrbit(satellite) {
 
     let { x, y, z } = positionAndVelocity.position;
 
-    const scaledPosition = scalePosition({ x, y, z });
+    const scaledPosition = scalePosition({ x: x, y: z, z: -y });
 
     orbitVertices.push(scaledPosition.x, scaledPosition.y, scaledPosition.z);
   }

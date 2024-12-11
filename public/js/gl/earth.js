@@ -222,7 +222,6 @@ export class Earth {
         #include <emissivemap_fragment>
         #ifdef USE_EMISSIVEMAP
 
-        
         for (int i = 0; i < NUM_POINT_LIGHTS; i++) {
             vec3 lightDirection = normalize(pointLights[i].position - vWorldPosition);
             float dotProduct = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
@@ -246,8 +245,6 @@ export class Earth {
     planetMaterial.map.colorSpace = SRGBColorSpace;
     this.planetMesh = new Mesh(this.planetGeometry, planetMaterial);
     this.planetGroup.add(this.planetMesh);
-    this.planetGroup.rotation.y = this.currRotation;
-    this.planetGroup.rotation.z = this.planetAngle;
     this.group.add(this.planetGroup);
 
     const planetCloudsMaterial = new MeshStandardMaterial({
@@ -261,6 +258,8 @@ export class Earth {
     this.cloudsMesh.scale.setScalar(1.003);
     this.cloudsMesh.renderOrder = 1;
     this.planetGroup.add(this.cloudsMesh);
+    this.group.rotation.y = this.currRotation;
+    this.group.rotation.z = this.planetAngle;
   }
 
   createAtmosphere() {
@@ -332,7 +331,7 @@ export class Earth {
         : rotationChange
     );
 
-    this.planetGroup.quaternion.premultiply(rotationQuaternion);
+    this.group.quaternion.premultiply(rotationQuaternion);
   }
 
   updatePlanetOrbit(dt) {
