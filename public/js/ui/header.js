@@ -3,12 +3,25 @@ import { globalState } from "../globalState.js";
 import { isMobileScreen } from "./utils.js";
 import { satellites } from "../gl/scene.js";
 import { glState } from "../gl/index.js";
+import {
+  toggleDropdown,
+  fetchFilterData,
+  initializeFilters,
+  getFilterData,
+  getFilterValues,
+  resetFiltersToDefault,
+  getUnmatchedSatellites,
+} from "./filter.js";
 
 // burger menu
 const dropdownButton = document.getElementById("menu__toggle");
 const dropdownMenu = document.getElementById("ham_menu");
-
 const eventsTab = document.getElementById("events-tab");
+const filtersButton = document.getElementById("filters-button");
+const filtersDropdown = document.getElementById("filters-dropdown");
+const closeFiltersButton = document.getElementById("close-filters-button");
+const clearFiltersButton = document.getElementById("clear-filters-button");
+const applyFiltersButton = document.getElementById("apply-filters-button");
 
 let firstMenuOpen = true;
 
@@ -29,10 +42,9 @@ export function initHeader() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
   const satelliteDropdown = document.getElementById("satellite-dropdown");
   const searchInput = document.getElementById("satellite-search");
-
   function getAllSatellites() {
     if (!satellites || typeof satellites.instanceCount === "undefined") {
-      //console.warn("satellites are not initialized");
+      console.warn("satellites are not initialized");
       return [];
     }
 
@@ -66,7 +78,13 @@ export function initHeader() {
       const option = document.createElement("a");
       option.textContent = satellite.name;
       option.dataset.satelliteId = satellite.id;
-      option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
+      option.classList.add(
+        "block",
+        "px-4",
+        "py-2",
+        "hover:bg-gray-700",
+        "cursor-pointer"
+      );
       option.addEventListener("click", () => focusSatellite(satellite.id));
       satelliteDropdown.appendChild(option);
     });
@@ -149,3 +167,45 @@ function closeMenu() {
   dropdownButton.classList.remove("tham-active");
   dropdownMenu.classList.add("-translate-x-full");
 }
+
+filtersButton.addEventListener("click", async () => {
+  const isCurrentlyClosed = filtersDropdown.classList.contains("invisible");
+  toggleDropdown(isCurrentlyClosed);
+
+  if (isCurrentlyClosed) {
+    const filterData = await getFilterData();
+    const apiFilterData = await fetchFilterData();
+
+    if (filterData && apiFilterData) {
+      const mergedFilterData = { ...apiFilterData, ...filterData };
+      initializeFilters(mergedFilterData);
+    }
+  }
+});
+
+closeFiltersButton.addEventListener("click", () => {
+  toggleDropdown(false);
+});
+
+clearFiltersButton.addEventListener("click", () => {
+  resetFiltersToDefault();
+});
+
+applyFiltersButton.addEventListener("click", () => {
+  const selectedFilters = getFilterValues();
+  const unmatchedSatellites = getUnmatchedSatellites(selectedFilters);
+  const allSatelliteIds = Array.from(
+    { length: satellites.instanceCount },
+    (_, i) => i
+  );
+  const matchedSatellites = allSatelliteIds.filter(
+    (id) => !unmatchedSatellites.includes(id)
+  );
+  satellites.mask(unmatchedSatellites);
+  satellites.unmask(matchedSatellites);
+});
+
+clearFiltersButton.addEventListener("click", () => {
+  resetFiltersToDefault();
+  satellites.show();
+});

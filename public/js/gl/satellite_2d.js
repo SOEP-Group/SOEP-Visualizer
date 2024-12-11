@@ -50,7 +50,19 @@ export class Satellites {
 
     this.instanceIdToDataMap = {};
     data.forEach((satellite, index) => {
-      this.instanceIdToDataMap[index] = satellite;
+      this.instanceIdToDataMap[index] = {
+        name: satellite.name,
+        inclination: satellite.inclination,
+        revolution: satellite.revolution,
+        lowest_orbit_distance: satellite.lowest_orbit_distance,
+        farthest_orbit_distance: satellite.farthest_orbit_distance,
+        launch_date: satellite.launch_date,
+        launch_site: satellite.launch_site,
+        owner: satellite.owner,
+        satellite_id: satellite.satellite_id,
+        tle_line1: satellite.tle_line1,
+        tle_line2: satellite.tle_line2,
+      };
     });
   }
 
@@ -381,6 +393,70 @@ export class Satellites {
     );
   }
 
+  getOrbitDistance(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data
+      ? { min: data.lowest_orbit_distance, max: data.farthest_orbit_distance }
+      : null;
+  }
+
+  getInclination(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.inclination : null;
+  }
+
+  getRevolutionTime(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.revolution : null;
+  }
+
+  getLaunchDate(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.launch_date : null;
+  }
+
+  getOwner(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.owner : null;
+  }
+
+  getLaunchSite(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.launch_site : null;
+  }
+
+  getOrbitDistance(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data
+      ? { min: data.lowest_orbit_distance, max: data.farthest_orbit_distance }
+      : null;
+  }
+
+  getInclination(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.inclination : null;
+  }
+
+  getRevolutionTime(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.revolution : null;
+  }
+
+  getLaunchDate(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.launch_date : null;
+  }
+
+  getOwner(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.owner : null;
+  }
+
+  getLaunchSite(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.launch_site : null;
+  }
+
   getVisible() {
     return Array.from(this.visible_satellites);
   }
@@ -474,8 +550,6 @@ export class Satellites {
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
-
-    //console.log(`Distance between:`, {lat1, lon1}, location2, `is:`, distance);
 
     return distance <= radius;
   }

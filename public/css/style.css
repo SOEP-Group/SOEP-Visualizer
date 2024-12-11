@@ -126,4 +126,49 @@ span.ripple {
   }
 }
 
-/* ########################### */
+.noUi-handle::before,
+.noUi-handle::after {
+  content: none;
+}
+
+/* Outside of the slider */
+.noUi-target {
+  background: #3b3a3a;
+  border-radius: 4px;
+  height: 8px;
+  position: relative;
+  margin: 10px 0;
+  border: 1px solid #646564;
+  box-shadow: none;
+}
+
+/* Inside the slider */
+.noUi-connect {
+  background: #5eead4;
+  border-radius: 4px;
+}
+
+/* Circular handles */
+.noUi-handle {
+  background-color: #5eead4; 
+  border: none;
+  border-radius: 50%;
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer;
+  outline: none;
+  position: absolute;
+  box-shadow: none;
+}
+
+.noUi-handle:hover {
+  background-color: #81e6d9;
+}
+
+.noUi-connect:hover {
+  background: #81e6d9;
+}
+
+.noUi-target:hover {
+  border-color: #818180;
+}
