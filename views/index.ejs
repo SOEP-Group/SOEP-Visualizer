@@ -226,16 +226,11 @@
             <div id="filter-section" class="mt-4 space-y-4 hidden">
               <!-- Location Selection -->
               <div class="flex flex-col items-start w-full mt-4 space-y-2">
-                <input type="text" id="location-events" placeholder="Location"
-                  class="bg-gray-500 text-white border border-gray-700 rounded space-y-4 p-2 text-l w-full box-border focus:border-gray-400 focus:outline-none">
-                <button data-ripple="true" id="get-location-button-events"
-                  class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
-                  Use Current Location
-                </button>
-                <button data-ripple="true" id="select-location-button-events"
-                  class="bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full">
-                  Select Location
-                </button>
+                <input type="text" placeholder="Location" class="location-field-events input-styling">
+                <button data-ripple="true" class="get-location-btn_events location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button_events location-button-styling">Select
+                  Location</button>
               </div>
 
               <!-- Start Date & Time -->
