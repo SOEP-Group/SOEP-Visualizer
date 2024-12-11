@@ -243,6 +243,7 @@ function onGlobalStateChanged(changedStates) {
     }
 
     if (isDisplayingPassing && location) {
+      satellites.mask(out_of_range);
       updateSatelliteVisibility();
     } else {
       satellites.show();
