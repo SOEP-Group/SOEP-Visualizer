@@ -132,9 +132,9 @@ export class Satellites {
     return this.instanceIdToSatelliteIdMap[id];
   }
 
-  getInstanceIdById(id){
-    for(const [key, val] of Object.entries(this.instanceIdToSatelliteIdMap)){
-      if(val == id){
+  getInstanceIdById(id) {
+    for (const [key, val] of Object.entries(this.instanceIdToSatelliteIdMap)) {
+      if (val == id) {
         return key;
       }
     }
@@ -197,13 +197,15 @@ export class Satellites {
     const sharedIdBufferSize =
       this.instanceCount * Int32Array.BYTES_PER_ELEMENT;
 
-    const positionsBuffer = new SharedArrayBuffer(sharedBufferSize);
+    const readPositionsBuffer = new SharedArrayBuffer(sharedBufferSize);
+    const writePositionsBuffer = new SharedArrayBuffer(sharedBufferSize);
     const speedsBuffer = new SharedArrayBuffer(sharedBufferSize);
+    const geogedicBuffer = new SharedArrayBuffer(sharedBufferSize);
     const idBuffer = new SharedArrayBuffer(sharedIdBufferSize);
 
-    this.positions_read = new Float32Array(positionsBuffer);
-    this.positions_write = new Float32Array(positionsBuffer);
-    this.positions_longlatalt = new Float32Array(positionsBuffer);
+    this.positions_read = new Float32Array(readPositionsBuffer);
+    this.positions_write = new Float32Array(writePositionsBuffer);
+    this.positions_longlatalt = new Float32Array(geogedicBuffer);
     this.speeds = new Float32Array(speedsBuffer);
     this.ids = new Int32Array(idBuffer);
     data.forEach((satellite, index) => {
@@ -214,6 +216,7 @@ export class Satellites {
       this.positions_read.set([0, 0, 0], index * 3);
       this.positions_write.set([0, 0, 0], index * 3);
       this.speeds.set([0, 0, 0], index * 3);
+      this.positions_longlatalt.set([0, 0, 0], index * 3);
       this.ids.set(satellite.satellite_id, index);
       this.tle_lines.push(tle_lines);
     });
@@ -261,7 +264,7 @@ export class Satellites {
           startIndex,
           endIndex,
           positions: this.positions_write.buffer,
-          latlongalt: this.positions_longlatalt,
+          longlatalt: this.positions_longlatalt.buffer,
           speeds: this.speeds.buffer,
           ids: this.ids.buffer,
         });
@@ -329,8 +332,8 @@ export class Satellites {
   getGeodeticCoordinates(instanceId) {
     const index = instanceId * 3;
     return {
-      long: this.positions_longlatalt[index],
-      lat: this.positions_longlatalt[index + 1],
+      lat: this.positions_longlatalt[index],
+      long: this.positions_longlatalt[index + 1],
       alt: this.positions_longlatalt[index + 2],
     };
   }
