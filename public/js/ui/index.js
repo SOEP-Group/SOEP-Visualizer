@@ -18,9 +18,19 @@ export * from "./popup.js";
 
 const hoverTooltip = document.getElementById("hover-tooltip");
 
+function hideTooltip() {
+  hoverTooltip.classList.add("hidden");
+}
+
+subscribe("glStateChanged", (changedStates) => {
+  if (changedStates["clickedSatellite"]) {
+    hideTooltip();
+  }
+});
+
 subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
   if (instanceId === -1) {
-    hoverTooltip.classList.add("hidden");
+    hideTooltip();
   } else {
     const satData = satellites.instanceIdToDataMap[instanceId];
 
@@ -35,6 +45,8 @@ subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
     hoverTooltip.classList.remove("hidden");
   }
 });
+
+document.addEventListener("touchstart", hideTooltip);
 
 subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
