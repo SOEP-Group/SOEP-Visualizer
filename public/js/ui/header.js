@@ -66,7 +66,7 @@ export function initHeader() {
       const option = document.createElement("a");
       option.textContent = satellite.name;
       option.dataset.satelliteId = satellite.id;
-      option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700");
+      option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
       option.addEventListener("click", () => focusSatellite(satellite.id));
       satelliteDropdown.appendChild(option);
     });

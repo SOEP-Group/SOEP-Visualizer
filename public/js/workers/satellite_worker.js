@@ -67,7 +67,7 @@ self.onmessage = async function (event) {
 
         speedsView[idx] = velocity.x;
         speedsView[idx + 1] = velocity.z;
-        speedsView[idx + 2] = velocity.y;
+        speedsView[idx + 2] = -velocity.y;
       } else {
         // console.error(
         //   `SGP4 error for satellite at index ${startIndex + i}`,
