@@ -86,9 +86,9 @@ function togglePopupSize(event) {
   popupContainer.classList.toggle("h-[95%]"); // extend the height
 
   if (popupContainer.classList.contains("h-[95%]")) {
-    popupContainer.classList.add("popup-container-extended");
+    content.classList.add("popup-content-extended");
   } else {
-    popupContainer.classList.remove("popup-container-extended");
+    content.classList.remove("popup-content-extended");
   }
   arrowIcon.classList.toggle("rotate-180");
 }
@@ -104,7 +104,7 @@ export function initPopup() {
 
   toggleArrow.addEventListener("click", togglePopupSize);
 
-  mobileCloseButton.addEventListener("click", () => {
+  mobileCloseButton.addEventListener("click", (event) => {
     event.stopPropagation();
     glState.set({ clickedSatellite: undefined });
     closeMobilePopup();
