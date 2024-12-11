@@ -316,7 +316,6 @@ export function getUnmatchedSatellites(selectedFilters) {
     instanceId < satellites.instanceCount;
     instanceId++
   ) {
-    const id = satellites.getIdByInstanceId(instanceId);
     const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
     const speedVector = satellites.getSpeed(instanceId);
     const speed = Math.sqrt(
@@ -361,7 +360,7 @@ export function getUnmatchedSatellites(selectedFilters) {
         launchSite === filters["Launch Site"]);
 
     if (!isWithinFilters) {
-      unmatchedSatellites.push(id);
+      unmatchedSatellites.push(instanceId);
     }
   }
 

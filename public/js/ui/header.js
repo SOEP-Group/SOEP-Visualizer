@@ -78,7 +78,13 @@ export function initHeader() {
       const option = document.createElement("a");
       option.textContent = satellite.name;
       option.dataset.satelliteId = satellite.id;
-      option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
+      option.classList.add(
+        "block",
+        "px-4",
+        "py-2",
+        "hover:bg-gray-700",
+        "cursor-pointer"
+      );
       option.addEventListener("click", () => focusSatellite(satellite.id));
       satelliteDropdown.appendChild(option);
     });
@@ -188,5 +194,18 @@ clearFiltersButton.addEventListener("click", () => {
 applyFiltersButton.addEventListener("click", () => {
   const selectedFilters = getFilterValues();
   const unmatchedSatellites = getUnmatchedSatellites(selectedFilters);
-  console.log("Satellites that do not match the filters:", unmatchedSatellites);
+  const allSatelliteIds = Array.from(
+    { length: satellites.instanceCount },
+    (_, i) => i
+  );
+  const matchedSatellites = allSatelliteIds.filter(
+    (id) => !unmatchedSatellites.includes(id)
+  );
+  satellites.mask(unmatchedSatellites);
+  satellites.unmask(matchedSatellites);
+});
+
+clearFiltersButton.addEventListener("click", () => {
+  resetFiltersToDefault();
+  satellites.show();
 });

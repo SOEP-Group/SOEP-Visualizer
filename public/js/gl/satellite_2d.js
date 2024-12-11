@@ -551,8 +551,6 @@ export class Satellites {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
-    //console.log(`Distance between:`, {lat1, lon1}, location2, `is:`, distance);
-
     return distance <= radius;
   }
 }
