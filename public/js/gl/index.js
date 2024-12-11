@@ -238,6 +238,7 @@ function onGlobalStateChanged(changedStates) {
         satellites.show();
         satellites.mask(current_out_of_range);
         out_of_range = current_out_of_range;
+        publish("newVisibleSatellites");
       }
       requestAnimationFrame(updateSatelliteVisibility);
     }
