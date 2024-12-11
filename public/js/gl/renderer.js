@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
+import { OrbitControls } from "./camera.js";
 import {
   BloomEffect,
   EffectComposer,
@@ -96,6 +97,8 @@ function updateCameraFocus(focusTarget) {
   if (!cameraFocus) return;
   if (instanceIndex !== undefined) {
     const groupWorldPosition = new THREE.Vector3();
+    const groupWorldQuaternion = new THREE.Quaternion();
+    targetGroup.getWorldQuaternion(groupWorldQuaternion);
     targetGroup.getWorldPosition(groupWorldPosition);
     let totalPosition = new THREE.Vector3();
     let meshCount = 0;
@@ -112,6 +115,7 @@ function updateCameraFocus(focusTarget) {
             new THREE.Quaternion(),
             new THREE.Vector3()
           );
+          instancePosition.applyQuaternion(groupWorldQuaternion);
           instancePosition.add(groupWorldPosition);
           totalPosition.add(instancePosition);
           meshCount++;
@@ -124,6 +128,7 @@ function updateCameraFocus(focusTarget) {
             positions[instanceIndex * 3 + 1],
             positions[instanceIndex * 3 + 2]
           );
+          pointPosition.applyQuaternion(groupWorldQuaternion);
           pointPosition.add(groupWorldPosition);
           totalPosition.add(pointPosition);
           meshCount++;
@@ -406,11 +411,11 @@ export function initRenderer() {
     size: 110,
   });
 
-  orientationGizmo.enabled = false; // Currently we get some weird gimbal lock issues...
+  orientationGizmo.enabled = true; // Currently we get some weird gimbal lock issues...
   const viewport_div = document.getElementById("gl_viewport");
   viewport_div.appendChild(renderer.domElement);
 
-  controls = new TrackballControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.noPan = true;
   controls.minDistance = 0.65;
   controls.maxDistance = 10;

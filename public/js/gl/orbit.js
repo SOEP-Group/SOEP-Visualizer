@@ -5,6 +5,8 @@ import { satellites } from "../gl/scene.js";
 import {
   propagate,
   twoline2satrec,
+  gstime,
+  eciToEcf,
 } from "../../libs/satellite.js/dist/satellite.es.js";
 import { scalePosition } from "../utils/utils.js";
 
@@ -84,8 +86,8 @@ export function displayOrbit(satellite) {
     dynamicLineMaterial
   );
 
-  getEarth().getGroup().add(currentOrbitLine);
-  getEarth().getGroup().add(currentSatelliteCenterLine);
+  satellites.getGroup().add(currentOrbitLine);
+  satellites.getGroup().add(currentSatelliteCenterLine);
 
   for (let t = 0; t <= orbitalPeriod; t += timeStep) {
     const time = new Date(startTime.getTime() + t * 60 * 1000); // Increment time by timeStep
@@ -98,7 +100,7 @@ export function displayOrbit(satellite) {
 
     let { x, y, z } = positionAndVelocity.position;
 
-    const scaledPosition = scalePosition({ x, y, z });
+    const scaledPosition = scalePosition({ x: x, y: z, z: -y });
 
     orbitVertices.push(scaledPosition.x, scaledPosition.y, scaledPosition.z);
   }
@@ -107,6 +109,26 @@ export function displayOrbit(satellite) {
     "position",
     new THREE.Float32BufferAttribute(orbitVertices, 3)
   );
+
+  const firstOrbitPoint = new THREE.Vector3(
+    orbitVertices[0],
+    orbitVertices[1],
+    orbitVertices[2]
+  );
+
+  const satellite_pos = satellites.getPosition(satellite);
+  const rotationAxis = new THREE.Vector3()
+    .crossVectors(firstOrbitPoint, satellite_pos)
+    .normalize();
+
+  const dot = firstOrbitPoint.dot(satellite_pos);
+  const magnitudeProduct = firstOrbitPoint.length() * satellite_pos.length();
+  const angle = Math.acos(dot / magnitudeProduct);
+  const quaternion = new THREE.Quaternion();
+  quaternion.setFromAxisAngle(rotationAxis, angle);
+
+  currentOrbitLine.quaternion.copy(quaternion);
+
   orbitAnimating = true;
 
   function updateDynamicLine() {
@@ -137,8 +159,8 @@ export function displayOrbit(satellite) {
 export function stopDisplayingOrbit() {
   orbitAnimating = false;
   if (currentOrbitLine) {
-    getEarth().getGroup().remove(currentOrbitLine);
-    getEarth().getGroup().remove(currentSatelliteCenterLine);
+    satellites.getGroup().remove(currentOrbitLine);
+    satellites.getGroup().remove(currentSatelliteCenterLine);
     currentOrbitLine = null;
     currentSatelliteCenterLine = null;
   }

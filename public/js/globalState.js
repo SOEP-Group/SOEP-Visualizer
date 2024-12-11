@@ -57,6 +57,7 @@ export class State {
 
 export let globalState = new State("onGlobalStateChanged", {
   passing_location: null,
+  togglePassing: false,
   pass_prediction_location: null,
   pickingLocation: false,
   pick_passing: false,
