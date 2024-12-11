@@ -36,7 +36,7 @@ body {
 
 .popup-content-extended {
   overflow-y: auto;
-  max-height: 90%;
+  max-height: 95%;
 }
 
 .loading-text::after {
