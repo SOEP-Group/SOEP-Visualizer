@@ -135,7 +135,7 @@ export function initPredictions() {
 
   document
     .getElementById("calculate-pass-button")
-    .addEventListener("click", function () { });
+    .addEventListener("click", function () {});
 
   document
     .getElementById("calculate-collision-button")
@@ -185,11 +185,22 @@ export function initPredictions() {
     });
   });
 
-  // Fix for later
+  document
+    .getElementById("toggle-section")
+    .addEventListener("hover", function (event) {
+      const passing_location = globalState.get("passing_location");
+      if (!passing_location) {
+        document.body.style.cursor = "default";
+      }
+    });
+
   document
     .getElementById("toggle-section")
     .addEventListener("click", function (event) {
-      globalState.set({ togglePassing: !globalState.get("togglePassing") });
+      const passing_location = globalState.get("passing_location");
+      if (passing_location) {
+        globalState.set({ togglePassing: !globalState.get("togglePassing") });
+      }
     });
 }
 

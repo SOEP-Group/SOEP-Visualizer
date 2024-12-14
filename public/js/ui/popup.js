@@ -188,4 +188,10 @@ function closeMobilePopup() {
 function toggleMobilePopupSize() {
   mobilePopupContainer.classList.toggle("h-[95%]");
   mobileArrowIcon.classList.toggle("rotate-180");
+
+  if (mobilePopupContainer.classList.contains("h-[95%]")) {
+    mobileContent.classList.add("mobile-popup-content-extended");
+  } else {
+    mobileContent.classList.remove("mobile-popup-content-extended");
+  }
 }

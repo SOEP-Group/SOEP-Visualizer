@@ -37,9 +37,10 @@ body {
   position: relative;
 }
 
-.popup-content-extended {
+.popup-content-extended,
+.mobile-popup-content-extended {
   overflow-y: auto;
-  max-height: 90%;
+  max-height: 95%;
 }
 
 .loading-text::after {
@@ -92,11 +93,11 @@ body {
   object-fit: contain;
 }
 
-#ui {
+.ui {
   pointer-events: none;
 }
 
-#ui * {
+.ui * {
   pointer-events: auto;
 }
 
@@ -156,7 +157,7 @@ span.ripple {
 
 /* Circular handles */
 .noUi-handle {
-  background-color: #5eead4; 
+  background-color: #5eead4;
   border: none;
   border-radius: 50%;
   width: 16px !important;

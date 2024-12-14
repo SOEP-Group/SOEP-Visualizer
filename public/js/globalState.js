@@ -56,6 +56,7 @@ export class State {
 }
 
 export let globalState = new State("onGlobalStateChanged", {
+  visible_satellites: [],
   passing_location: null,
   togglePassing: false,
   events_location: null,
