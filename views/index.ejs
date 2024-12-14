@@ -34,6 +34,7 @@
 </head>
 
 <body>
+  <div id="resizer_overlay" class="z-50 hidden bg-transparent absolute w-full h-full"></div>
   <div id="loading-screen"
     class="top-0 left-0 fixed w-full h-full bg-loading-screen bg-cover bg-center flex justify-center items-center z-50 opacity-100 transition-opacity duration-500">
     <div class="flex flex-col items-center space-y-4 text-white">
@@ -72,6 +73,7 @@
         class="flex items-center bg-black border border-gray-700 rounded-lg md:px-4 px-2 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
         title="Filters">
         <svg class="w-6 h-6 md:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z"></path>
         </svg>
@@ -80,6 +82,7 @@
 
       <div id="filters-dropdown"
         class="invisible absolute top-[calc(100%+1rem)] right-1/2 md:right-0 md:w-[20rem] w-[16rem] bg-black/80 text-white rounded-md shadow-lg border border-teal-300 p-4 z-50 opacity-0 transform md:translate-y-2 md:translate-x-0 translate-x-1/2 transition-all duration-300 ease-in-out">
+
         <div class="flex justify-end mb-2">
           <button id="close-filters-button"
             class="text-teal-300 hover:text-teal-200 transition ease-in-out duration-200">
@@ -356,6 +359,29 @@
 
           <div id="prediction-tab" class="tab-panel space-y-6">
 
+            <!-- Collision Prediction -->
+            <div class="expandable-section">
+              <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-collision" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Collision Prediction</span>
+              </h3>
+              <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
+                  <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Passing Satellites -->
             <div class="expandable-section">
               <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
@@ -421,28 +447,6 @@
               </div>
             </div>
 
-            <!-- Re-entry Prediction -->
-            <div class="expandable-section">
-              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-re-entry" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Re-entry Prediction</span>
-              </h3>
-              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-re-entry" placeholder="Satellite" class="input-styling">
-                  <button data-ripple="true" id="calculate-re-entry-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div class="tab-panel">
