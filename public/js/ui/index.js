@@ -5,6 +5,7 @@ import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
 import { initResizer } from "./resizer.js";
 import { initPopup } from "./popup.js";
+import { initToggleView } from "./toggle_view.js";
 import { glState } from "../gl/index.js";
 import { initOrbit } from "../gl/orbit.js";
 import { satellites } from "../gl/scene.js";
@@ -15,6 +16,8 @@ export * from "./header.js";
 export * from "./resizer.js";
 export * from "./predictions.js";
 export * from "./popup.js";
+export * from "./toggle_view.js";
+
 
 const hoverTooltip = document.getElementById("hover-tooltip");
 
@@ -61,6 +64,7 @@ function onStart() {
   initResizer();
   initPopup();
   initOrbit();
+  initToggleView();
   initGraphs();
 
   const tabs = document.querySelectorAll(".tab");
