@@ -49,7 +49,7 @@ let startMouseX = 0;
 let startMouseY = 0;
 
 function onStart() {
-  loadingManager.onStart = () => {};
+  loadingManager.onStart = () => { };
   loadingManager.onLoad = onLoadFinished;
   loadingManager.onProgress = onLoadProgress;
   loadingManager.onError = onLoadError;
@@ -137,6 +137,9 @@ function onViewportClick(event) {
         globalState.set({ passing_location: { lat, long } });
       } else if (globalState.get("pick_pass_prediction")) {
         globalState.set({ pass_prediction_location: { lat, long } });
+      }
+      else if (globalState.get("pick_events")) {
+        globalState.set({ events_location: { lat, long } });
       }
       globalState.set({ pickingLocation: false });
     }

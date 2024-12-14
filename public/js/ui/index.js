@@ -3,6 +3,7 @@ import { State } from "../globalState.js";
 import { initSettings } from "./settings.js";
 import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
+import { initEvents } from "./events.js";
 import { initResizer } from "./resizer.js";
 import { initPopup } from "./popup.js";
 import { initToggleView } from "./toggle_view.js";
@@ -15,6 +16,7 @@ export * from "./settings.js";
 export * from "./header.js";
 export * from "./resizer.js";
 export * from "./predictions.js";
+export * from "./events.js";
 export * from "./popup.js";
 export * from "./toggle_view.js";
 
@@ -61,6 +63,7 @@ function onStart() {
   initHeader();
   initSettings();
   initPredictions();
+  initEvents();
   initResizer();
   initPopup();
   initOrbit();
