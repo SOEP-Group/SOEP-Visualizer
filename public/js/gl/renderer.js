@@ -424,7 +424,7 @@ export function initRenderer() {
   controls.zoomSpeed = 0.3;
   controls.update();
   orientationGizmo.attachControls(controls);
-  camera.position.set(3, 0, 0);
+  camera.position.set(-3, 0, 0);
   let graphics_preset = detectIdealSettings();
   glState.set({ currentGraphics: graphics_preset });
   initEventListeners();
