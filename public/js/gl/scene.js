@@ -47,8 +47,6 @@ function loadObjects() {
     orbitalSpeedMultiplier: 1,
   });
 
-  console.log(earth.getGroup());
-
   scene.add(sun.getGroup());
   scene.add(earth.getGroup());
 }

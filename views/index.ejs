@@ -240,8 +240,8 @@
 
       <!-- Sliding window left-->
       <div id="ham_menu"
-        class=" bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
-        <div id="resize" class="resizer-container absolute top-0 -right-[7px] h-full flex items-center justify-center">
+        class="z-30 bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
+        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
           <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
             title="Resize">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -687,7 +687,7 @@
 
       <div id="popup-container"
         class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
-        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full"
+        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full flex flex-col"
           data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
           <div class="flex flex-row justify-end">
             <button id="close-popup" class="bg-transparent" title="Close">
@@ -702,7 +702,8 @@
           <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
             <p class="loading-text">Loading</p>
           </div>
-          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300"></div>
+          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300 max-h-[95%]"></div>
+
         </div>
 
         <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
@@ -720,7 +721,7 @@
         class="z-10 pb-4 rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-all duration-300 ease-in-out flex flex-col w-full px-1 h-[30%] text-base md:hidden">
 
         <!-- Popup Window Content -->
-        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative pt-6"
+        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative pt-6 flex flex-col"
           data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
 
           <!-- Close Button -->
@@ -751,7 +752,7 @@
           </div>
 
           <!-- Actual Content (Initially hidden) -->
-          <div id="mobile-popup-content" class="hidden space-y-2 text-teal-300 text-sm"></div>
+          <div id="mobile-popup-content" class="hidden space-y-2 text-teal-300 text-sm overflow-y-auto overflow-x-hidden flex-1"></div>
         </div>
       </div>
 </body>

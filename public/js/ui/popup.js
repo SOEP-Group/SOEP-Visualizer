@@ -35,25 +35,39 @@ function onGlStateChanged(changedStates) {
 
 function onRendererUpdate() {
   if (popupOpen) {
-    const speed_visual = document.getElementById("satellite_speed_visualizer");
-    const long_visual = document.getElementById("satellite_long_visualizer");
-    const lat_visual = document.getElementById("satellite_lat_visualizer");
+    const speed_visual = document.getElementsByClassName(
+      "satellite_speed_visualizer"
+    );
+    const long_visual = document.getElementsByClassName(
+      "satellite_long_visualizer"
+    );
+    const lat_visual = document.getElementsByClassName(
+      "satellite_lat_visualizer"
+    );
+    const alt_visual = document.getElementsByClassName(
+      "satellite_alt_visualizer"
+    );
     // Only really need to check one of them
     if (speed_visual) {
       const clicked_satellite = glState.get("clickedSatellite");
       if (clicked_satellite !== undefined && clicked_satellite !== null) {
-        const speed = satellites.getSpeed(clicked_satellite);
-        const location = satellites.getGeodeticCoordinates(clicked_satellite);
-        const single_speed = Math.sqrt(
-          Math.pow(speed.x, 2) + Math.pow(speed.y, 2) + Math.pow(speed.z, 2)
-        );
-        speed_visual.innerHTML = `${single_speed.toFixed(3)}km/s`;
-        long_visual.innerHTML = location.long
-          ? `${location.long.toFixed(2)}°`
-          : "Error";
-        lat_visual.innerHTML = location.lat
-          ? `${location.lat.toFixed(2)}°`
-          : "Error";
+        for (let i = 0; i < speed_visual.length; i++) {
+          const speed = satellites.getSpeed(clicked_satellite);
+          const location = satellites.getGeodeticCoordinates(clicked_satellite);
+          const single_speed = Math.sqrt(
+            Math.pow(speed.x, 2) + Math.pow(speed.y, 2) + Math.pow(speed.z, 2)
+          );
+          speed_visual[i].innerHTML = `${single_speed.toFixed(3)}km/s`;
+          long_visual[i].innerHTML = location.long
+            ? `${location.long.toFixed(2)}°`
+            : "Error";
+          lat_visual[i].innerHTML = location.lat
+            ? `${location.lat.toFixed(2)}°`
+            : "Error";
+          alt_visual[i].innerHTML = location.lat
+            ? `${location.alt.toFixed(3)}km`
+            : "Error";
+        }
       }
     }
   }
@@ -90,9 +104,9 @@ function togglePopupSize(event) {
   popupContainer.classList.toggle("h-[95%]"); // extend the height
 
   if (popupContainer.classList.contains("h-[95%]")) {
-    popupContainer.classList.add("popup-container-extended");
+    content.classList.add("popup-content-extended");
   } else {
-    popupContainer.classList.remove("popup-container-extended");
+    content.classList.remove("popup-content-extended");
   }
   arrowIcon.classList.toggle("rotate-180");
 }
@@ -108,7 +122,7 @@ export function initPopup() {
 
   toggleArrow.addEventListener("click", togglePopupSize);
 
-  mobileCloseButton.addEventListener("click", () => {
+  mobileCloseButton.addEventListener("click", (event) => {
     event.stopPropagation();
     glState.set({ clickedSatellite: undefined });
     closeMobilePopup();

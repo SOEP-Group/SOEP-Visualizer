@@ -1,22 +1,24 @@
 <div class="flex justify-items-center items-center justify-between">
-  <h2 class="text-2xl">
-    <%= name %>
-  </h2>
+  <h2 class="text-2xl"><%= name %></h2>
   <p>(NoID: <%= satellite_id %>)</p>
 </div>
 <hr class="border-teal-300" />
 <p>
-  <strong>Speed:</strong> <span id="satellite_speed_visualizer">0.00km/h</span>
+  <strong>Speed:</strong>
+  <span class="satellite_speed_visualizer">0.00km/h</span>
 </p>
 <p>
-  <strong>Longitude:</strong> <span id="satellite_long_visualizer"></span>
+  <strong>Longitude:</strong> <span class="satellite_long_visualizer"></span>
 </p>
+<p><strong>Latitude:</strong> <span class="satellite_lat_visualizer"></span></p>
 <p>
-  <strong>Latitude:</strong> <span id="satellite_lat_visualizer"></span>
+  <strong>Altitude(Above sea level):</strong>
+  <span class="satellite_alt_visualizer"></span>
 </p>
 <p>
   <strong>Orbit distance:</strong>
-  <%= farthest_orbit_distance %> km (Farthest) / <%= lowest_orbit_distance %> km (Lowest)
+  <%= farthest_orbit_distance %> km (Farthest) / <%= lowest_orbit_distance %> km
+  (Lowest)
 </p>
 <p>
   <strong>Inclination:</strong>
