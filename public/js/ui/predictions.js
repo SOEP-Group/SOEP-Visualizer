@@ -128,17 +128,17 @@ export function initPredictions() {
     });
 
   document
-    .getElementById("re-entry-prediction-header")
+    .getElementById("collision-prediction-header")
     .addEventListener("click", function () {
-      toggleSection("re-entry-content", "arrow-re-entry");
+      toggleSection("collision-content", "arrow-collision");
     });
 
   document
     .getElementById("calculate-pass-button")
-    .addEventListener("click", function () {});
+    .addEventListener("click", function () { });
 
   document
-    .getElementById("calculate-re-entry-button")
+    .getElementById("calculate-collision-button")
     .addEventListener("click", function () {
       // Future use
     });
