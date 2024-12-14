@@ -33,9 +33,10 @@ export function initToggleView() {
 }
 
 function keyboardToggle(event) {
-    const isShiftT = event.shiftKey && event.key.toLowerCase() === 'v';
+    const isAltShiftV = event.altKey && event.shiftKey && event.key.toLowerCase() === 'v';
+    const isCmdShiftV = event.metaKey && event.shiftKey && event.key.toLowerCase() === 'v'; // mac
 
-    if (isShiftT) {
+    if (isAltShiftV || isCmdShiftV) {
         event.preventDefault();
         toggleView();
     }
