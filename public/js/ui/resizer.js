@@ -1,11 +1,13 @@
 export function initResizer() {
   const resizer = document.querySelector(".resizer");
   const sidebar = document.getElementById("ham_menu");
-  const MIN_WIDTH = window.innerWidth * 0.30;
+  const MIN_WIDTH = window.innerWidth * 0.3;
   const MAX_WIDTH = window.innerWidth * 0.95;
+  const overlay = document.getElementById("resizer_overlay");
 
   if (resizer && sidebar) {
-    let x = 0, w = 0;
+    let x = 0,
+      w = 0;
 
     function showResizer() {
       if (!sidebar.classList.contains("-translate-x-full")) {
@@ -22,13 +24,21 @@ export function initResizer() {
     hideResizer();
 
     resizer.addEventListener("mousedown", function (e) {
+      e.stopPropagation();
       x = e.clientX;
       const sbWidth = window.getComputedStyle(sidebar).width;
       w = parseInt(sbWidth, 10);
 
-      document.addEventListener("mousemove", mouseMoveHandler);
-      document.addEventListener("mouseup", mouseUpHandler);
+      overlay.classList.remove("hidden");
+      overlay.addEventListener("mousemove", mouseMoveHandler);
+      overlay.addEventListener("mouseup", mouseUpHandler);
     });
+    function mouseUpHandler(e) {
+      e.stopPropagation();
+      overlay.removeEventListener("mousemove", mouseMoveHandler);
+      overlay.removeEventListener("mouseup", mouseUpHandler);
+      overlay.classList.add("hidden");
+    }
 
     function mouseMoveHandler(e) {
       const dx = e.clientX - x;
@@ -45,11 +55,6 @@ export function initResizer() {
       sidebar.style.width = `${cw}px`;
     }
 
-    function mouseUpHandler() {
-      document.removeEventListener("mousemove", mouseMoveHandler);
-      document.removeEventListener("mouseup", mouseUpHandler);
-    }
-
     const toggleButton = document.getElementById("resize");
     toggleButton.addEventListener("click", function () {
       if (sidebar.classList.contains("translate-x-0")) {
@@ -59,7 +64,7 @@ export function initResizer() {
       }
     });
 
-    sidebar.addEventListener('transitionend', function () {
+    sidebar.addEventListener("transitionend", function () {
       if (sidebar.classList.contains("translate-x-0")) {
         showResizer();
       } else {
