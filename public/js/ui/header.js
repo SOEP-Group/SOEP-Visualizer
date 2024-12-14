@@ -85,7 +85,10 @@ export function initHeader() {
         "hover:bg-gray-700",
         "cursor-pointer"
       );
-      option.addEventListener("click", () => focusSatellite(satellite.id));
+      option.addEventListener("click", (event) => {
+        event.stopPropagation();
+        focusSatellite(satellite.id);
+      });
       satelliteDropdown.appendChild(option);
     });
 
@@ -113,13 +116,15 @@ export function initHeader() {
     satelliteDropdown.classList.add("hidden");
   }
 
-  searchInput.addEventListener("input", () => {
+  searchInput.addEventListener("input", (event) => {
+    event.stopPropagation();
     const query = searchInput.value.trim();
     const filtered = filterSatellites(query);
     populateDropdown(filtered);
   });
 
-  searchInput.addEventListener("focus", () => {
+  searchInput.addEventListener("focus", (event) => {
+    event.stopPropagation();
     const allSatellites = getAllSatellites();
     populateDropdown(allSatellites);
   });
@@ -133,7 +138,8 @@ export function initHeader() {
     }
   });
 
-  dropdownButton.addEventListener("click", function () {
+  dropdownButton.addEventListener("click", function (event) {
+    event.stopPropagation();
     const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
     if (menuClosed) {
       return openMenu();
@@ -169,7 +175,8 @@ function closeMenu() {
   dropdownMenu.classList.add("-translate-x-full");
 }
 
-filtersButton.addEventListener("click", async () => {
+filtersButton.addEventListener("click", async (event) => {
+  event.stopPropagation();
   const isCurrentlyClosed = filtersDropdown.classList.contains("invisible");
   toggleDropdown(isCurrentlyClosed);
 
@@ -184,15 +191,18 @@ filtersButton.addEventListener("click", async () => {
   }
 });
 
-closeFiltersButton.addEventListener("click", () => {
+closeFiltersButton.addEventListener("click", (event) => {
+  event.stopPropagation();
   toggleDropdown(false);
 });
 
-clearFiltersButton.addEventListener("click", () => {
+clearFiltersButton.addEventListener("click", (event) => {
+  event.stopPropagation();
   resetFiltersToDefault();
 });
 
-applyFiltersButton.addEventListener("click", () => {
+applyFiltersButton.addEventListener("click", (event) => {
+  event.stopPropagation();
   const selectedFilters = getFilterValues();
   const unmatchedSatellites = getUnmatchedSatellites(selectedFilters);
   const allSatelliteIds = Array.from(
@@ -206,7 +216,8 @@ applyFiltersButton.addEventListener("click", () => {
   satellites.unmask(matchedSatellites);
 });
 
-clearFiltersButton.addEventListener("click", () => {
+clearFiltersButton.addEventListener("click", (event) => {
+  event.stopPropagation();
   resetFiltersToDefault();
   satellites.show();
 });
