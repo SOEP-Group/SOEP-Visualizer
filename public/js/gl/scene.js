@@ -6,6 +6,7 @@ import { glState, cubeTextureLoader } from "./index.js";
 import { fetchSatellites } from "../api/satellites.js";
 import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
+import { EARTH_RADIUS } from "../utils/utils.js";
 
 export let scene = new THREE.Scene();
 
@@ -46,17 +47,28 @@ function loadObjects() {
     orbitalSpeedMultiplier: 1,
   });
 
+  console.log(earth.getGroup());
+
   scene.add(sun.getGroup());
   scene.add(earth.getGroup());
 }
 
-function addSatellites(satellites_obj) {
+export function addSatellites(satellites_obj) {
   if (!satellites_obj) {
     console.error("No satellites detected!");
     return;
   }
+
+  const earthGroup = earth.getGroup();
+  if (satellites) {
+    // rebuilding
+    satellites.dispose();
+    earthGroup.remove(satellites.getGroup());
+    satellites = null;
+  }
+
   satellites = new Satellites(satellites_obj);
-  earth.getGroup().add(satellites.getGroup());
+  earthGroup.add(satellites.getGroup());
 }
 
 function globalStateChanged(changedStates) {

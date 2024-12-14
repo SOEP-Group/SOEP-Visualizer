@@ -1,6 +1,8 @@
 import { getLocation } from "./utils.js";
 import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
+import { satellites } from "../gl/scene.js";
+import { glState } from "../gl/index.js";
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
 
@@ -18,6 +20,14 @@ function onGlobalStateChanged(changedStates) {
     }
   } else if (changedStates["passing_location"]) {
     const passing_location = globalState.get("passing_location");
+    const toggleButton = document.getElementById("toggle-section");
+
+    if (passing_location) {
+      toggleButton.classList.remove("opacity-50");
+    } else {
+      toggleButton.classList.add("opacity-50");
+    }
+
     if (passing_location !== null) {
       const grandparent_element = document.getElementById("passing-content");
       for (const child of grandparent_element.children) {
@@ -40,11 +50,71 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
+  } else if (changedStates["togglePassing"]) {
+    toggleIconState();
+    const isDisplayingPassing = globalState.get("togglePassing");
+    const dropdown = document.getElementById("passing-satellites-dropdown");
+    if (isDisplayingPassing) {
+      onNewVisibleSatellites();
+      dropdown.classList.remove("hidden");
+    } else {
+      dropdown.classList.add("hidden");
+    }
   }
+}
+
+function populateDropdown(satellite_ids, dropdown) {
+  dropdown.innerHTML = "";
+
+  if (!satellite_ids || satellite_ids.length === 0) {
+    const noPassingSatellites = document.createElement("a");
+    noPassingSatellites.textContent = "No passing satellites";
+    noPassingSatellites.classList.add("block", "px-4", "py-2", "text-gray-500");
+    dropdown.appendChild(noPassingSatellites);
+    return;
+  }
+  const satellite_data = globalState.get("satellites");
+  satellite_ids.forEach((satellite) => {
+    const option = document.createElement("a");
+    option.textContent = satellite_data[satellite].name;
+    option.dataset.satelliteId = satellites.getInstanceIdById(satellite);
+    option.classList.add(
+      "block",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-700",
+      "cursor-pointer"
+    );
+    option.addEventListener("click", () => focusSatellite(satellite));
+    dropdown.appendChild(option);
+  });
+}
+
+function focusSatellite(id) {
+  let clicked_satellite = id;
+  glState.set({
+    clickedSatellite: clicked_satellite,
+  });
+}
+
+function onNewVisibleSatellites() {
+  const dropdown = document.getElementById("passing-satellites-dropdown");
+  const passingSatellites = satellites ? satellites.getVisible() : [];
+  populateDropdown(passingSatellites, dropdown);
 }
 
 export function initPredictions() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
+  subscribe("newVisibleSatellites", onNewVisibleSatellites);
+
+  const toggleButton = document.getElementById("toggle-section");
+  const passing_location = globalState.get("passing_location");
+
+  if (passing_location) {
+    toggleButton.classList.remove("opacity-50");
+  } else {
+    toggleButton.classList.add("opacity-50");
+  }
   document
     .getElementById("passing-prediction-header")
     .addEventListener("click", function () {
@@ -58,22 +128,25 @@ export function initPredictions() {
     });
 
   document
-    .getElementById("re-entry-prediction-header")
+    .getElementById("collision-prediction-header")
     .addEventListener("click", function () {
-      toggleSection("re-entry-content", "arrow-re-entry");
+      toggleSection("collision-content", "arrow-collision");
     });
 
   document
     .getElementById("calculate-pass-button")
-    .addEventListener("click", function () {});
+    .addEventListener("click", function () { });
 
   document
-    .getElementById("calculate-re-entry-button")
+    .getElementById("calculate-collision-button")
     .addEventListener("click", function () {
       // Future use
     });
 
   const location_btns = document.querySelectorAll(".get-location-btn");
+
+  const dropdown = document.getElementById("passing-satellites-dropdown");
+  dropdown.classList.add("hidden");
 
   location_btns.forEach(async (btn) => {
     btn.addEventListener("click", function (event) {
@@ -113,11 +186,11 @@ export function initPredictions() {
   });
 
   // Fix for later
-  document.addEventListener("click", function (event) {
-    if (event.target.closest("#toggle-section")) {
-      toggleIconState();
-    }
-  });
+  document
+    .getElementById("toggle-section")
+    .addEventListener("click", function (event) {
+      globalState.set({ togglePassing: !globalState.get("togglePassing") });
+    });
 }
 
 function toggleSection(contentId, arrowId) {
@@ -137,8 +210,13 @@ function toggleSection(contentId, arrowId) {
 export function toggleIconState() {
   const toggleText = document.getElementById("toggle-text");
   const togglePath = document.getElementById("toggle-path");
+  const isDisplayingPassing = globalState.get("togglePassing");
 
-  if (toggleText.innerText === "Displaying All Satellites") {
+  if (isDisplayingPassing) {
+    const location = globalState.get("passing_location");
+    if (!location) {
+      return;
+    }
     toggleText.innerText = "Displaying Passing Satellites";
     togglePath.setAttribute(
       "d",
@@ -151,4 +229,5 @@ export function toggleIconState() {
       "M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
     );
   }
+  glState.set({ clickedSatellite: null });
 }

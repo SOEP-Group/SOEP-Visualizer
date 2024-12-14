@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { getEarth, glState } from "../gl/index.js";
+import { glState } from "../gl/index.js";
 import { subscribe } from "../eventBuss.js";
 import { satellites } from "../gl/scene.js";
 import {
@@ -10,6 +10,7 @@ import { scalePosition } from "../utils/utils.js";
 
 export let currentOrbitLine = null;
 export let currentSatelliteCenterLine = null;
+export let velocityArrow = null;
 
 const sgp4_errors = {
   1: "mean elements, ecc >= 1.0 or ecc < -0.001 or a < 0.95 er",
@@ -22,12 +23,6 @@ const sgp4_errors = {
 
 export function initOrbit() {
   subscribe("glStateChanged", onGlStateChanged);
-}
-
-function getUtcMinutesSinceEpoch() {
-  const now = Date.now(); // Current time in milliseconds since epoch
-  const minutesSinceEpoch = now / 1000 / 60; // Convert to minutes
-  return minutesSinceEpoch;
 }
 
 function onGlStateChanged(changedStates) {
@@ -75,8 +70,8 @@ export function displayOrbit(satellite) {
     new THREE.Float32BufferAttribute(dynamicVertices, 3)
   );
 
-  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Light blue for orbit
-  const dynamicLineMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Light blue for dynamic line
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for orbit
+  const dynamicLineMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow for dynamic line
 
   currentOrbitLine = new THREE.Line(orbitPathGeometry, orbitMaterial);
   currentSatelliteCenterLine = new THREE.Line(
@@ -84,9 +79,10 @@ export function displayOrbit(satellite) {
     dynamicLineMaterial
   );
 
-  getEarth().getGroup().add(currentOrbitLine);
-  getEarth().getGroup().add(currentSatelliteCenterLine);
+  satellites.getGroup().add(currentOrbitLine);
+  satellites.getGroup().add(currentSatelliteCenterLine);
 
+  // Calculate orbit path
   for (let t = 0; t <= orbitalPeriod; t += timeStep) {
     const time = new Date(startTime.getTime() + t * 60 * 1000); // Increment time by timeStep
     const positionAndVelocity = propagate(satrec, time);
@@ -97,8 +93,7 @@ export function displayOrbit(satellite) {
     }
 
     let { x, y, z } = positionAndVelocity.position;
-
-    const scaledPosition = scalePosition({ x, y, z });
+    const scaledPosition = scalePosition({ x: x, y: z, z: -y });
 
     orbitVertices.push(scaledPosition.x, scaledPosition.y, scaledPosition.z);
   }
@@ -107,19 +102,30 @@ export function displayOrbit(satellite) {
     "position",
     new THREE.Float32BufferAttribute(orbitVertices, 3)
   );
+
+  // Satellite position and velocity
+  let satelliteVel = scalePosition(satellites.getSpeed(satellite));
+  satelliteVel = new THREE.Vector3(
+    satelliteVel.x * 50,
+    satelliteVel.y * 50,
+    satelliteVel.z * 50
+  );
+
   orbitAnimating = true;
 
+  // Function to update the dynamic line
   function updateDynamicLine() {
     if (!orbitAnimating) return;
 
     const currentPosition = satellites.getPosition(satellite);
+    const currentVel = scalePosition(satellites.getSpeed(satellite));
 
     if (!currentPosition) {
       console.warn("Failed to get satellite position");
       return;
     }
 
-    // Update the satellite position in the dynamic line geometry
+    // Update satellite position in the dynamic line geometry
     dynamicVertices[3] = currentPosition.x; // Satellite X
     dynamicVertices[4] = currentPosition.y; // Satellite Y
     dynamicVertices[5] = currentPosition.z;
@@ -127,18 +133,20 @@ export function displayOrbit(satellite) {
     dynamicLineGeometry.attributes.position.array = new Float32Array(
       dynamicVertices
     );
+
     dynamicLineGeometry.attributes.position.needsUpdate = true;
 
     requestAnimationFrame(updateDynamicLine);
   }
+
   updateDynamicLine();
 }
 
 export function stopDisplayingOrbit() {
   orbitAnimating = false;
   if (currentOrbitLine) {
-    getEarth().getGroup().remove(currentOrbitLine);
-    getEarth().getGroup().remove(currentSatelliteCenterLine);
+    satellites.getGroup().remove(currentOrbitLine);
+    satellites.getGroup().remove(currentSatelliteCenterLine);
     currentOrbitLine = null;
     currentSatelliteCenterLine = null;
   }

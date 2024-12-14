@@ -4,6 +4,12 @@
 <head>
   <title>SOEP Visualizer</title>
   <link rel="icon" href="../images/logo/earth_logo.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.css"
+    integrity="sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"
+    integrity="sha512-g/feAizmeiVKSwvfW0Xk3ZHZqv5Zs8PEXEBKzL15pM0SevEvoX8eJ4yFWbqakvRj7vtw1Q97bLzEpG2IVWX0Mg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script async src="./libs/es-shims/es-module-shims.js"></script>
@@ -28,6 +34,7 @@
 </head>
 
 <body>
+  <div id="resizer_overlay" class="z-50 hidden bg-transparent absolute w-full h-full"></div>
   <div id="loading-screen"
     class="top-0 left-0 fixed w-full h-full bg-loading-screen bg-cover bg-center flex justify-center items-center z-50 opacity-100 transition-opacity duration-500">
     <div class="flex flex-col items-center space-y-4 text-white">
@@ -40,7 +47,7 @@
 
   <header
     class="bg-black z-30 text-white h-16 flex items-center shadow-md w-full border-b-2 border-teal-300 sticky top-0">
-    <nav class="flex items-center max-w-full px-4 w-full">
+    <nav class="flex items-center ml-4 mr-4 max-w-full px-4 w-full relative">
 
       <!-- Burger menu -->
       <div id="menu__toggle"
@@ -60,10 +67,147 @@
 
     </nav>
 
+    <!-- Filters button -->
+    <div class="flex items-center md:ml-4 ml-0 mr-4 relative">
+      <button id="filters-button"
+        class="flex items-center bg-black border border-gray-700 rounded-lg md:px-4 px-2 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
+        title="Filters">
+        <svg class="w-6 h-6 md:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z"></path>
+        </svg>
+        <span class="hidden md:block">Filters</span>
+      </button>
+
+      <div id="filters-dropdown"
+        class="invisible absolute top-[calc(100%+1rem)] right-1/2 md:right-0 md:w-[20rem] w-[16rem] bg-black/80 text-white rounded-md shadow-lg border border-teal-300 p-4 z-50 opacity-0 transform md:translate-y-2 md:translate-x-0 translate-x-1/2 transition-all duration-300 ease-in-out">
+
+        <div class="flex justify-end mb-2">
+          <button id="close-filters-button"
+            class="text-teal-300 hover:text-teal-200 transition ease-in-out duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M18 6 6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+          <!-- Speed -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="speed-slider" class="block mb-1 text-sm font-medium">Speed (km/s)</label>
+            <div id="speed-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="speed-min-label">0</span>
+              <span id="speed-max-label">12</span>
+            </div>
+          </div>
+
+          <!-- Longitude -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="longitude-slider" class="block mb-1 text-sm font-medium">Longitude (°)</label>
+            <div id="longitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="longitude-min-label">-180</span>
+              <span id="longitude-max-label">180</span>
+            </div>
+          </div>
+
+          <!-- Latitude -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="latitude-slider" class="block mb-1 text-sm font-medium">Latitude (°)</label>
+            <div id="latitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="latitude-min-label">-90</span>
+              <span id="latitude-max-label">90</span>
+            </div>
+          </div>
+
+          <!-- Orbit distance -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="orbit-distance-slider" class="block mb-1 text-sm font-medium">Orbit Distance (km)</label>
+            <div id="orbit-distance-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="orbit-distance-min-label">100</span>
+              <span id="orbit-distance-max-label">500000</span>
+            </div>
+          </div>
+
+          <!-- Inclination -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="inclination-slider" class="block mb-1 text-sm font-medium">Inclination (°)</label>
+            <div id="inclination-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="inclination-min-label">0</span>
+              <span id="inclination-max-label">180</span>
+            </div>
+          </div>
+
+          <!-- Revolution time -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="revolution-time-slider" class="block mb-1 text-sm font-medium">Revolution Time (hours)</label>
+            <div id="revolution-time-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+              <span id="revolution-time-min-label">80</span>
+              <span id="revolution-time-max-label">40000</span>
+            </div>
+          </div>
+
+          <!-- Launch Date -->
+          <div class="w-full max-w-md mx-auto">
+            <label for="launch-date-start" class="block mb-1 text-sm font-medium">Launch Date Start</label>
+            <input type="date" id="launch-date-start"
+              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
+
+            <label for="launch-date-end" class="block mb-1 text-sm font-medium mt-4">Launch Date End</label>
+            <input type="date" id="launch-date-end"
+              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
+          </div>
+
+          <!-- Launch site -->
+          <div>
+            <label for="launch-site" class="block mb-1 text-sm font-medium">Launch Site</label>
+            <select id="launch-site"
+              class="w-full bg-black border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1 transition">
+              <option value="">Any</option>
+              <option value="AFETR">AFETR</option>
+              <option value="KSC">KSC</option>
+            </select>
+          </div>
+
+          <!-- Owner -->
+          <div>
+            <label for="owner" class="block mb-1 text-sm font-medium">Owner</label>
+            <select id="owner"
+              class="w-full bg-black border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1">
+              <option value="">Any</option>
+              <option value="US">US</option>
+              <option value="RU">RU</option>
+              <option value="CN">CN</option>
+              <option value="EU">EU</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-center space-x-2 mt-4 border-t border-gray-700 pt-4">
+          <button id="clear-filters-button"
+            class="border border-teal-300 text-teal-300 px-4 py-1 rounded hover:bg-teal-300 hover:text-black transition">
+            Clear Filters
+          </button>
+          <button id="apply-filters-button"
+            class="bg-teal-300 text-black px-4 py-1 rounded font-semibold hover:bg-teal-400 transition">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Satellite search -->
-    <div class="right-6 w-full md:w-[32rem] hidden md:block md:ml-7 relative">
+    <div class="md:right-6 right-2 w-[20rem] md:w-[32rem] md:ml-7 relative">
       <!-- Search Input -->
-      <input type="text" id="satellite-search" placeholder="Search for a satellite"
+      <input type="text" id="satellite-search" placeholder="Search" data-placeholder-md="Search for a satellite"
+        data-placeholder-sm="Search"
         class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
       <!-- Search Button (magnifying glass) -->
       <button id="satellite-search-button"
@@ -80,7 +224,6 @@
         class="absolute top-full left-0 bg-black text-white w-full border border-gray-700 mt-1 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
       </div>
     </div>
-
 
   </header>
 
@@ -331,6 +474,29 @@
                 <span class="text-transparent">:)</span>
               </button>
             </div>
+            <!-- Collision Prediction -->
+            <div class="expandable-section">
+              <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
+                <!-- Triangle Icon -->
+                <div id="arrow-collision" class="mr-2">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+                <!-- Section Title -->
+                <span class="cursor-pointer">Collision Prediction</span>
+              </h3>
+              <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+                <div class="input-form-styling">
+                  <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
+                  <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Passing Satellites -->
             <div class="expandable-section">
               <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
@@ -361,6 +527,9 @@
                     Location</button>
                   <button data-ripple="true" class="select-location-button location-button-styling">Select
                     Location</button>
+                </div>
+                <div id="passing-satellites-dropdown"
+                  class="relative bg-black text-white w-[100%] mx-auto border border-gray-700 mt-2 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
                 </div>
               </div>
             </div>
@@ -393,28 +562,6 @@
               </div>
             </div>
 
-            <!-- Re-entry Prediction -->
-            <div class="expandable-section">
-              <h3 id="re-entry-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-re-entry" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Re-entry Prediction</span>
-              </h3>
-              <div id="re-entry-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-re-entry" placeholder="Satellite" class="input-styling">
-                  <button data-ripple="true" id="calculate-re-entry-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Graphs -->
@@ -434,11 +581,12 @@
             <hr class="my-6 border-teal-300" />
 
             <!-- Toggle View -->
-            <h3 class="text-md md:text-lg text-white">Upcoming feature: Toggle Between Earth and Satellite Centric View
+            <h3 class="text-md md:text-lg text-white">Toggle Between Earth and Satellite Centric View
             </h3>
             <div class="flex flex-col space-y-2 mt-4">
               <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
-                Click the "Toggle View" button or use the "Alt + V" keyboard shortcut to switch views.
+                Click the <img src="../images/icons/toggle_button.png" class="w-12 h-5 inline-block" /> buttons or use
+                the 'Alt + Shift + V' keyboard shortcut to switch views. Ensure that a satellite is selected.
               </p>
             </div>
             <hr class="my-6 border-teal-300" />
@@ -523,7 +671,20 @@
         </div>
       </div>
 
-      <!-- Popup -->
+      <!-- Toggle View Buttons -->
+      <div class="flex justify-end md:justify-center items-center mt-2">
+        <!-- Satellite Button -->
+        <button id="satellite-view-button" title="Satellite view"
+          class="bg-black px-2 py-1 border border-teal-300 pointer-events-none cursor-not-allowed">
+          <img src="../images/icons/satellite.svg" alt="Satellite" class="w-6 h-6" />
+        </button>
+        <!-- Earth Button -->
+        <button id="earth-view-button" title="Earth view"
+          class="px-2 py-1 border border-teal-300 pointer-events-none bg-teal-500">
+          <img src="../images/icons/earth.svg" alt="Earth" class="w-6 h-6" />
+        </button>
+      </div>
+
       <div id="popup-container"
         class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
         <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full"

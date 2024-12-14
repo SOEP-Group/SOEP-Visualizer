@@ -6,6 +6,7 @@ import { initPredictions } from "./predictions.js";
 import { initEvents } from "./events.js";
 import { initResizer } from "./resizer.js";
 import { initPopup } from "./popup.js";
+import { initToggleView } from "./toggle_view.js";
 import { glState } from "../gl/index.js";
 import { initOrbit } from "../gl/orbit.js";
 import { satellites } from "../gl/scene.js";
@@ -17,12 +18,24 @@ export * from "./resizer.js";
 export * from "./predictions.js";
 export * from "./events.js";
 export * from "./popup.js";
+export * from "./toggle_view.js";
+
 
 const hoverTooltip = document.getElementById("hover-tooltip");
 
+function hideTooltip() {
+  hoverTooltip.classList.add("hidden");
+}
+
+subscribe("glStateChanged", (changedStates) => {
+  if (changedStates["clickedSatellite"]) {
+    hideTooltip();
+  }
+});
+
 subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
   if (instanceId === -1) {
-    hoverTooltip.classList.add("hidden");
+    hideTooltip();
   } else {
     const satData = satellites.instanceIdToDataMap[instanceId];
 
@@ -38,6 +51,8 @@ subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
   }
 });
 
+document.addEventListener("touchstart", hideTooltip);
+
 subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
 // const satellite_default = document.getElementById("satellite-info-default");
@@ -52,6 +67,7 @@ function onStart() {
   initResizer();
   initPopup();
   initOrbit();
+  initToggleView();
   initGraphs();
 
   const tabs = document.querySelectorAll(".tab");

@@ -14,7 +14,7 @@ import {
   camera,
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { initScene, earth, satellites } from "./scene.js";
+import { initScene, earth, satellites, addSatellites } from "./scene.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -88,7 +88,11 @@ function onStart() {
       if (hovered_satellite !== null) {
         document.body.style.cursor = "pointer";
         satellites.setHovered(hovered_satellite);
-        publish("hoveredSatellite", { instanceId: hovered_satellite, mouseX: event.clientX, mouseY: event.clientY });
+        publish("hoveredSatellite", {
+          instanceId: hovered_satellite,
+          mouseX: event.clientX,
+          mouseY: event.clientY,
+        });
       } else {
         document.body.style.cursor = "default";
         satellites.setHovered(-1);
@@ -206,7 +210,47 @@ function onStateChanged(changedStates) {
 function onGlobalStateChanged(changedStates) {
   if (changedStates["pickingLocation"]) {
     const picking = globalState.get("pickingLocation");
-    satellites.hide(picking);
+    if (picking) {
+      satellites.hide();
+    } else {
+      satellites.show();
+    }
     earth.togglePickingLocation(picking);
+  }
+  if (changedStates["togglePassing"]) {
+    const radius = 500;
+    const isDisplayingPassing = globalState.get("togglePassing");
+    const location = globalState.get("passing_location");
+    let out_of_range = satellites
+      .getSatellitesOutOfRange(location, radius)
+      .sort();
+    function updateSatelliteVisibility() {
+      if (!globalState.get("togglePassing")) return;
+      const current_location = globalState.get("passing_location");
+      const current_out_of_range = satellites
+        .getSatellitesOutOfRange(current_location, radius)
+        .sort();
+
+      const arraysDiffer =
+        current_out_of_range.length !== out_of_range.length ||
+        current_out_of_range.some(
+          (satellite, index) => satellite !== out_of_range[index]
+        );
+
+      if (arraysDiffer) {
+        satellites.show();
+        satellites.mask(current_out_of_range);
+        out_of_range = current_out_of_range;
+        publish("newVisibleSatellites");
+      }
+      requestAnimationFrame(updateSatelliteVisibility);
+    }
+
+    if (isDisplayingPassing && location) {
+      satellites.mask(out_of_range);
+      updateSatelliteVisibility();
+    } else {
+      satellites.show();
+    }
   }
 }
