@@ -65,33 +65,96 @@ export async function initEvents() {
     }
   }
 
+  const startDate = document.getElementById("start-date").value;
+  const startTime = document.getElementById("start-time").value;
+  const endDate = document.getElementById("end-date").value;
+  const endTime = document.getElementById("end-time").value;
+
+  let startDateTime;
+  if (startDate) {
+    startDateTime = startDate + (startTime ? `T${startTime}:00` : "T00:00:00");
+  } else {
+    startDateTime = new Date().toISOString();
+  }
+
+  let endDateTime;
+  if (endDate) {
+    endDateTime = endDate + (endTime ? `T${endTime}:00` : "T23:59:59");
+  } else {
+    const start = new Date(startDateTime);
+    const end = new Date(start.getTime() + 365 * 24 * 60 * 60 * 1000);
+    endDateTime = end.toISOString();
+  }
+
   document
     .getElementById("sun-events-header")
     .addEventListener("click", async () => {
       toggleSection("sun-content", "arrow-sun");
-      await fetchAndRenderEvents("sun", "sun-content");
+      await fetchAndRenderEvents(
+        "sun",
+        "sun-content",
+        startDateTime,
+        endDateTime
+      );
     });
 
   document
     .getElementById("moon-events-header")
     .addEventListener("click", async () => {
       toggleSection("moon-content", "arrow-moon");
-      await fetchAndRenderEvents("moon", "moon-content");
+      await fetchAndRenderEvents(
+        "moon",
+        "moon-content",
+        startDateTime,
+        endDateTime
+      );
     });
 
   document
     .getElementById("planet-events-header")
     .addEventListener("click", async () => {
       toggleSection("planet-content", "arrow-planet");
-      await fetchAndRenderAllPlanets();
+      await fetchAndRenderAllPlanets(startDateTime, endDateTime);
     });
 
   document
     .getElementById("filter-events")
     .addEventListener("click", async () => {
-      await fetchAndRenderEvents("sun", "sun-content");
-      await fetchAndRenderEvents("moon", "moon-content");
-      await fetchAndRenderAllPlanets();
+      const startDate = document.getElementById("start-date").value;
+      const startTime = document.getElementById("start-time").value;
+      const endDate = document.getElementById("end-date").value;
+      const endTime = document.getElementById("end-time").value;
+
+      let startDateTime;
+      if (startDate) {
+        startDateTime =
+          startDate + (startTime ? `T${startTime}:00` : "T00:00:00");
+      } else {
+        startDateTime = new Date().toISOString();
+      }
+
+      let endDateTime;
+      if (endDate) {
+        endDateTime = endDate + (endTime ? `T${endTime}:00` : "T23:59:59");
+      } else {
+        const start = new Date(startDateTime);
+        const end = new Date(start.getTime() + 365 * 24 * 60 * 60 * 1000);
+        endDateTime = end.toISOString();
+      }
+
+      await fetchAndRenderEvents(
+        "sun",
+        "sun-content",
+        startDateTime,
+        endDateTime
+      );
+      await fetchAndRenderEvents(
+        "moon",
+        "moon-content",
+        startDateTime,
+        endDateTime
+      );
+      await fetchAndRenderAllPlanets(startDateTime, endDateTime);
     });
 
   getLocationBtn.forEach((btn) => {
@@ -151,7 +214,12 @@ export async function initEvents() {
     });
 
   function filterEvents() {}
-  async function fetchAndRenderEvents(bodyName, contentId) {
+  async function fetchAndRenderEvents(
+    bodyName,
+    contentId,
+    startDateTime,
+    endDateTime
+  ) {
     const contentElement = document.getElementById(contentId);
 
     contentElement.innerHTML = "<p>Loading events...</p>";
@@ -171,7 +239,9 @@ export async function initEvents() {
       const eventData = await fetchEvents(
         bodyName,
         userLatitude,
-        userLongitude
+        userLongitude,
+        startDateTime,
+        endDateTime
       );
       cachedEvents[bodyName] = eventData;
 
@@ -184,7 +254,7 @@ export async function initEvents() {
     }
   }
 
-  async function fetchAndRenderAllPlanets() {
+  async function fetchAndRenderAllPlanets(startDateTime, endDateTime) {
     const contentElement = document.getElementById("planet-content");
 
     contentElement.innerHTML = "<p>Loading planet events...</p>";
@@ -202,7 +272,15 @@ export async function initEvents() {
       const planetEvents = await Promise.all(
         bodies
           .slice(2)
-          .map((planet) => fetchEvents(planet, userLatitude, userLongitude))
+          .map((planet) =>
+            fetchEvents(
+              planet,
+              userLatitude,
+              userLongitude,
+              startDateTime,
+              endDateTime
+            )
+          )
       );
 
       let planetHTML = "";
@@ -252,20 +330,35 @@ export async function initEvents() {
 `;
 
     // Moon
+    const nextNewMoonDate = eventData.nextNewMoon
+      ? new Date(eventData.nextNewMoon)
+      : null;
+    const nextFullMoonDate = eventData.nextFullMoon
+      ? new Date(eventData.nextFullMoon)
+      : null;
+    const nextFirstQuarterDate = eventData.nextFirstQuarter
+      ? new Date(eventData.nextFirstQuarter)
+      : null;
     if (bodyName.toLowerCase() === "moon") {
       content += `
     <li><strong>Moon Phase Angle:</strong> ${eventData.moonPhaseAngle.toFixed(
       2
     )}°</li>
-    <li><strong>Next New Moon:</strong> ${new Date(
-      eventData.nextNewMoon
-    ).toLocaleString()}</li>
-    <li><strong>Next First Quarter:</strong> ${new Date(
-      eventData.nextFirstQuarter
-    ).toLocaleString()}</li>
-    <li><strong>Next Full Moon:</strong> ${new Date(
-      eventData.nextFullMoon
-    ).toLocaleString()}</li>
+    <li><strong>Next New Moon:</strong> ${
+      nextNewMoonDate && nextNewMoonDate.toString() !== "Invalid Date"
+        ? nextNewMoonDate.toLocaleString()
+        : "N/A"
+    }</li>
+    <li><strong>Next First Quarter:</strong> ${
+      nextFirstQuarterDate && nextFirstQuarterDate.toString() !== "Invalid Date"
+        ? nextFirstQuarterDate.toLocaleString()
+        : "N/A"
+    }</li>
+    <li><strong>Next Full Moon:</strong> ${
+      nextFullMoonDate && nextFullMoonDate.toString() !== "Invalid Date"
+        ? nextFullMoonDate.toLocaleString()
+        : "N/A"
+    }</li>
     <li><strong>Next Last Quarter:</strong> ${new Date(
       eventData.nextLastQuarter
     ).toLocaleString()}</li>

@@ -18,7 +18,7 @@ exports.getAllSatellites = async function (req, res) {
 
 exports.getBodyEvents = async function (req, res) {
   const { body } = req.params;
-  const { latitude, longitude } = req.query;
+  const { latitude, longitude, start, end } = req.query;
 
   // Default is San Francisco
   const observer = new Astronomy.Observer(
@@ -27,11 +27,26 @@ exports.getBodyEvents = async function (req, res) {
     10 // Elevation in meters
   );
 
-  const date = new Date();
+  let startTime = new Date();
+  let limitDays = 365;
+
+  if (start) {
+    const startParsed = new Date(start);
+    if (!isNaN(startParsed)) {
+      startTime = startParsed;
+    }
+  }
+
+  if (end) {
+    const endParsed = new Date(end);
+    if (!isNaN(endParsed)) {
+      const diffMs = endParsed - startTime;
+      limitDays = diffMs > 0 ? diffMs / (1000 * 60 * 60 * 24) : 365;
+    }
+  }
 
   try {
-    const bodyName =
-      body.charAt(0).toUpperCase() + body.slice(1).toLowerCase();
+    const bodyName = body.charAt(0).toUpperCase() + body.slice(1).toLowerCase();
     const validBodies = [
       "Sun",
       "Moon",
@@ -46,34 +61,31 @@ exports.getBodyEvents = async function (req, res) {
     ];
 
     if (!validBodies.includes(bodyName)) {
-      return res
-        .status(400)
-        .json({ error: `Invalid celestial body: ${body}` });
+      return res.status(400).json({ error: `Invalid celestial body: ${body}` });
     }
 
-    const startTime = new Astronomy.AstroTime(date);
-    const limitDays = 365; // Days
+    const astroStartTime = new Astronomy.AstroTime(startTime);
 
     // Common events for all bodies
     const riseEvent = Astronomy.SearchRiseSet(
       bodyName,
       observer,
       +1,
-      startTime,
+      astroStartTime,
       limitDays
     );
     const setEvent = Astronomy.SearchRiseSet(
       bodyName,
       observer,
       -1,
-      startTime,
+      astroStartTime,
       limitDays
     );
     const culminationEvent = Astronomy.SearchHourAngle(
       bodyName,
       observer,
       0.0,
-      startTime,
+      astroStartTime,
       limitDays
     );
 
@@ -87,33 +99,45 @@ exports.getBodyEvents = async function (req, res) {
 
     // Moon
     if (bodyName === "Moon") {
-      const moonPhaseAngle = Astronomy.MoonPhase(startTime);
-      const nextNewMoon = Astronomy.SearchMoonPhase(0, startTime, 40);
-      const nextFirstQuarter = Astronomy.SearchMoonPhase(90, startTime, 40);
-      const nextFullMoon = Astronomy.SearchMoonPhase(180, startTime, 40);
-      const nextLastQuarter = Astronomy.SearchMoonPhase(270, startTime, 40);
+      const moonPhaseAngle = Astronomy.MoonPhase(astroStartTime);
+      const nextNewMoon = Astronomy.SearchMoonPhase(
+        0,
+        astroStartTime,
+        limitDays
+      );
+      const nextFirstQuarter = Astronomy.SearchMoonPhase(
+        90,
+        astroStartTime,
+        limitDays
+      );
+      const nextFullMoon = Astronomy.SearchMoonPhase(
+        180,
+        astroStartTime,
+        limitDays
+      );
+      const nextLastQuarter = Astronomy.SearchMoonPhase(
+        270,
+        astroStartTime,
+        limitDays
+      );
 
       // Lunar Eclipses
       let nextLunarEclipse = null;
       try {
-        nextLunarEclipse = Astronomy.SearchLunarEclipse(startTime);
+        nextLunarEclipse = Astronomy.SearchLunarEclipse(astroStartTime);
       } catch (e) {
         console.error("No lunar eclipse found:", e);
       }
 
       // Lunar Perigee and Apogee
-      const nextLunarApsis = Astronomy.SearchLunarApsis(startTime);
+      const nextLunarApsis = Astronomy.SearchLunarApsis(astroStartTime);
 
       data.moonPhaseAngle = moonPhaseAngle;
-      data.nextNewMoon = nextNewMoon
-        ? nextNewMoon.date.toISOString()
-        : null;
+      data.nextNewMoon = nextNewMoon ? nextNewMoon.date.toISOString() : null;
       data.nextFirstQuarter = nextFirstQuarter
         ? nextFirstQuarter.date.toISOString()
         : null;
-      data.nextFullMoon = nextFullMoon
-        ? nextFullMoon.date.toISOString()
-        : null;
+      data.nextFullMoon = nextFullMoon ? nextFullMoon.date.toISOString() : null;
       data.nextLastQuarter = nextLastQuarter
         ? nextLastQuarter.date.toISOString()
         : null;
@@ -135,23 +159,23 @@ exports.getBodyEvents = async function (req, res) {
     // Sun
     if (bodyName === "Sun") {
       // Twilight Times
-      const limitDaysTwilight = 1; // Search within the next day
+      // const limitDaysTwilight = 1; // Search within the next day
 
       // Civil Twilight (-6 degrees)
       const civilDawn = Astronomy.SearchAltitude(
         "Sun",
         observer,
         +1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -6.0
       );
       const civilDusk = Astronomy.SearchAltitude(
         "Sun",
         observer,
         -1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -6.0
       );
 
@@ -160,16 +184,16 @@ exports.getBodyEvents = async function (req, res) {
         "Sun",
         observer,
         +1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -12.0
       );
       const nauticalDusk = Astronomy.SearchAltitude(
         "Sun",
         observer,
         -1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -12.0
       );
 
@@ -178,23 +202,23 @@ exports.getBodyEvents = async function (req, res) {
         "Sun",
         observer,
         +1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -18.0
       );
       const astroDusk = Astronomy.SearchAltitude(
         "Sun",
         observer,
         -1,
-        startTime,
-        limitDaysTwilight,
+        astroStartTime,
+        limitDays,
         -18.0
       );
 
       // Solar Eclipses
       let nextSolarEclipse = null;
       try {
-        nextSolarEclipse = Astronomy.SearchGlobalSolarEclipse(startTime);
+        nextSolarEclipse = Astronomy.SearchGlobalSolarEclipse(astroStartTime);
       } catch (e) {
         console.error("No solar eclipse found:", e);
       }
@@ -214,7 +238,7 @@ exports.getBodyEvents = async function (req, res) {
     //   try {
     //     nextMaxElongation = Astronomy.SearchMaxElongation(
     //       bodyName,
-    //       startTime
+    //       astroStartTime
     //     );
     //   } catch (e) {
     //     console.error("No maximum elongation found:", e);
@@ -230,9 +254,9 @@ exports.getBodyEvents = async function (req, res) {
 
     //   // Inferior and Superior Conjunctions
     //   const nextInferiorConjunction =
-    //     Astronomy.SearchRelativeLongitude(bodyName, 0.0, startTime);
+    //     Astronomy.SearchRelativeLongitude(bodyName, 0.0, astroStartTime);
     //   const nextSuperiorConjunction =
-    //     Astronomy.SearchRelativeLongitude(bodyName, 180.0, startTime);
+    //     Astronomy.SearchRelativeLongitude(bodyName, 180.0, astroStartTime);
 
     //   data.nextInferiorConjunction = nextInferiorConjunction
     //     ? nextInferiorConjunction.date.toISOString()
@@ -244,7 +268,7 @@ exports.getBodyEvents = async function (req, res) {
     //   // Transits (for Mercury and Venus)
     //   let nextTransit = null;
     //   try {
-    //     nextTransit = Astronomy.SearchTransit(bodyName, startTime);
+    //     nextTransit = Astronomy.SearchTransit(bodyName, astroStartTime);
     //   } catch (e) {
     //     console.error("No transit found:", e);
     //   }
@@ -257,12 +281,12 @@ exports.getBodyEvents = async function (req, res) {
     //     : null;
 
     //   // Visual Magnitude and Elongation
-    //   const illumInfo = Astronomy.Illumination(bodyName, startTime);
+    //   const illumInfo = Astronomy.Illumination(bodyName, astroStartTime);
     //   data.currentMagnitude = illumInfo.mag;
-    //   data.currentElongation = Astronomy.AngleFromSun(bodyName, startTime);
+    //   data.currentElongation = Astronomy.AngleFromSun(bodyName, astroStartTime);
 
     //   // Planetary Perihelion and Aphelion
-    //   const nextApsis = Astronomy.SearchPlanetApsis(bodyName, startTime);
+    //   const nextApsis = Astronomy.SearchPlanetApsis(bodyName, astroStartTime);
     //   data.nextApsis = nextApsis
     //     ? {
     //         kind: nextApsis.kind,
@@ -281,12 +305,12 @@ exports.getBodyEvents = async function (req, res) {
     //   const nextOpposition = Astronomy.SearchRelativeLongitude(
     //     bodyName,
     //     0.0,
-    //     startTime
+    //     astroStartTime
     //   );
     //   const nextConjunction = Astronomy.SearchRelativeLongitude(
     //     bodyName,
     //     180.0,
-    //     startTime
+    //     astroStartTime
     //   );
 
     //   data.nextOpposition = nextOpposition
@@ -297,12 +321,12 @@ exports.getBodyEvents = async function (req, res) {
     //     : null;
 
     //   // Visual Magnitude and Elongation
-    //   const illumInfo = Astronomy.Illumination(bodyName, startTime);
+    //   const illumInfo = Astronomy.Illumination(bodyName, astroStartTime);
     //   data.currentMagnitude = illumInfo.mag;
-    //   data.currentElongation = Astronomy.AngleFromSun(bodyName, startTime);
+    //   data.currentElongation = Astronomy.AngleFromSun(bodyName, astroStartTime);
 
     //   // Planetary Perihelion and Aphelion
-    //   const nextApsis = Astronomy.SearchPlanetApsis(bodyName, startTime);
+    //   const nextApsis = Astronomy.SearchPlanetApsis(bodyName, astroStartTime);
     //   data.nextApsis = nextApsis
     //     ? {
     //         kind: nextApsis.kind,
