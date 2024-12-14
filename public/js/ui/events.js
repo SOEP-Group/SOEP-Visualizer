@@ -154,10 +154,6 @@ export async function initEvents() {
   async function fetchAndRenderEvents(bodyName, contentId) {
     const contentElement = document.getElementById(contentId);
 
-    if (contentElement.dataset.loaded === "true") {
-      return;
-    }
-
     contentElement.innerHTML = "<p>Loading events...</p>";
 
     try {
@@ -182,7 +178,6 @@ export async function initEvents() {
       const eventDetailsHTML = renderEventDetails("", eventData, bodyName);
 
       contentElement.innerHTML = eventDetailsHTML;
-      contentElement.dataset.loaded = "true";
     } catch (error) {
       contentElement.innerHTML = `<p>Error loading events: ${error.message}</p>`;
       console.error(`Error fetching ${bodyName} events:`, error);
@@ -191,10 +186,6 @@ export async function initEvents() {
 
   async function fetchAndRenderAllPlanets() {
     const contentElement = document.getElementById("planet-content");
-
-    if (contentElement.dataset.loaded === "true") {
-      return;
-    }
 
     contentElement.innerHTML = "<p>Loading planet events...</p>";
 
@@ -226,7 +217,6 @@ export async function initEvents() {
       });
 
       contentElement.innerHTML = planetHTML;
-      contentElement.dataset.loaded = "true";
     } catch (error) {
       contentElement.innerHTML = `<p>Error loading planet events: ${error.message}</p>`;
       console.error("Error fetching planet events:", error);
