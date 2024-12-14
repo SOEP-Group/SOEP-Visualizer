@@ -19,10 +19,10 @@ export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
   filtersDropdown.classList.toggle("invisible", !isOpen);
   filtersDropdown.classList.toggle("opacity-0", !isOpen);
-  filtersDropdown.classList.toggle("translate-y-2", !isOpen);
+  filtersDropdown.classList.toggle("md:translate-y-2", !isOpen);
   filtersDropdown.classList.toggle("pointer-events-none", !isOpen);
   filtersDropdown.classList.toggle("opacity-100", isOpen);
-  filtersDropdown.classList.toggle("translate-y-0", isOpen);
+  filtersDropdown.classList.toggle("md:translate-y-0", isOpen);
 
   if (!isOpen) {
     setTimeout(() => filtersDropdown.classList.add("invisible"), 300);

@@ -68,19 +68,20 @@
     </nav>
 
     <!-- Filters button -->
-    <div class="flex items-center ml-4 mr-4 relative">
+    <div class="flex items-center md:ml-4 ml-0 mr-4 relative">
       <button id="filters-button"
-        class="flex items-center bg-black border border-gray-700 rounded-lg px-4 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
+        class="flex items-center bg-black border border-gray-700 rounded-lg md:px-4 px-2 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
         title="Filters">
-        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        <svg class="w-6 h-6 md:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z"></path>
         </svg>
-        <span>Filters</span>
+        <span class="hidden md:block">Filters</span>
       </button>
 
       <div id="filters-dropdown"
-        class="invisible absolute top-[calc(100%+1rem)] right-0 w-[20rem] bg-black/80 text-white rounded-md shadow-lg border border-teal-300 p-4 z-50 opacity-0 transform translate-y-2 transition-all duration-300 ease-in-out">
+        class="invisible absolute top-[calc(100%+1rem)] right-1/2 md:right-0 md:w-[20rem] w-[16rem] bg-black/80 text-white rounded-md shadow-lg border border-teal-300 p-4 z-50 opacity-0 transform md:translate-y-2 md:translate-x-0 translate-x-1/2 transition-all duration-300 ease-in-out">
 
         <div class="flex justify-end mb-2">
           <button id="close-filters-button"
@@ -203,9 +204,10 @@
     </div>
 
     <!-- Satellite search -->
-    <div class="right-6 w-full md:w-[32rem] hidden md:block md:ml-7 relative">
+    <div class="md:right-6 right-2 w-[20rem] md:w-[32rem] md:ml-7 relative">
       <!-- Search Input -->
-      <input type="text" id="satellite-search" placeholder="Search for a satellite"
+      <input type="text" id="satellite-search" placeholder="Search" data-placeholder-md="Search for a satellite"
+        data-placeholder-sm="Search"
         class="text-white bg-black border border-gray-700 rounded-lg pl-4 pr-12 py-2 focus:outline-none focus:ring-1 focus:border-teal-300 w-full transition duration-300 ease-in-out">
       <!-- Search Button (magnifying glass) -->
       <button id="satellite-search-button"

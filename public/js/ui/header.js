@@ -157,6 +157,18 @@ export function initHeader() {
   dropdownMenu.addEventListener("mousedown", (event) => {
     event.stopPropagation();
   });
+
+  updatePlaceholder()
+  window.addEventListener('resize', updatePlaceholder);
+}
+
+function updatePlaceholder() {
+  const searchInput = document.getElementById('satellite-search');
+  if (window.innerWidth >= 768) {
+    searchInput.placeholder = searchInput.dataset.placeholderMd;
+  } else {
+    searchInput.placeholder = searchInput.dataset.placeholderSm;
+  }
 }
 
 function openMenu() {
