@@ -18,6 +18,7 @@ import * as THREE from "three";
 
 import { camera, clock, controls } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
+import { gstime } from "../../libs/satellite.js/dist/satellite.es.js";
 
 export class Earth {
   group;
@@ -45,11 +46,10 @@ export class Earth {
     this.planetSize = planetSize;
     this.planetAngle = planetAngle;
     this.planetTexture = planetTexture;
-    this.orbitalDistance = orbitalDistance;
+    this.orbitalDistance = -orbitalDistance;
     this.planetRotationSpeed =
       ((2 * Math.PI) / 86400) * rotationSpeedMultiplier;
     this.planetRotationDirection = planetRotationDirection;
-    this.currRotation = this.calculateEarthRotationInRadians();
     this.orbitalSpeed =
       ((2 * Math.PI) / (365.25 * 24 * 60 * 60)) * orbitalSpeedMultiplier;
     this.currentOrbitAngle = this.calculateInitialOrbitAngle();
@@ -93,28 +93,8 @@ export class Earth {
 
   calculateEarthRotationInRadians() {
     const now = new Date();
-
-    // Reference time: start of the day (UTC)
-    const referenceTime = new Date(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      0, // Midnight UTC
-      0,
-      0
-    );
-
-    // Time elapsed since midnight (in seconds)
-    const elapsedTimeInSeconds = (now - referenceTime) / 1000;
-
-    // Earth's angular speed for rotation (sidereal day in seconds)
-    const angularSpeed = (2 * Math.PI) / 86164; // radians per second
-
-    // Rotation angle since midnight
-    const rotationAngle = angularSpeed * elapsedTimeInSeconds;
-
-    // Ensure angle is within [0, 2π]
-    return rotationAngle % (2 * Math.PI);
+    const gmst = gstime(now);
+    return gmst;
   }
 
   calculateInitialOrbitAngle() {
@@ -258,8 +238,7 @@ export class Earth {
     this.cloudsMesh.scale.setScalar(1.003);
     this.cloudsMesh.renderOrder = 1;
     this.planetGroup.add(this.cloudsMesh);
-    this.group.rotation.y = this.currRotation;
-    this.group.rotation.z = this.planetAngle;
+    this.group.rotation.z = -this.planetAngle;
   }
 
   createAtmosphere() {
@@ -316,22 +295,9 @@ export class Earth {
   }
 
   updatePlanetRotation(dt) {
-    const rotationChange = this.planetRotationSpeed * dt;
-
-    const tiltAxis = new THREE.Vector3(0, 1, 0).applyAxisAngle(
-      new THREE.Vector3(1, 0, 0),
-      THREE.MathUtils.degToRad(23.5)
+    this.planetGroup.setRotationFromEuler(
+      new THREE.Euler(0, this.calculateEarthRotationInRadians(), 0)
     );
-
-    const rotationQuaternion = new THREE.Quaternion();
-    rotationQuaternion.setFromAxisAngle(
-      tiltAxis,
-      this.planetRotationDirection === "clockwise"
-        ? -rotationChange
-        : rotationChange
-    );
-
-    this.group.quaternion.premultiply(rotationQuaternion);
   }
 
   updatePlanetOrbit(dt) {
@@ -387,11 +353,18 @@ export class Earth {
     };
   }
 
+  // Use this to get the full group of all geometry involving earth
   getGroup() {
     return this.group;
   }
 
+  // Use this to get the roup that rotates
+  getPlanetGroup() {
+    return this.planetGroup;
+  }
+
   reload() {
+    this.dispose();
     this.createPlanet();
   }
 
@@ -418,7 +391,7 @@ export class Earth {
 
     if (intersects.length > 0) {
       let world_coordinates = intersects[0].point;
-      let local_coordinates = this.group.worldToLocal(world_coordinates);
+      let local_coordinates = this.planetGroup.worldToLocal(world_coordinates);
 
       let normalized = local_coordinates.clone().normalize();
 
