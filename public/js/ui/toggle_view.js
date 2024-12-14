@@ -35,7 +35,6 @@ export function initToggleView() {
 
 function keyboardToggle(event) {
   const isShiftV = event.shiftKey && event.key.toLowerCase() === "v";
-  console.log(isShiftV);
   if (isShiftV) {
     event.preventDefault();
 
