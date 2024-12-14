@@ -4,7 +4,9 @@ import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
 
 let cachedEvents = {};
-const selectLocationBtn = document.querySelectorAll(".select-location-button-events");
+const selectLocationBtn = document.querySelectorAll(
+  ".select-location-button-events"
+);
 const getLocationBtn = document.querySelectorAll(".get-location-btn-events");
 
 const bodies = [
@@ -36,7 +38,9 @@ function onGlobalStateChanged(changedStates) {
     const events_location = globalState.get("events_location");
     if (events_location !== null) {
       const parent_element = document.getElementById("events-content");
-      const locationField = parent_element.querySelector(".location-field-events");
+      const locationField = parent_element.querySelector(
+        ".location-field-events"
+      );
       if (locationField) {
         locationField.value = `${events_location.lat}, ${events_location.long}`;
       }
@@ -44,38 +48,66 @@ function onGlobalStateChanged(changedStates) {
   }
 }
 
-export function initEvents() {
+export async function initEvents() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
 
-  document.getElementById("sun-events-header").addEventListener("click", async () => {
-    toggleSection("sun-content", "arrow-sun");
-    await fetchAndRenderEvents("sun", "sun-content");
-  });
+  let loc = globalState.get("events_location");
+  if (!loc) {
+    try {
+      loc = await getLocation();
+      if (loc && loc.lat && loc.long) {
+        globalState.set({ events_location: loc });
+      } else {
+        globalState.set({ events_location: { lat: 37.7749, long: -122.4194 } });
+      }
+    } catch (error) {
+      globalState.set({ events_location: { lat: 37.7749, long: -122.4194 } });
+    }
+  }
 
-  document.getElementById("moon-events-header").addEventListener("click", async () => {
-    toggleSection("moon-content", "arrow-moon");
-    await fetchAndRenderEvents("moon", "moon-content");
-  });
+  document
+    .getElementById("sun-events-header")
+    .addEventListener("click", async () => {
+      toggleSection("sun-content", "arrow-sun");
+      await fetchAndRenderEvents("sun", "sun-content");
+    });
 
-  document.getElementById("planet-events-header").addEventListener("click", async () => {
-    toggleSection("planet-content", "arrow-planet");
-    await fetchAndRenderAllPlanets();
-  });
+  document
+    .getElementById("moon-events-header")
+    .addEventListener("click", async () => {
+      toggleSection("moon-content", "arrow-moon");
+      await fetchAndRenderEvents("moon", "moon-content");
+    });
 
-  document.getElementById("filter-events").addEventListener("click", async () => {
-    await fetchAndRenderEvents("sun", "sun-content");
-    await fetchAndRenderEvents("moon", "moon-content");
-    await fetchAndRenderAllPlanets();
-  });
+  document
+    .getElementById("planet-events-header")
+    .addEventListener("click", async () => {
+      toggleSection("planet-content", "arrow-planet");
+      await fetchAndRenderAllPlanets();
+    });
+
+  document
+    .getElementById("filter-events")
+    .addEventListener("click", async () => {
+      await fetchAndRenderEvents("sun", "sun-content");
+      await fetchAndRenderEvents("moon", "moon-content");
+      await fetchAndRenderAllPlanets();
+    });
 
   getLocationBtn.forEach((btn) => {
     btn.addEventListener("click", function (event) {
-      getLocation().then((location) => {
-        const parent_id = btn.parentElement.id;
-        if (parent_id === "events-content") {
-          globalState.set({ events_location: location });
-        }
-      });
+      getLocation()
+        .then((location) => {
+          const parent_id = btn.parentElement.id;
+          if (parent_id === "events-content") {
+            globalState.set({ events_location: location });
+          }
+        })
+        .catch(() => {
+          globalState.set({
+            events_location: { lat: 37.7749, long: -122.4194 },
+          });
+        });
     });
   });
 
@@ -107,15 +139,18 @@ export function initEvents() {
     arrow.classList.toggle("rotate-90");
   }
 
-  document.getElementById('toggle-filters').addEventListener('click', function () {
-    document.getElementById('arrow-filter').querySelector('svg').classList.toggle('rotate-180');
-    const filterSection = document.getElementById("filter-section");
-    filterSection.classList.toggle("hidden");
-  });
+  document
+    .getElementById("toggle-filters")
+    .addEventListener("click", function () {
+      document
+        .getElementById("arrow-filter")
+        .querySelector("svg")
+        .classList.toggle("rotate-180");
+      const filterSection = document.getElementById("filter-section");
+      filterSection.classList.toggle("hidden");
+    });
 
-  function filterEvents() {
-
-  }
+  function filterEvents() {}
   async function fetchAndRenderEvents(bodyName, contentId) {
     const contentElement = document.getElementById(contentId);
 
@@ -128,17 +163,23 @@ export function initEvents() {
     try {
       const loc = globalState.get("events_location");
       console.log(loc);
-      const userLatitude = loc.lat;
-      const userLongitude = loc.long;
 
-      const eventData = await fetchEvents(bodyName, userLatitude, userLongitude);
+      let userLatitude = 37.7749; // default lat
+      let userLongitude = -122.4194; // default long
+
+      if (loc && loc.lat && loc.long) {
+        userLatitude = loc.lat;
+        userLongitude = loc.long;
+      }
+
+      const eventData = await fetchEvents(
+        bodyName,
+        userLatitude,
+        userLongitude
+      );
       cachedEvents[bodyName] = eventData;
 
-      const eventDetailsHTML = renderEventDetails(
-        "",
-        eventData,
-        bodyName
-      );
+      const eventDetailsHTML = renderEventDetails("", eventData, bodyName);
 
       contentElement.innerHTML = eventDetailsHTML;
       contentElement.dataset.loaded = "true";
@@ -158,19 +199,19 @@ export function initEvents() {
     contentElement.innerHTML = "<p>Loading planet events...</p>";
 
     try {
-
       const loc = globalState.get("events_location");
+      let userLatitude = 37.7749;
       let userLongitude = -122.4194;
-      let userLatitude = -122.4194;
 
-      if (loc != null) {
-        console.log(loc);
-        userLongitude = loc.long;
+      if (loc && loc.lat && loc.long) {
         userLatitude = loc.lat;
+        userLongitude = loc.long;
       }
 
       const planetEvents = await Promise.all(
-        bodies.slice(2).map((planet) => fetchEvents(planet, userLatitude, userLongitude))
+        bodies
+          .slice(2)
+          .map((planet) => fetchEvents(planet, userLatitude, userLongitude))
       );
 
       let planetHTML = "";
@@ -206,17 +247,16 @@ export function initEvents() {
   <div class="event-details">
     <h2>${title}</h2>
     <ul>
-      <li><strong>Rise Time:</strong> ${eventData.rise
-        ? new Date(eventData.rise).toLocaleString()
-        : "N/A"
+      <li><strong>Rise Time:</strong> ${
+        eventData.rise ? new Date(eventData.rise).toLocaleString() : "N/A"
       }</li>
-      <li><strong>Set Time:</strong> ${eventData.set
-        ? new Date(eventData.set).toLocaleString()
-        : "N/A"
+      <li><strong>Set Time:</strong> ${
+        eventData.set ? new Date(eventData.set).toLocaleString() : "N/A"
       }</li>
-      <li><strong>Culmination:</strong> ${eventData.culmination
-        ? new Date(eventData.culmination).toLocaleString()
-        : "N/A"
+      <li><strong>Culmination:</strong> ${
+        eventData.culmination
+          ? new Date(eventData.culmination).toLocaleString()
+          : "N/A"
       }</li>
      <br>
 `;
@@ -225,34 +265,36 @@ export function initEvents() {
     if (bodyName.toLowerCase() === "moon") {
       content += `
     <li><strong>Moon Phase Angle:</strong> ${eventData.moonPhaseAngle.toFixed(
-        2
-      )}°</li>
+      2
+    )}°</li>
     <li><strong>Next New Moon:</strong> ${new Date(
-        eventData.nextNewMoon
-      ).toLocaleString()}</li>
+      eventData.nextNewMoon
+    ).toLocaleString()}</li>
     <li><strong>Next First Quarter:</strong> ${new Date(
-        eventData.nextFirstQuarter
-      ).toLocaleString()}</li>
+      eventData.nextFirstQuarter
+    ).toLocaleString()}</li>
     <li><strong>Next Full Moon:</strong> ${new Date(
-        eventData.nextFullMoon
-      ).toLocaleString()}</li>
+      eventData.nextFullMoon
+    ).toLocaleString()}</li>
     <li><strong>Next Last Quarter:</strong> ${new Date(
-        eventData.nextLastQuarter
-      ).toLocaleString()}</li>
-    <li><strong>Next Lunar Eclipse:</strong> ${eventData.nextLunarEclipse
-          ? `${eventData.nextLunarEclipse.kind} on ${new Date(
+      eventData.nextLastQuarter
+    ).toLocaleString()}</li>
+    <li><strong>Next Lunar Eclipse:</strong> ${
+      eventData.nextLunarEclipse
+        ? `${eventData.nextLunarEclipse.kind} on ${new Date(
             eventData.nextLunarEclipse.date
           ).toLocaleString()}`
-          : "N/A"
-        }</li>
-    <li><strong>Next Lunar Perigee/Apogee:</strong> ${eventData.nextLunarApsis
-          ? `${eventData.nextLunarApsis.kind} on ${new Date(
+        : "N/A"
+    }</li>
+    <li><strong>Next Lunar Perigee/Apogee:</strong> ${
+      eventData.nextLunarApsis
+        ? `${eventData.nextLunarApsis.kind} on ${new Date(
             eventData.nextLunarApsis.date
           ).toLocaleString()} at ${eventData.nextLunarApsis.distanceKm.toFixed(
             0
           )} km`
-          : "N/A"
-        }</li>
+        : "N/A"
+    }</li>
   `;
     }
 
@@ -260,15 +302,15 @@ export function initEvents() {
     if (bodyName.toLowerCase() === "sun") {
       const twilight = eventData.twilight;
       content += `
-    <li><strong>Next Solar Eclipse:</strong> ${eventData.nextSolarEclipse
-          ? `${eventData.nextSolarEclipse.kind} on ${new Date(
+    <li><strong>Next Solar Eclipse:</strong> ${
+      eventData.nextSolarEclipse
+        ? `${eventData.nextSolarEclipse.kind} on ${new Date(
             eventData.nextSolarEclipse.date
           ).toLocaleString()}`
-          : "N/A"
-        }</li>
+        : "N/A"
+    }</li>
   `;
     }
-
 
     // if (["mercury", "venus"].includes(bodyName.toLowerCase())) {
     //   const maxElongation = eventData.nextMaxElongation;
