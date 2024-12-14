@@ -159,12 +159,12 @@ export function initHeader() {
     event.stopPropagation();
   });
 
-  updatePlaceholder()
-  window.addEventListener('resize', updatePlaceholder);
+  updatePlaceholder();
+  window.addEventListener("resize", updatePlaceholder);
 }
 
 function updatePlaceholder() {
-  const searchInput = document.getElementById('satellite-search');
+  const searchInput = document.getElementById("satellite-search");
   if (window.innerWidth >= 768) {
     searchInput.placeholder = searchInput.dataset.placeholderMd;
   } else {
