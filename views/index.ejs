@@ -226,416 +226,418 @@
     </div>
 
   </header>
+  <!-- UI -->
+  <div id="ui" class="absolute z-20 w-full h-full mt-16">
 
-  <div class="gl_viewport" id="gl_viewport">
-    <div id="ui" class="absolute z-20 w-full h-full">
+    <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
+    </div>
 
-      <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
-      </div>
+    <!-- Hover Tooltip -->
+    <div id="hover-tooltip"
+      class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50">
+    </div>
 
-      <!-- Hover Tooltip -->
-      <div id="hover-tooltip"
-        class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50">
-      </div>
-
-      <!-- Sliding window left-->
-      <div id="ham_menu"
-        class="z-30 bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
-        <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
-          <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
-            title="Resize">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </div>
+    <!-- Sliding window left-->
+    <div id="ham_menu"
+      class="z-30 bg-black w-full md:w-1/3 absolute top-0 left-0 h-full text-white flex flex-col -translate-x-full transform transition-transform duration-300 ease-in-out">
+      <div id="resize" class="resizer-container absolute top-0 right-0 h-full flex items-center justify-center">
+        <div class="resizer w-[15px] cursor-ew-resize h-16 absolute bg-teal-600 flex items-center justify-center"
+          title="Resize">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
         </div>
-        <!-- Tabs -->
-        <div class="tabs flex space-x-4 border-b border-gray-300">
+      </div>
+      <!-- Tabs -->
+      <div class="tabs flex space-x-4 border-b border-gray-300">
 
-          <!-- Calender (Events) -->
-          <button data-ripple="true" class="tab group relative" id="events-tab" title="Events">
-            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" />
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-            </svg>
-          </button>
+        <!-- Calender (Events) -->
+        <button data-ripple="true" class="tab group relative" id="events-tab" title="Events">
+          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
+          </svg>
+        </button>
+
+        <!-- Predictions -->
+        <button data-ripple="true" class="tab group relative" id="prediction-tab-icon" title="Predictions">
+          <!-- Satellite -->
+          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <g id="Satellite" transform="matrix(0.0665082,5.91071e-18,-5.91071e-18,0.0665082,-51.1746,-44.2688)">
+              <g transform="matrix(1.20588,0,0,1.23214,-193.299,-187.108)">
+                <path
+                  d="M982,764.627L982,851.681C982,857.376 977.276,862 971.456,862L924.544,862C918.724,862 914,857.376 914,851.681L914,764.627C914,758.932 918.724,754.308 924.544,754.308L971.456,754.308C977.276,754.308 982,758.932 982,764.627Z"
+                  style="fill:none;stroke:currentColor;stroke-width:23.13px;" />
+              </g>
+              <g transform="matrix(0.965225,3.09049e-18,3.09049e-18,1,39.1654,-0.345951)">
+                <path
+                  d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
+                  style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
+              </g>
+              <g transform="matrix(-0.965225,-3.09049e-18,3.09049e-18,1,1860.59,-0.345951)">
+                <path
+                  d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
+                  style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
+              </g>
+              <g transform="matrix(1,-6.38485e-17,-6.38485e-17,0.281568,1.3776,722.692)">
+                <path
+                  d="M956,886.637L956,921.363C956,936.065 952.639,948 948.5,948C944.361,948 941,936.065 941,921.363L941,886.637C941,871.935 944.361,860 948.5,860C952.639,860 956,871.935 956,886.637Z"
+                  style="fill:none;stroke:currentColor;stroke-width:25.58px;" />
+              </g>
+              <g transform="matrix(1,-5.0114e-17,-5.0114e-17,0.43611,1.3776,499.945)">
+                <path
+                  d="M956,877.197L956,930.803C956,940.294 952.639,948 948.5,948C944.361,948 941,940.294 941,930.803L941,877.197C941,867.706 944.361,860 948.5,860C952.639,860 956,867.706 956,877.197Z"
+                  style="fill:none;stroke:currentColor;stroke-width:24.36px;" />
+              </g>
+              <g transform="matrix(-1.1427,-1.39941e-16,2.39363e-16,-1.95455,2052.51,2741.52)">
+                <path
+                  d="M908.878,909L964.939,909L1021,909C1021,921.15 995.901,931 964.939,931C933.977,931 908.878,921.15 908.878,909Z"
+                  style="fill:none;stroke:currentColor;stroke-width:15.65px;" />
+              </g>
+            </g>
+          </svg>
+
+          <!-- Question mark -->
+          <svg class="absolute right-1 top-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12" />
+          </svg>
+        </button>
+
+        <!-- Graphs -->
+        <button data-ripple="true" class="tab group relative" title="Graphs">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v15a1 1 0 0 0 1 1h15M8 16l2.5-5.5 3 3L17.273 7 20 9.667" />
+          </svg>
+          <!-- Hover Text -->
+          <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+            Graphs
+          </span> -->
+        </button>
+
+        <!-- Info -->
+        <button data-ripple="true" class="tab group relative" title="Info">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+        </button>
+
+        <!-- Settings -->
+        <button data-ripple="true" class="tab group relative" title="Settings">
+          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z" />
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- Content -->
+      <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
+        <div class="tab-panel">
+          <p id="satellite-info-default">Events</p>
+          <!-- <h4 id="debug-ui-fps-counter"></h4>
+          <h4>Renderer stats:</h4>
+          <p id="debug-ui-renderer-info"></p>
+          <h4>GPU info:</h4>
+          <p id="debug-ui-gpu-info"></p> -->
+        </div>
+
+        <div id="prediction-tab" class="tab-panel space-y-6">
+
+          <!-- Collision Prediction -->
+          <div class="expandable-section">
+            <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-collision" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Collision Prediction</span>
+            </h3>
+            <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
+                <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passing Satellites -->
+          <div class="expandable-section">
+            <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-passing" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Passing Satellites</span>
+            </h3>
+            <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <div id="toggle-section" class="flex items-center justify-between w-[250px]">
+                  <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
+                    id="toggle-svg">
+                    <path id="toggle-path" fill="#ffffff"
+                      d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
+                  </svg>
+                </div>
+                <input type="text" placeholder="Location" class="location-field input-styling">
+                <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button location-button-styling">Select
+                  Location</button>
+              </div>
+              <div id="passing-satellites-dropdown"
+                class="relative bg-black text-white w-[100%] mx-auto border border-gray-700 mt-2 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pass Prediction -->
+          <div class="expandable-section">
+            <h3 id="pass-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-pass" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Pass Prediction</span>
+            </h3>
+            <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
+                <input type="text" placeholder="Location" class="location-field input-styling">
+                <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button location-button-styling">Select
+                  Location</button>
+                <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="tab-panel">
+          <div id="graphs-container" class="text-white"></div>
+        </div>
+
+        <div class="tab-panel">
+          <h2 class="text-2xl font-semibold">How to Use</h2>
+          <!-- Description Text -->
+          <p class="text-sm md:text-base text-gray-400">
+            This project is designed to help you track and explore satellites around Earth. Click on a satellite to
+            see more details about it, including real-time speed, location, and other analytical data.
+          </p>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Toggle View -->
+          <h3 class="text-md md:text-lg text-white">Toggle Between Earth and Satellite Centric View
+          </h3>
+          <div class="flex flex-col space-y-2 mt-4">
+            <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
+              Click the <img src="../images/icons/toggle_button.png" class="w-12 h-5 inline-block" /> buttons or use
+              the 'Shift + V' keyboard shortcut to switch views. Ensure that a satellite is selected.
+            </p>
+          </div>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Events -->
+          <h3 class="text-md md:text-lg text-white">What are the events?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
+            location. These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
+          </p>
+          <hr class="my-6 border-teal-300" />
 
           <!-- Predictions -->
-          <button data-ripple="true" class="tab group relative" id="prediction-tab-icon" title="Predictions">
-            <!-- Satellite -->
-            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <g id="Satellite" transform="matrix(0.0665082,5.91071e-18,-5.91071e-18,0.0665082,-51.1746,-44.2688)">
-                <g transform="matrix(1.20588,0,0,1.23214,-193.299,-187.108)">
-                  <path
-                    d="M982,764.627L982,851.681C982,857.376 977.276,862 971.456,862L924.544,862C918.724,862 914,857.376 914,851.681L914,764.627C914,758.932 918.724,754.308 924.544,754.308L971.456,754.308C977.276,754.308 982,758.932 982,764.627Z"
-                    style="fill:none;stroke:currentColor;stroke-width:23.13px;" />
-                </g>
-                <g transform="matrix(0.965225,3.09049e-18,3.09049e-18,1,39.1654,-0.345951)">
-                  <path
-                    d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
-                    style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
-                </g>
-                <g transform="matrix(-0.965225,-3.09049e-18,3.09049e-18,1,1860.59,-0.345951)">
-                  <path
-                    d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
-                    style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
-                </g>
-                <g transform="matrix(1,-6.38485e-17,-6.38485e-17,0.281568,1.3776,722.692)">
-                  <path
-                    d="M956,886.637L956,921.363C956,936.065 952.639,948 948.5,948C944.361,948 941,936.065 941,921.363L941,886.637C941,871.935 944.361,860 948.5,860C952.639,860 956,871.935 956,886.637Z"
-                    style="fill:none;stroke:currentColor;stroke-width:25.58px;" />
-                </g>
-                <g transform="matrix(1,-5.0114e-17,-5.0114e-17,0.43611,1.3776,499.945)">
-                  <path
-                    d="M956,877.197L956,930.803C956,940.294 952.639,948 948.5,948C944.361,948 941,940.294 941,930.803L941,877.197C941,867.706 944.361,860 948.5,860C952.639,860 956,867.706 956,877.197Z"
-                    style="fill:none;stroke:currentColor;stroke-width:24.36px;" />
-                </g>
-                <g transform="matrix(-1.1427,-1.39941e-16,2.39363e-16,-1.95455,2052.51,2741.52)">
-                  <path
-                    d="M908.878,909L964.939,909L1021,909C1021,921.15 995.901,931 964.939,931C933.977,931 908.878,921.15 908.878,909Z"
-                    style="fill:none;stroke:currentColor;stroke-width:15.65px;" />
-                </g>
-              </g>
-            </svg>
-
-            <!-- Question mark -->
-            <svg class="absolute right-1 top-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12" />
-            </svg>
-          </button>
+          <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
+            satellites are visible from specific locations. These predictions help us track the movement of
+            satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
+            observed from a given location. Additionally, we provide information on when a selected satellite will be
+            visible from your location, based on real-time data.
+          </p>
+          <hr class="my-6 border-teal-300" />
 
           <!-- Graphs -->
-          <button data-ripple="true" class="tab group relative" title="Graphs">
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v15a1 1 0 0 0 1 1h15M8 16l2.5-5.5 3 3L17.273 7 20 9.667" />
-            </svg>
-            <!-- Hover Text -->
-            <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-              Graphs
-            </span> -->
-          </button>
+          <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            The graphs display detailed information about the selected satellite, including its
+            speed, height above Earth, and other relevant data. They provide a visual representation of the
+            satellite's position over time, both in the past 24 hours and into the future.
+          </p>
+          <hr class="my-6 border-teal-300" />
 
-          <!-- Info -->
-          <button data-ripple="true" class="tab group relative" title="Info">
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
-          </button>
+          <!-- Inclination Explanation -->
+          <h3 class="text-md md:text-lg text-white">What is Inclination?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            Inclination refers to the angle between a satellite's orbital plane and Earth's equatorial plane. It is
+            measured in degrees and determines the satellite's orbital behavior and coverage:
+          </p>
+          <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+            <li><strong>0° Inclination:</strong> The satellite orbits directly above the equator (equatorial orbit).
+            </li>
+            <li><strong>90° Inclination:</strong> The satellite passes over the poles (polar orbit), covering the
+              entire Earth.</li>
+            <li><strong>Between 0° and 90°:</strong> Inclined orbits, ideal for regional coverage.</li>
+            <li><strong>Greater than 90°:</strong> Retrograde orbits, moving opposite to Earth's rotation.</li>
+          </ul>
+          <hr class="my-6 border-teal-300" />
 
-          <!-- Settings -->
-          <button data-ripple="true" class="tab group relative" title="Settings">
-            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z" />
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-            </svg>
-          </button>
-
+          <!-- Blog -->
+          <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog
+            where we share weekly progress and updates about our work.</p>
+          <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+            rel="noopener noreferrer">
+            Check out our blog
+          </a>
         </div>
 
-        <!-- Content -->
-        <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
-          <div class="tab-panel">
-            <p id="satellite-info-default">Events</p>
-            <!-- <h4 id="debug-ui-fps-counter"></h4>
-            <h4>Renderer stats:</h4>
-            <p id="debug-ui-renderer-info"></p>
-            <h4>GPU info:</h4>
-            <p id="debug-ui-gpu-info"></p> -->
+        <div class="tab-panel">
+
+          <!-- Graphics present -->
+          <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+            <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
+            <select id="graphics-settings"
+              class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
           </div>
 
-          <div id="prediction-tab" class="tab-panel space-y-6">
-
-            <!-- Collision Prediction -->
-            <div class="expandable-section">
-              <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-collision" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Collision Prediction</span>
-              </h3>
-              <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
-                  <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Passing Satellites -->
-            <div class="expandable-section">
-              <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-passing" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Passing Satellites</span>
-              </h3>
-              <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <div id="toggle-section" class="flex items-center justify-between w-[250px]">
-                    <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
-                      id="toggle-svg">
-                      <path id="toggle-path" fill="#ffffff"
-                        d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
-                    </svg>
-                  </div>
-                  <input type="text" placeholder="Location" class="location-field input-styling">
-                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
-                    Location</button>
-                  <button data-ripple="true" class="select-location-button location-button-styling">Select
-                    Location</button>
-                </div>
-                <div id="passing-satellites-dropdown"
-                  class="relative bg-black text-white w-[100%] mx-auto border border-gray-700 mt-2 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
-                </div>
-              </div>
-            </div>
-
-            <!-- Pass Prediction -->
-            <div class="expandable-section">
-              <h3 id="pass-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-pass" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Pass Prediction</span>
-              </h3>
-              <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
-                  <input type="text" placeholder="Location" class="location-field input-styling">
-                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
-                    Location</button>
-                  <button data-ripple="true" class="select-location-button location-button-styling">Select
-                    Location</button>
-                  <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
-
+          <!-- Timezone -->
+          <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+            <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
+            <select id="time-zone-settings"
+              class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
           </div>
 
-          <div class="tab-panel">
-            <div id="graphs-container" class="text-white"></div>
-          </div>
-
-          <div class="tab-panel">
-            <h2 class="text-2xl font-semibold">How to Use</h2>
-            <!-- Description Text -->
-            <p class="text-sm md:text-base text-gray-400">
-              This project is designed to help you track and explore satellites around Earth. Click on a satellite to
-              see more details about it, including real-time speed, location, and other analytical data.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Toggle View -->
-            <h3 class="text-md md:text-lg text-white">Toggle Between Earth and Satellite Centric View
-            </h3>
-            <div class="flex flex-col space-y-2 mt-4">
-              <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
-                Click the <img src="../images/icons/toggle_button.png" class="w-12 h-5 inline-block" /> buttons or use
-                the 'Alt + Shift + V' keyboard shortcut to switch views. Ensure that a satellite is selected.
-              </p>
-            </div>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Events -->
-            <h3 class="text-md md:text-lg text-white">What are the events?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
-              location. These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Predictions -->
-            <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
-              satellites are visible from specific locations. These predictions help us track the movement of
-              satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
-              observed from a given location. Additionally, we provide information on when a selected satellite will be
-              visible from your location, based on real-time data.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Graphs -->
-            <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              The graphs display detailed information about the selected satellite, including its
-              speed, height above Earth, and other relevant data. They provide a visual representation of the
-              satellite's position over time, both in the past 24 hours and into the future.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Inclination Explanation -->
-            <h3 class="text-md md:text-lg text-white">What is Inclination?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              Inclination refers to the angle between a satellite's orbital plane and Earth's equatorial plane. It is
-              measured in degrees and determines the satellite's orbital behavior and coverage:
-            </p>
-            <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
-              <li><strong>0° Inclination:</strong> The satellite orbits directly above the equator (equatorial orbit).
-              </li>
-              <li><strong>90° Inclination:</strong> The satellite passes over the poles (polar orbit), covering the
-                entire Earth.</li>
-              <li><strong>Between 0° and 90°:</strong> Inclined orbits, ideal for regional coverage.</li>
-              <li><strong>Greater than 90°:</strong> Retrograde orbits, moving opposite to Earth's rotation.</li>
-            </ul>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Blog -->
-            <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog
-              where we share weekly progress and updates about our work.</p>
-            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
-              rel="noopener noreferrer">
-              Check out our blog
-            </a>
-          </div>
-
-          <div class="tab-panel">
-
-            <!-- Graphics present -->
-            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
-              <select id="graphics-settings"
-                class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
-            </div>
-
-            <!-- Timezone -->
-            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
-              <select id="time-zone-settings"
-                class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
-            </div>
-
-            <!-- Save settings button -->
-            <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
-              Save settings
-            </button>
-          </div>
-
+          <!-- Save settings button -->
+          <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
+            Save settings
+          </button>
         </div>
 
       </div>
 
-      <!-- Toggle View Buttons -->
-      <div class="flex justify-end md:justify-center items-center mt-2">
-        <!-- Satellite Button -->
-        <button id="satellite-view-button" title="Satellite view"
-          class="bg-black px-2 py-1 border border-teal-300 pointer-events-none cursor-not-allowed">
-          <img src="../images/icons/satellite.svg" alt="Satellite" class="w-6 h-6" />
-        </button>
-        <!-- Earth Button -->
-        <button id="earth-view-button" title="Earth view"
-          class="px-2 py-1 border border-teal-300 pointer-events-none bg-teal-500">
-          <img src="../images/icons/earth.svg" alt="Earth" class="w-6 h-6" />
-        </button>
+    </div>
+
+    <!-- Toggle View Buttons -->
+    <div class="flex justify-end md:justify-center items-center mt-2">
+      <!-- Satellite Button -->
+      <button id="satellite-view-button" title="Satellite view"
+        class="bg-black px-2 py-1 border border-teal-300 pointer-events-none cursor-not-allowed">
+        <img src="../images/icons/satellite.svg" alt="Satellite" class="w-6 h-6" />
+      </button>
+      <!-- Earth Button -->
+      <button id="earth-view-button" title="Earth view"
+        class="px-2 py-1 border border-teal-300 pointer-events-none bg-teal-500">
+        <img src="../images/icons/earth.svg" alt="Earth" class="w-6 h-6" />
+      </button>
+    </div>
+
+    <div id="popup-container"
+      class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
+      <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full flex flex-col"
+        data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
+        <div class="flex flex-row justify-end">
+          <button id="close-popup" class="bg-transparent" title="Close">
+            <svg class="h-8 w-10 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
+          <p class="loading-text">Loading</p>
+        </div>
+        <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300 overflow-y-auto overflow-x-hidden flex-1 max-h-[95%]"></div>
       </div>
 
-      <div id="popup-container"
-        class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">
-        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-2 h-full w-full flex flex-col"
-          data-augmented-ui="border tl-2-clip-x br-clip bl-clip">
-          <div class="flex flex-row justify-end">
-            <button id="close-popup" class="bg-transparent" title="Close">
-              <svg class="h-8 w-10 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
-                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
-            <p class="loading-text">Loading</p>
-          </div>
-          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300 overflow-y-auto overflow-x-hidden flex-1 max-h-[95%]"></div>
+      <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
+        title="More info">
+        <svg id="arrow-icon"
+          class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400"
+          stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5L12 17.25l-7.5-6.75" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Mobile Popup Container -->
+    <div id="mobile-popup-container"
+      class="z-10 pb-4 rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-all duration-300 ease-in-out flex flex-col w-full px-1 h-[30%] text-base md:hidden">
+
+      <!-- Popup Window Content -->
+      <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative pt-6 flex flex-col"
+        data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
+
+        <!-- Close Button -->
+        <div class="absolute top-2 right-2 z-20">
+          <button id="mobile-close-popup" class="bg-transparent p-0" title="Close">
+            <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
+              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
-        <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
-          title="More info">
-          <svg id="arrow-icon"
-            class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400"
+        <!-- Expand Arrow -->
+        <div id="mobile-toggle-arrow"
+          class="flex justify-center items-center absolute -top-1 w-full z-10 cursor-pointer" title="More info">
+          <svg id="mobile-arrow-icon"
+            class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400 rotate-180"
             stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5L12 17.25l-7.5-6.75" />
           </svg>
         </div>
-      </div>
 
-      <!-- Mobile Popup Container -->
-      <div id="mobile-popup-container"
-        class="z-10 pb-4 rounded-lg translate-y-full absolute bottom-0 left-0 transform transition-all duration-300 ease-in-out flex flex-col w-full px-1 h-[30%] text-base md:hidden">
-
-        <!-- Popup Window Content -->
-        <div class="popup-window shadow-lg bg-sky-900/75 space-y-2 p-4 h-full w-full relative pt-6 flex flex-col"
-          data-augmented-ui="border tl-clip tr-clip br-clip bl-clip">
-
-          <!-- Close Button -->
-          <div class="absolute top-2 right-2 z-20">
-            <button id="mobile-close-popup" class="bg-transparent p-0" title="Close">
-              <svg class="h-8 w-8 text-teal-300 hover:text-teal-200" width="24" height="24" viewBox="0 0 24 24"
-                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Expand Arrow -->
-          <div id="mobile-toggle-arrow"
-            class="flex justify-center items-center absolute -top-1 w-full z-10 cursor-pointer" title="More info">
-            <svg id="mobile-arrow-icon"
-              class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-300 ease-in-out hover:text-gray-400 rotate-180"
-              stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5L12 17.25l-7.5-6.75" />
-            </svg>
-          </div>
-
-          <!-- Loading Skeleton -->
-          <div id="mobile-popup-skeleton" class="space-y-4 text-teal-300">
-            <p class="loading-text">Loading</p>
-          </div>
-
-          <!-- Actual Content (Initially hidden) -->
-          <div id="mobile-popup-content" class="hidden space-y-2 text-teal-300 text-sm overflow-y-auto overflow-x-hidden flex-1"></div>
+        <!-- Loading Skeleton -->
+        <div id="mobile-popup-skeleton" class="space-y-4 text-teal-300">
+          <p class="loading-text">Loading</p>
         </div>
+
+        <!-- Actual Content (Initially hidden) -->
+        <div id="mobile-popup-content" class="hidden space-y-2 text-teal-300 text-sm overflow-y-auto overflow-x-hidden flex-1"></div>
       </div>
+    </div>
+  </div>
+
+  <div class="gl_viewport" id="gl_viewport" tabindex="0"></div>
 </body>
 
 <script type="module" src="js/main.js"></script>
