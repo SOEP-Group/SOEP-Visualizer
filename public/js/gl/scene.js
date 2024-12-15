@@ -5,7 +5,7 @@ import { Satellites } from "./satellite_2d.js"; // remove the _2d here to use th
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchSatellites } from "../api/satellites.js";
 import { globalState } from "../globalState.js";
-import { subscribe } from "../eventBuss.js";
+import { subscribe, publish } from "../eventBuss.js";
 
 export let scene = new THREE.Scene();
 
@@ -85,6 +85,7 @@ export function initScene() {
     globalState.set({
       satellites: res,
     });
+    publish("satellitesFetched");
   });
 }
 

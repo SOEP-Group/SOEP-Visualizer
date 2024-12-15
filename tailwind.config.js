@@ -8,7 +8,7 @@ module.exports = {
         "loading-screen": "url('/images/background/earth-from-space.jpg')",
       },
       spacing: {
-        '9/10': '90%',
+        "9/10": "90%",
       },
     },
   },
