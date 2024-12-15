@@ -11,6 +11,17 @@ let toggledSatellite = false;
 export function initToggleView() {
   subscribe("glStateChanged", onGlStateChanged);
 
+  document.getElementById("toggle_buttons").addEventListener("mouseup", (event) => {
+    event.stopPropagation();
+  });
+  document.getElementById("toggle_buttons").addEventListener("mousemove", (event) => {
+    document.body.style.cursor = "default";
+    event.stopPropagation();
+  });
+  document.getElementById("toggle_buttons").addEventListener("mousedown", (event) => {
+    event.stopPropagation();
+  });
+
   earthView.addEventListener("click", (event) => {
     event.stopPropagation();
     glState.set({

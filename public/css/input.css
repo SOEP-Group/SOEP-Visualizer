@@ -23,15 +23,23 @@
     @apply flex flex-col;
   }
 
-  .input-form-styling{
+  .input-form-styling {
     @apply flex flex-col items-start w-full mt-4 space-y-2;
   }
 
-  .input-styling{
+  .input-styling {
     @apply bg-gray-500 text-white border border-gray-700 rounded space-y-4 p-2 text-lg w-full box-border focus:border-gray-400 focus:outline-none;
   }
 
-  .location-button-styling{
+  .location-button-styling {
     @apply bg-gray-900 text-white font-bold py-1 px-3 rounded mt-1 hover:bg-gray-700 w-full;
+  }
+
+  .filter-button-styling {
+    @apply bg-black border border-gray-700 rounded-lg md:px-4 px-2 py-2 hover:text-gray-500 focus:outline-none transition duration-200 ease-in-out;
+  }
+
+  .filter-button-styling.active {
+    @apply border-teal-300;
   }
 }
