@@ -20,15 +20,14 @@ export * from "./events.js";
 export * from "./popup.js";
 export * from "./toggle_view.js";
 
-
 const hoverTooltip = document.getElementById("hover-tooltip");
 
 function hideTooltip() {
   hoverTooltip.classList.add("hidden");
 }
 
-subscribe("glStateChanged", (changedStates) => {
-  if (changedStates["clickedSatellite"]) {
+subscribe("glStateChanged", (prevState) => {
+  if ("clickedSatellite" in prevState) {
     hideTooltip();
   }
 });
@@ -91,8 +90,8 @@ const initialUIState = { currentGraphics: undefined };
 
 export const uiState = new State("uiStateChanged", initialUIState);
 
-// function onGlStateChanged(changedStates) {
-//   if (changedStates["clickedSatellite"]) {
+// function onGlStateChanged(prevState) {
+//   if ("clickedSatellite" in prevState) {
 //     const clicked_satellite = glState.get("clickedSatellite");
 //     if (clicked_satellite === undefined || clicked_satellite === null) {
 //       satellite_default.classList.remove("hidden");

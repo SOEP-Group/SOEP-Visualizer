@@ -56,14 +56,14 @@ function initStates(settings) {
   }
 }
 
-function onGlStateChanged(changedStates) {
-  if (changedStates["currentGraphics"]) {
+function onGlStateChanged(prevState) {
+  if ("currentGraphics" in prevState) {
     uiState.set({ currentGraphics: glState.get("currentGraphics") });
   }
 }
 
-function onUiStateChanged(changedStates) {
-  if (changedStates["currentGraphics"]) {
+function onUiStateChanged(prevState) {
+  if ("currentGraphics" in prevState) {
     updateSettings();
   }
 }

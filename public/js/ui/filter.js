@@ -1,4 +1,5 @@
 import { satellites } from "../gl/scene.js";
+import { globalState } from "../globalState.js";
 
 const DEFAULT_SLIDER_RANGES = {
   minSpeed: 0,
@@ -303,19 +304,28 @@ export function resetFiltersToDefault() {
   if (ownerSelect) ownerSelect.value = "";
 }
 
-export function getUnmatchedSatellites(selectedFilters) {
+export function getMatchedSatellites(selectedFilters, ignore_list) {
   if (!satellites || typeof satellites.instanceCount === "undefined") {
     console.warn("Satellites are not initialized.");
     return [];
   }
-
-  const unmatchedSatellites = [];
+  const matchedSatellites = [];
+  const ignore_list_set = new Set(ignore_list);
 
   for (
     let instanceId = 0;
     instanceId < satellites.instanceCount;
     instanceId++
   ) {
+    if (ignore_list_set.has(instanceId)) {
+      continue;
+    }
+
+    if (!selectedFilters || Object.keys(selectedFilters).length <= 0) {
+      matchedSatellites.push(instanceId);
+      continue;
+    }
+
     const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
     const speedVector = satellites.getSpeed(instanceId);
     const speed = Math.sqrt(
@@ -327,7 +337,6 @@ export function getUnmatchedSatellites(selectedFilters) {
     const launchDate = satellites.getLaunchDate(instanceId);
     const owner = satellites.getOwner(instanceId);
     const launchSite = satellites.getLaunchSite(instanceId);
-
     const filters = selectedFilters;
     const speedRange = filters["Speed (km/s)"].map(Number);
     const latRange = filters["Latitude (°)"].map(Number);
@@ -339,7 +348,6 @@ export function getUnmatchedSatellites(selectedFilters) {
     const launchDateStart = new Date(filters["Launch Date"].start);
     const launchDateEnd = new Date(filters["Launch Date"].end);
     const satelliteLaunchDate = new Date(launchDate);
-
     const isWithinFilters =
       speed >= speedRange[0] &&
       speed <= speedRange[1] &&
@@ -358,11 +366,11 @@ export function getUnmatchedSatellites(selectedFilters) {
       (filters["Owner"] === "Any" || owner === filters["Owner"]) &&
       (filters["Launch Site"] === "Any" ||
         launchSite === filters["Launch Site"]);
+    console.timeEnd("Filter Checks");
 
-    if (!isWithinFilters) {
-      unmatchedSatellites.push(instanceId);
+    if (isWithinFilters) {
+      matchedSatellites.push(instanceId);
     }
   }
-
-  return unmatchedSatellites;
+  return matchedSatellites;
 }

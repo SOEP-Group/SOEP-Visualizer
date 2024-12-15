@@ -1,12 +1,11 @@
 import * as THREE from "three";
 import { Sun } from "./sun.js";
 import { Earth } from "./earth.js";
-import { Satellites } from "./satellite_2d.js"; // remove the _2d here to use the 3D versions
+import { Satellites } from "./satellite_2d.js"; // remove the _2d here to use the 3D versions. NOTE 3D version is suuuuuuuuper deprecated
 import { glState, cubeTextureLoader } from "./index.js";
 import { fetchSatellites } from "../api/satellites.js";
 import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
-import { EARTH_RADIUS } from "../utils/utils.js";
 
 export let scene = new THREE.Scene();
 
@@ -14,7 +13,6 @@ export let sun;
 
 export let satellites;
 
-// Note Ivan: We should maybe rotate the satellites as well with the earth, but im not sure
 export let earth;
 
 function loadBackground() {
@@ -67,10 +65,11 @@ export function addSatellites(satellites_obj) {
 
   satellites = new Satellites(satellites_obj);
   earthGroup.add(satellites.getGroup());
+  globalState.set({ visible_satellites: satellites.instaceIdsToArray() });
 }
 
-function globalStateChanged(changedStates) {
-  if (changedStates["satellites"]) {
+function globalStateChanged(prevState) {
+  if ("satellites" in prevState) {
     addSatellites(globalState.get("satellites"));
   }
 }
@@ -83,7 +82,9 @@ export function initScene() {
   scene.add(light);
 
   fetchSatellites().then((res) => {
-    globalState.set({ satellites: res });
+    globalState.set({
+      satellites: res,
+    });
   });
 }
 

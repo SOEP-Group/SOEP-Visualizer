@@ -12,7 +12,7 @@ import {
   ToneMappingMode,
   BlendFunction,
 } from "postprocessing";
-import { scene, reloadScene, sun, satellites } from "./scene.js";
+import { scene, reloadScene, sun, satellites, earth } from "./scene.js";
 import { glState } from "./index.js";
 import { publish, subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
@@ -217,6 +217,10 @@ function animate() {
         loadingScreen.classList.add("hidden");
       }, 500);
     }, 1000);
+    glState.set({
+      focusedTarget: { target: earth.getGroup().id },
+    });
+    loadedImages = false;
   }
 }
 
@@ -453,10 +457,10 @@ function updateRenderer() {
   reloadScene();
 }
 
-function onStateChanged(changedStates) {
-  if (changedStates["currentGraphics"]) {
+function onStateChanged(prevState) {
+  if ("currentGraphics" in prevState) {
     updateRenderer();
-  } else if (changedStates["focusedTarget"]) {
+  } else if ("focusedTarget" in prevState) {
     updateCameraFocus(glState.get("focusedTarget"));
   }
 }

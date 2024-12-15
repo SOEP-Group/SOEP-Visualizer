@@ -5,8 +5,8 @@ export function initDebug() {
   subscribe("glStateChanged", updateDebugMenu);
 }
 
-function updateDebugMenu(changedStates) {
-  if (!changedStates["rendererInfo"]) {
+function updateDebugMenu(prevState) {
+  if (!("rendererInfo" in prevState)) {
     return;
   }
   const rendererInfo = glState.get("rendererInfo");
