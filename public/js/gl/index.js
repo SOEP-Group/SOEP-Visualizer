@@ -15,7 +15,7 @@ import {
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites, addSatellites } from "./scene.js";
-import { getMatchedSatellites } from "../ui/filter.js";
+import { getMatchedSatellites, isFiltered } from "../ui/filter.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -191,12 +191,18 @@ function onStateChanged(prevState) {
         focusedTarget: { target: earth.getGroup().id },
       });
       satellites.setFocused(-1);
+
       const visible_satellites = globalState.get("visible_satellites");
-      if (!visible_satellites.includes(prevState["clickedSatellite"])) {
-        const updated_satellites = visible_satellites.filter(
-          (satellite) => satellite !== prevState["clickedSatellite"]
-        );
-        globalState.set({ visible_satellites: updated_satellites });
+      const location_mask = globalState.get("location_mask");
+      const is_filtered = isFiltered(
+        globalState.get("filter_parameters"),
+        prevState["clickedSatellite"]
+      );
+      if (
+        is_filtered ||
+        location_mask.includes(prevState["clickedSatellite"])
+      ) {
+        publish("onGlobalStateChanged", { visible_satellites });
       }
     } else {
       glState.set({

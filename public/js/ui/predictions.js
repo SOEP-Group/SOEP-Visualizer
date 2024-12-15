@@ -50,6 +50,8 @@ function onGlobalStateChanged(prevState) {
         break;
       }
     }
+  } else if ("togglePassing" in prevState) {
+    toggleIconState();
   }
 }
 

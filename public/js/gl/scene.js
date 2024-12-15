@@ -65,7 +65,7 @@ export function addSatellites(satellites_obj) {
 
   satellites = new Satellites(satellites_obj);
   earthGroup.add(satellites.getGroup());
-  globalState.set({ visible_satellites: satellites.instaceIdsToArray() });
+  globalState.set({ visible_satellites: satellites.instanceIdsToArray() });
 }
 
 function globalStateChanged(prevState) {

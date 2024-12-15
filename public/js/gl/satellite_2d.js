@@ -554,7 +554,7 @@ export class Satellites {
     return distance <= radius;
   }
 
-  instaceIdsToArray() {
-    return Object.keys(this.instanceIdToSatelliteIdMap);
+  instanceIdsToArray() {
+    return Object.keys(this.instanceIdToSatelliteIdMap).map(Number);
   }
 }
