@@ -15,6 +15,8 @@ const DEFAULT_SLIDER_RANGES = {
   maxRevolution: 40000,
 };
 
+const filtersButton = document.getElementById('filters-button');
+
 export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
   filtersDropdown.classList.toggle("invisible", !isOpen);
@@ -23,6 +25,7 @@ export function toggleDropdown(isOpen) {
   filtersDropdown.classList.toggle("pointer-events-none", !isOpen);
   filtersDropdown.classList.toggle("opacity-100", isOpen);
   filtersDropdown.classList.toggle("md:translate-y-0", isOpen);
+  filtersButton.classList.toggle("active", isOpen);
 
   if (!isOpen) {
     setTimeout(() => filtersDropdown.classList.add("invisible"), 300);
