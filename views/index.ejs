@@ -697,7 +697,8 @@
         class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50">
       </div>
       <!-- Toggle View Buttons -->
-      <div class="flex justify-end md:justify-center items-center mt-2">
+       <div class="flex flex-col items-end md:items-center justify-center mt-2 mr-2 md:mr-0">
+      <div class="flex">
         <!-- Satellite Button -->
         <button id="satellite-view-button" title="Satellite view"
           class="bg-black px-2 py-1 border border-teal-300 pointer-events-none cursor-not-allowed">
@@ -709,6 +710,10 @@
           <img src="../images/icons/earth.svg" alt="Earth" class="w-6 h-6" />
         </button>
       </div>
+      <div class="flex text-white">
+        Sat.count: <span id="sat-count" class="ml-1">0</span>
+      </div>
+    </div>
 
       <div id="popup-container"
         class="z-10 pb-4 rounded-lg translate-x-full absolute top-5 right-[-100%] transform transition-all duration-300 ease-in-out hidden md:flex md:flex-col w-1/4 h-[30%] text-base">

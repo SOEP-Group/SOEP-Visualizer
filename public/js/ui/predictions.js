@@ -6,8 +6,8 @@ import { glState } from "../gl/index.js";
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
 
-function onGlobalStateChanged(changedStates) {
-  if (changedStates["pickingLocation"]) {
+function onGlobalStateChanged(prevState) {
+  if ("pickingLocation" in prevState) {
     const picking = globalState.get("pickingLocation");
 
     for (let i = 0; i < selectLocationBtn.length; i++) {
@@ -18,7 +18,7 @@ function onGlobalStateChanged(changedStates) {
           "Click on earth (Press here to Cancel)";
       }
     }
-  } else if (changedStates["passing_location"]) {
+  } else if ("passing_location" in prevState) {
     const passing_location = globalState.get("passing_location");
     const toggleButton = document.getElementById("toggle-section");
 
@@ -37,7 +37,7 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
-  } else if (changedStates["pass_prediction_location"]) {
+  } else if ("pass_prediction_location" in prevState) {
     const pass_prediction_location = globalState.get(
       "pass_prediction_location"
     );
@@ -50,62 +50,13 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
-  } else if (changedStates["togglePassing"]) {
+  } else if ("togglePassing" in prevState) {
     toggleIconState();
-    const isDisplayingPassing = globalState.get("togglePassing");
-    const dropdown = document.getElementById("passing-satellites-dropdown");
-    if (isDisplayingPassing) {
-      onNewVisibleSatellites();
-      dropdown.classList.remove("hidden");
-    } else {
-      dropdown.classList.add("hidden");
-    }
   }
-}
-
-function populateDropdown(satellite_ids, dropdown) {
-  dropdown.innerHTML = "";
-
-  if (!satellite_ids || satellite_ids.length === 0) {
-    const noPassingSatellites = document.createElement("a");
-    noPassingSatellites.textContent = "No passing satellites";
-    noPassingSatellites.classList.add("block", "px-4", "py-2", "text-gray-500");
-    dropdown.appendChild(noPassingSatellites);
-    return;
-  }
-  const satellite_data = globalState.get("satellites");
-  satellite_ids.forEach((satellite) => {
-    const option = document.createElement("a");
-    option.textContent = satellite_data[satellite].name;
-    option.dataset.satelliteId = satellites.getInstanceIdById(satellite);
-    option.classList.add(
-      "block",
-      "px-4",
-      "py-2",
-      "hover:bg-gray-700",
-      "cursor-pointer"
-    );
-    option.addEventListener("click", () => focusSatellite(satellite));
-    dropdown.appendChild(option);
-  });
-}
-
-function focusSatellite(id) {
-  let clicked_satellite = id;
-  glState.set({
-    clickedSatellite: clicked_satellite,
-  });
-}
-
-function onNewVisibleSatellites() {
-  const dropdown = document.getElementById("passing-satellites-dropdown");
-  const passingSatellites = satellites ? satellites.getVisible() : [];
-  populateDropdown(passingSatellites, dropdown);
 }
 
 export function initPredictions() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
-  subscribe("newVisibleSatellites", onNewVisibleSatellites);
 
   const toggleButton = document.getElementById("toggle-section");
   const passing_location = globalState.get("passing_location");

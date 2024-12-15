@@ -10,7 +10,6 @@ import {
   getFilterData,
   getFilterValues,
   resetFiltersToDefault,
-  getUnmatchedSatellites,
 } from "./filter.js";
 
 // burger menu
@@ -23,11 +22,12 @@ const filtersDropdown = document.getElementById("filters-dropdown");
 const closeFiltersButton = document.getElementById("close-filters-button");
 const clearFiltersButton = document.getElementById("clear-filters-button");
 const applyFiltersButton = document.getElementById("apply-filters-button");
+const satelliteDropdown = document.getElementById("satellite-dropdown");
 
 let firstMenuOpen = true;
 
-function onGlobalStateChanged(changedStates) {
-  if (changedStates["pickingLocation"]) {
+function onGlobalStateChanged(prevState) {
+  if ("pickingLocation" in prevState) {
     const picking = globalState.get("pickingLocation");
     if (isMobileScreen()) {
       if (!picking) {
@@ -37,91 +37,40 @@ function onGlobalStateChanged(changedStates) {
       }
     }
   }
+
+  if (
+    "visible_satellites" in prevState &&
+    !satelliteDropdown.classList.contains("hidden")
+  ) {
+    const query = searchInput.value.trim();
+    handleFilter(query);
+  }
+}
+
+function getAllSatellites() {
+  if (!satellites || typeof satellites.instanceCount === "undefined") {
+    console.warn("satellites are not initialized");
+    return [];
+  }
+
+  const satelliteList = [];
+  const visible_satellites = globalState.get("visible_satellites");
+  for (let instanceId of visible_satellites) {
+    const id = satellites.getIdByInstanceId(instanceId);
+    const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
+    satelliteList.push({ id, name });
+  }
+  return satelliteList;
 }
 
 export function initHeader() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
-  const satelliteDropdown = document.getElementById("satellite-dropdown");
   const searchInput = document.getElementById("satellite-search");
-  function getAllSatellites() {
-    if (!satellites || typeof satellites.instanceCount === "undefined") {
-      console.warn("satellites are not initialized");
-      return [];
-    }
-
-    const satelliteList = [];
-    for (
-      let instanceId = 0;
-      instanceId < satellites.instanceCount;
-      instanceId++
-    ) {
-      const id = satellites.getIdByInstanceId(instanceId);
-      const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
-      satelliteList.push({ id, name });
-    }
-    return satelliteList;
-  }
-
-  function populateDropdown(filteredSatellites) {
-    satelliteDropdown.innerHTML = "";
-
-    if (!filteredSatellites || filteredSatellites.length === 0) {
-      const noResult = document.createElement("a");
-      noResult.textContent = "No satellites found";
-      noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
-      satelliteDropdown.appendChild(noResult);
-      satelliteDropdown.classList.remove("hidden");
-      return;
-    }
-
-    const satellitesToShow = filteredSatellites.slice(0, 20);
-    satellitesToShow.forEach((satellite) => {
-      const option = document.createElement("a");
-      option.textContent = satellite.name;
-      option.dataset.satelliteId = satellite.id;
-      option.classList.add(
-        "block",
-        "px-4",
-        "py-2",
-        "hover:bg-gray-700",
-        "cursor-pointer"
-      );
-      option.addEventListener("click", (event) => {
-        event.stopPropagation();
-        focusSatellite(satellite.id);
-      });
-      satelliteDropdown.appendChild(option);
-    });
-
-    satelliteDropdown.classList.remove("hidden");
-  }
-
-  function filterSatellites(query) {
-    const allSatellites = getAllSatellites();
-    return allSatellites.filter((satellite) =>
-      satellite.name.toLowerCase().includes(query.toLowerCase())
-    );
-  }
-
-  function focusSatellite(id) {
-    globalState.set({ togglePassing: false });
-    let clicked_satellite = satellites.getInstanceIdById(id);
-    glState.set({
-      clickedSatellite: clicked_satellite,
-    });
-
-    const searchInput = document.getElementById("satellite-search");
-    if (searchInput) {
-      searchInput.value = "";
-    }
-    satelliteDropdown.classList.add("hidden");
-  }
 
   searchInput.addEventListener("input", (event) => {
     event.stopPropagation();
     const query = searchInput.value.trim();
-    const filtered = filterSatellites(query);
-    populateDropdown(filtered);
+    handleFilter(query);
   });
 
   searchInput.addEventListener("focus", (event) => {
@@ -161,6 +110,66 @@ export function initHeader() {
 
   updatePlaceholder();
   window.addEventListener("resize", updatePlaceholder);
+}
+
+function focusSatellite(id) {
+  globalState.set({ togglePassing: false });
+  let clicked_satellite = satellites.getInstanceIdById(id);
+  glState.set({
+    clickedSatellite: clicked_satellite,
+  });
+
+  const searchInput = document.getElementById("satellite-search");
+  if (searchInput) {
+    searchInput.value = "";
+  }
+  satelliteDropdown.classList.add("hidden");
+}
+
+function populateDropdown(filteredSatellites) {
+  satelliteDropdown.innerHTML = "";
+
+  if (!filteredSatellites || filteredSatellites.length === 0) {
+    const noResult = document.createElement("a");
+    noResult.textContent = "No satellites found";
+    noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
+    satelliteDropdown.appendChild(noResult);
+    satelliteDropdown.classList.remove("hidden");
+    return;
+  }
+
+  // const satellitesToShow = filteredSatellites.slice(0, 20);
+  filteredSatellites.forEach((satellite) => {
+    const option = document.createElement("a");
+    option.textContent = satellite.name;
+    option.dataset.satelliteId = satellite.id;
+    option.classList.add(
+      "block",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-700",
+      "cursor-pointer"
+    );
+    option.addEventListener("click", (event) => {
+      event.stopPropagation();
+      focusSatellite(satellite.id);
+    });
+    satelliteDropdown.appendChild(option);
+  });
+
+  satelliteDropdown.classList.remove("hidden");
+}
+
+function filterSatellites(query) {
+  const allSatellites = getAllSatellites();
+  return allSatellites.filter((satellite) =>
+    satellite.name.toLowerCase().includes(query.toLowerCase())
+  );
+}
+
+function handleFilter(query) {
+  const filtered = filterSatellites(query);
+  populateDropdown(filtered);
 }
 
 function updatePlaceholder() {
@@ -217,20 +226,11 @@ clearFiltersButton.addEventListener("click", (event) => {
 applyFiltersButton.addEventListener("click", (event) => {
   event.stopPropagation();
   const selectedFilters = getFilterValues();
-  const unmatchedSatellites = getUnmatchedSatellites(selectedFilters);
-  const allSatelliteIds = Array.from(
-    { length: satellites.instanceCount },
-    (_, i) => i
-  );
-  const matchedSatellites = allSatelliteIds.filter(
-    (id) => !unmatchedSatellites.includes(id)
-  );
-  satellites.mask(unmatchedSatellites);
-  satellites.unmask(matchedSatellites);
+  globalState.set({ filter_parameters: selectedFilters });
 });
 
 clearFiltersButton.addEventListener("click", (event) => {
   event.stopPropagation();
   resetFiltersToDefault();
-  satellites.show();
+  globalState.set({ filter_parameters: {} });
 });

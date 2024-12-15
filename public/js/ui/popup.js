@@ -19,8 +19,8 @@ const mobileCloseButton = document.getElementById("mobile-close-popup");
 const mobileSkeleton = document.getElementById("mobile-popup-skeleton");
 const mobileArrowIcon = document.getElementById("mobile-arrow-icon");
 
-function onGlStateChanged(changedStates) {
-  if (changedStates["clickedSatellite"]) {
+function onGlStateChanged(prevState) {
+  if ("clickedSatellite" in prevState) {
     const clicked_satellite = glState.get("clickedSatellite");
     if (clicked_satellite !== undefined && clicked_satellite !== null) {
       openPopup();

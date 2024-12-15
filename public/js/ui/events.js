@@ -22,8 +22,8 @@ const bodies = [
   "pluto",
 ];
 
-function onGlobalStateChanged(changedStates) {
-  if (changedStates["pickingLocation"]) {
+function onGlobalStateChanged(prevState) {
+  if ("pickingLocation" in prevState) {
     const picking = globalState.get("pickingLocation");
 
     for (let i = 0; i < selectLocationBtn.length; i++) {
@@ -34,7 +34,7 @@ function onGlobalStateChanged(changedStates) {
           "Click on earth (Press here to Cancel)";
       }
     }
-  } else if (changedStates["events_location"]) {
+  } else if ("events_location" in prevState) {
     const events_location = globalState.get("events_location");
     if (events_location !== null) {
       const parent_element = document.getElementById("events-content");
