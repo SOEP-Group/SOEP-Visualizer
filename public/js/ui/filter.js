@@ -366,7 +366,6 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       (filters["Owner"] === "Any" || owner === filters["Owner"]) &&
       (filters["Launch Site"] === "Any" ||
         launchSite === filters["Launch Site"]);
-    console.timeEnd("Filter Checks");
 
     if (isWithinFilters) {
       matchedSatellites.push(instanceId);
