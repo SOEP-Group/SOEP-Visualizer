@@ -90,6 +90,18 @@ function getContent(satellite) {
     mobileContent.classList.remove("hidden");
     mobileSkeleton.classList.add("hidden");
     mobileContent.innerHTML = res;
+
+    const satelliteImage = document.getElementById("satellite-image");
+    if (satelliteImage) {
+      const satelliteImagePath = `images/satellite/${satellite}.jpg`;
+      satelliteImage.src = satelliteImagePath;
+      satelliteImage.alt = `Image of Satellite ${satellite}`;
+
+      satelliteImage.onerror = () => {
+        satelliteImage.src = "images/logo/logo.svg";
+        satelliteImage.alt = "Default Satellite Image";
+      };
+    }
   });
 }
 
