@@ -73,7 +73,6 @@
         class="flex items-center bg-black border border-gray-700 rounded-lg md:px-4 px-2 py-2 hover:bg-gray-800 focus:outline-none transition duration-200 ease-in-out"
         title="Filters">
         <svg class="w-6 h-6 md:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z"></path>
         </svg>
@@ -336,337 +335,361 @@
 
       </div>
 
-       <!-- Content -->
-        <!-- Events -->
-        <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
-          <div class="tab-panel space-y-6">
-            <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-semibold">Events</h2>
-              <button id="toggle-filters"
-                class="flex items-center bg-gray-900 text-white py-2 px-3 rounded hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-500">
-                Filters
-                <!-- Down Arrow Icon -->
-                <div id="arrow-filter" class="mr-2">
-                  <svg class="ml-2 w-5 h-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                    fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m5 9 7 7 7-7" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-
-            <div id="filter-section" class="mt-4 space-y-4 hidden">
-              <!-- Location Selection -->
-              <div id="events-content" class="flex-col items-start w-full mt-4 space-y-2">
-                <input type="text" placeholder="Location" class="location-field-events input-styling">
-                <button data-ripple="true" class="get-location-btn-events location-button-styling">Use Current
-                  Location</button>
-                <button data-ripple="true" class="select-location-button-events location-button-styling">Select
-                  Location</button>
+      <!-- Content -->
+      <!-- Events -->
+      <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
+        <div class="tab-panel space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold">Events</h2>
+            <button id="toggle-filters"
+              class="flex items-center bg-gray-900 text-white py-2 px-3 rounded hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-500">
+              Filters
+              <!-- Down Arrow Icon -->
+              <div id="arrow-filter" class="mr-2">
+                <svg class="ml-2 w-5 h-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m5 9 7 7 7-7" />
+                </svg>
               </div>
-
-              <!-- Start Date & Time -->
-              <div class="space-y-4 mb-4">
-                <div>
-                  <label for="start-date" class="font-medium text-white">Start Date:</label>
-                  <div class="grid grid-cols-2 gap-2 mt-1">
-                    <input id="start-date" type="date"
-                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                    <input id="start-time" type="time"
-                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                  </div>
-                </div>
-
-                <!-- End Date & Time -->
-                <div>
-                  <label for="end-date" class="font-medium text-white">End Date:</label>
-                  <div class="grid grid-cols-2 gap-2 mt-1">
-                    <input id="end-date" type="date"
-                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                    <input id="end-time" type="time"
-                      class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="text-right">
-                <button id="filter-events" class="btn-blue w-full">
-                  Filter
-                </button>
-              </div>
-            </div>
-
-            <!-- Sun Events -->
-            <div class="expandable-section">
-              <h3 id="sun-events-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-sun" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Sun</span>
-              </h3>
-              <div id="sun-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-              </div>
-            </div>
-
-            <!-- Moon Events -->
-            <div class="expandable-section">
-              <h3 id="moon-events-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-moon" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Moon</span>
-              </h3>
-              <div id="moon-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-              </div>
-            </div>
-
-            <!-- Planet Events -->
-            <div class="expandable-section">
-              <h3 id="planet-events-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-planet" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Planets</span>
-              </h3>
-              <div id="planet-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-              </div>
-            </div>
-          </div>
-
-          <!-- Predictions -->
-          <div id="prediction-tab" class="tab-panel space-y-6">
-            <div class="flex items-center justify-between">
-              <h2 class="text-2xl font-semibold">Predictions</h2>
-              <button class="flex items-center py-2 px-3 cursor-default">
-                <span class="text-transparent">:)</span>
-              </button>
-            </div>
-            <!-- Collision Prediction -->
-            <div class="expandable-section">
-              <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-collision" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Collision Prediction</span>
-              </h3>
-              <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
-                  <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Passing Satellites -->
-            <div class="expandable-section">
-              <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-passing" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Passing Satellites</span>
-              </h3>
-              <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <div id="toggle-section" class="flex items-center justify-between w-[250px]">
-                    <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
-                      id="toggle-svg">
-                      <path id="toggle-path" fill="#ffffff"
-                        d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
-                    </svg>
-                  </div>
-                  <input type="text" placeholder="Location" class="location-field input-styling">
-                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
-                    Location</button>
-                  <button data-ripple="true" class="select-location-button location-button-styling">Select
-                    Location</button>
-                </div>
-                <div id="passing-satellites-dropdown"
-                  class="relative bg-black text-white w-[100%] mx-auto border border-gray-700 mt-2 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
-                </div>
-              </div>
-            </div>
-
-            <!-- Pass Prediction -->
-            <div class="expandable-section">
-              <h3 id="pass-prediction-header" class="expandable-header flex items-center cursor-pointer">
-                <!-- Triangle Icon -->
-                <div id="arrow-pass" class="mr-2">
-                  <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m9 5 7 7-7 7" />
-                  </svg>
-                </div>
-                <!-- Section Title -->
-                <span class="cursor-pointer">Pass Prediction</span>
-              </h3>
-              <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
-                <div class="input-form-styling">
-                  <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
-                  <input type="text" placeholder="Location" class="location-field input-styling">
-                  <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
-                    Location</button>
-                  <button data-ripple="true" class="select-location-button location-button-styling">Select
-                    Location</button>
-                  <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Graphs -->
-          <div class="tab-panel">
-            <h2 class="text-2xl font-semibold">Graphs</h2>
-            <div id="graphs-container" class="text-white"></div>
-          </div>
-
-          <!-- How to -->
-          <div class="tab-panel">
-            <h2 class="text-2xl font-semibold">How to Use</h2>
-            <!-- Description Text -->
-            <p class="text-sm md:text-base text-gray-400">
-              This project is designed to help you track and explore satellites around Earth. Click on a satellite to
-              see more details about it, including real-time speed, location, and other analytical data.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Toggle View -->
-            <h3 class="text-md md:text-lg text-white">Toggle Between Earth and Satellite Centric View
-            </h3>
-            <div class="flex flex-col space-y-2 mt-4">
-              <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
-                Click the <img src="../images/icons/toggle_button.png" class="w-12 h-5 inline-block" /> buttons or use
-                the 'Shift + V' keyboard shortcut to switch views. Ensure that a satellite is selected.
-              </p>
-            </div>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Events -->
-            <h3 class="text-md md:text-lg text-white">What are the events?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              The events keep track of relevant celestial phenomena involving the Sun and the Moon, based on your
-              location. These include solar and lunar events such as eclipses, moon phases, and solar conjunctions.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Predictions -->
-            <h3 class="text-md md:text-lg text-white">What predictions do we have and how do they work?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              We use satellite data to predict satellite orbits, the timing of satellite re-entries, and which
-              satellites are visible from specific locations. These predictions help us track the movement of
-              satellites, determine when they will re-enter Earth's atmosphere, and identify which satellites can be
-              observed from a given location. Additionally, we provide information on when a selected satellite will be
-              visible from your location, based on real-time data.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Graphs -->
-            <h3 class="text-md md:text-lg text-white">What do the graphs show?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              The graphs display detailed information about the selected satellite, including its
-              speed, height above Earth, and other relevant data. They provide a visual representation of the
-              satellite's position over time, both in the past 24 hours and into the future.
-            </p>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Inclination Explanation -->
-            <h3 class="text-md md:text-lg text-white">What is Inclination?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">
-              Inclination refers to the angle between a satellite's orbital plane and Earth's equatorial plane. It is
-              measured in degrees and determines the satellite's orbital behavior and coverage:
-            </p>
-            <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
-              <li><strong>0° Inclination:</strong> The satellite orbits directly above the equator (equatorial orbit).
-              </li>
-              <li><strong>90° Inclination:</strong> The satellite passes over the poles (polar orbit), covering the
-                entire Earth.</li>
-              <li><strong>Between 0° and 90°:</strong> Inclined orbits, ideal for regional coverage.</li>
-              <li><strong>Greater than 90°:</strong> Retrograde orbits, moving opposite to Earth's rotation.</li>
-            </ul>
-            <hr class="my-6 border-teal-300" />
-
-            <!-- Blog -->
-            <h3 class="text-md md:text-lg text-gray-200">Curious how the project is coming along?</h3>
-            <p class="mt-2 text-sm md:text-base text-gray-400">For the latest updates on the project, check out our blog
-              where we share weekly progress and updates about our work.</p>
-            <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
-              rel="noopener noreferrer">
-              Check out our blog
-            </a>
-          </div>
-
-          <!-- Settings -->
-          <div class="tab-panel">
-            <h2 class="text-2xl font-semibold">Settings</h2>
-
-            <!-- Graphics present -->
-            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
-              <select id="graphics-settings"
-                class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
-            </div>
-
-            <!-- Timezone -->
-            <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
-              <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
-              <select id="time-zone-settings"
-                class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
-            </div>
-
-            <!-- Save settings button -->
-            <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
-              Save settings
             </button>
           </div>
+
+          <div id="filter-section" class="mt-4 space-y-4 hidden">
+            <!-- Location Selection -->
+            <div id="events-content" class="flex-col items-start w-full mt-4 space-y-2">
+              <input type="text" placeholder="Location" class="location-field-events input-styling">
+              <button data-ripple="true" class="get-location-btn-events location-button-styling">Use Current
+                Location</button>
+              <button data-ripple="true" class="select-location-button-events location-button-styling">Select
+                Location</button>
+            </div>
+
+            <!-- Start Date & Time -->
+            <div class="space-y-4 mb-4">
+              <div>
+                <label for="start-date" class="font-medium text-white">Start Date:</label>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <input id="start-date" type="date"
+                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  <input id="start-time" type="time"
+                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                </div>
+              </div>
+
+              <!-- End Date & Time -->
+              <div>
+                <label for="end-date" class="font-medium text-white">End Date:</label>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <input id="end-date" type="date"
+                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                  <input id="end-time" type="time"
+                    class="bg-gray-500 text-white border border-gray-700 rounded p-2 w-full text-sm focus:border-gray-400 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-right">
+              <button id="filter-events" class="btn-blue w-full">
+                Filter
+              </button>
+            </div>
+          </div>
+
+          <!-- Sun Events -->
+          <div class="expandable-section">
+            <h3 id="sun-events-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-sun" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Sun</span>
+            </h3>
+            <div id="sun-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+            </div>
+          </div>
+
+          <!-- Moon Events -->
+          <div class="expandable-section">
+            <h3 id="moon-events-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-moon" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Moon</span>
+            </h3>
+            <div id="moon-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+            </div>
+          </div>
+
+          <!-- Planet Events -->
+          <div class="expandable-section">
+            <h3 id="planet-events-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-planet" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Planets</span>
+            </h3>
+            <div id="planet-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+            </div>
+          </div>
+        </div>
+
+        <!-- Predictions -->
+        <div id="prediction-tab" class="tab-panel space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold">Predictions</h2>
+            <button class="flex items-center py-2 px-3 cursor-default">
+              <span class="text-transparent">:)</span>
+            </button>
+          </div>
+          <!-- Collision Prediction -->
+          <div class="expandable-section">
+            <h3 id="collision-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-collision" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Collision Prediction</span>
+            </h3>
+            <div id="collision-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <input type="text" id="satellite-collision" placeholder="Satellite" class="input-styling">
+                <button data-ripple="true" id="calculate-collision-button" class="btn-blue w-full">Calculate</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passing Satellites -->
+          <div class="expandable-section">
+            <h3 id="passing-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-passing" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Passing Satellites</span>
+            </h3>
+            <div id="passing-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <div id="toggle-section" class="flex items-center justify-between w-[250px]">
+                  <span id="toggle-text" class="mr-2 text-left flex-1">Displaying All Satellites</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-8 h-8 cursor-pointer ml-auto"
+                    id="toggle-svg">
+                    <path id="toggle-path" fill="#ffffff"
+                      d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
+                  </svg>
+                </div>
+                <input type="text" placeholder="Location" class="location-field input-styling">
+                <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button location-button-styling">Select
+                  Location</button>
+              </div>
+              <div id="passing-satellites-dropdown"
+                class="relative bg-black text-white w-[100%] mx-auto border border-gray-700 mt-2 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto hidden">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pass Prediction -->
+          <div class="expandable-section">
+            <h3 id="pass-prediction-header" class="expandable-header flex items-center cursor-pointer">
+              <!-- Triangle Icon -->
+              <div id="arrow-pass" class="mr-2">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white transition-transform duration-200 ease-in-out"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                  viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m9 5 7 7-7 7" />
+                </svg>
+              </div>
+              <!-- Section Title -->
+              <span class="cursor-pointer">Pass Prediction</span>
+            </h3>
+            <div id="pass-content" class="expandable-content hidden transition-all duration-300 ease-in-out">
+              <div class="input-form-styling">
+                <input type="text" id="satellite-pass" placeholder="Satellite" class="input-styling">
+                <input type="text" placeholder="Location" class="location-field input-styling">
+                <button data-ripple="true" class="get-location-btn location-button-styling">Use Current
+                  Location</button>
+                <button data-ripple="true" class="select-location-button location-button-styling">Select
+                  Location</button>
+                <button data-ripple="true" id="calculate-pass-button" class="btn-blue w-full">Calculate</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Graphs -->
+        <div class="tab-panel">
+          <h2 class="text-2xl font-semibold">Graphs</h2>
+          <div id="graphs-container" class="text-white"></div>
+        </div>
+
+        <!-- How to -->
+        <div class="tab-panel">
+          <h2 class="text-2xl font-semibold">How to Use & Information</h2>
+          <!-- Description Text -->
+          <p class="text-sm md:text-base text-gray-400">
+            SOEP helps you explore and track Earth's orbiting satellites. Click on any satellite to access real-time details
+            such as speed, location, and analytical data.
+          </p>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Toggle View -->
+          <h3 class="text-md md:text-lg text-white">Switch Between Earth and Satellite Centric View
+          </h3>
+          <div class="flex flex-col space-y-2 mt-4">
+            <p class="text-sm text-white bg-gray-800 p-2 rounded-md">
+              Click the <img src="../images/icons/toggle_button.png" class="w-12 h-5 inline-block" /> buttons or use
+              the 'Shift + V' keyboard shortcut to toggle views. Make sure a satellite is selected first.
+            </p>
+          </div>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Events -->
+          <h3 class="text-md md:text-lg text-white">What Are the Events?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            Events track key celestial events related to the Sun, Moon, and Planets from your selected location. These
+            include:
+          </p>
+          <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+            <li><strong>Eclipses:</strong> When the Sun, Moon, and Earth align, causing solar or lunar eclipses. These
+              can be <strong>partial</strong> or <strong>total</strong>, depending on how perfectly they align.</li>
+            <li><strong>Moon Phases:</strong> The changing appearance of the Moon as it orbits Earth.</li>
+            <li><strong>Culmination:</strong> The highest point a celestial body reaches in the sky, often the best time
+              for observation.</li>
+            <li><strong>Perigee/Apogee:</strong> The Moon's closest (Perigee) and farthest (Apogee) points from Earth in
+              its orbit, affecting its apparent size and brightness.</li>
+          </ul>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Predictions -->
+          <h3 class="text-md md:text-lg text-white">What Are Predictions?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            SOEP provides three types of satellite predictions to enhance your tracking experience:
+          </p>
+          <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+            <li><strong>Collision Prediction:</strong> Calculates the current possibility of a collision for a selected
+              satellite with other objects in orbit.</li>
+            <li><strong>Passing Satellites:</strong> View all satellites that are currently passing over a selected
+              location. You can toggle to display <strong>all satellites</strong> or only those that are
+              <strong>passing</strong> over the location.
+            </li>
+            <li><strong>Pass Prediction:</strong> Select a location and a satellite to receive information on when (or
+              if) the satellite will pass over that location.</li>
+          </ul>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Graphs -->
+          <h3 class="text-md md:text-lg text-white">What Do the Graphs Show?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            Visualize satellite data through dynamic graphs. Track speed, altitude, longitude, and latitude of the
+            selected satellite. The graphs display data from the current time and project one hour into the future.
+          </p>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Inclination Explanation -->
+          <h3 class="text-md md:text-lg text-white">What Is Inclination?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            Inclination is the angle between a satellite's orbital plane and Earth's equatorial plane. This angle
+            defines the satellite's path and coverage area:
+          </p>
+          <ul class="list-disc list-inside text-sm md:text-base text-gray-400 mt-2">
+            <li><strong>0° Inclination:</strong> The satellite follows the equator (equatorial orbit).
+            </li>
+            <li><strong>90° Inclination:</strong> The satellite passes over both poles (polar orbit) and covers the
+              entire Earth.</li>
+            <li><strong>Between 0° and 90°:</strong> Inclined orbits provide regional coverage.</li>
+            <li><strong>Greater than 90°:</strong> Retrograde orbits move opposite to Earth's rotation.</li>
+          </ul>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Revolution Time Explanation -->
+          <h3 class="text-md md:text-lg text-white">What Is Revolution Time?</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+            Revolution time refers to the time it takes for a satellite to complete one full orbit around Earth. This
+            duration depends on the satellite's altitude and velocity. Low Earth Orbit (LEO) satellites, for instance,
+            typically have shorter revolution times (around 90 minutes), while satellites in higher orbits take much
+            longer.
+          </p>
+          <hr class="my-6 border-teal-300" />
+
+          <!-- Blog -->
+          <h3 class="text-md md:text-lg text-gray-200">Follow Our Progress</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">Stay updated with the latest project developments. Visit
+            our blog for progress reports and insights.</p>
+          <a data-ripple="true" class="btn-blue" href="https://soep-group.github.io/soep-weekly-blog/" target="_blank"
+            rel="noopener noreferrer">
+            Visit Our Blog
+          </a>
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-panel">
+          <h2 class="text-2xl font-semibold">Settings</h2>
+
+          <!-- Graphics present -->
+          <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+            <h3 class="justify-begin text-sm md:text-lg">Graphics preset:</h3>
+            <select id="graphics-settings"
+              class="border p-1 md:p-2 text-sm md:text-base w-32 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+          </div>
+
+          <!-- Timezone -->
+          <div class="p-2 flex flex-row text-white justify-between items-center w-full border-b border-b-white">
+            <h3 class="justify-begin text-sm md:text-lg">Time zone:</h3>
+            <select id="time-zone-settings"
+              class="border p-1 md:p-2 text-sm md:text-base w-64 rounded bg-black border-white focus:border-teal-300 justify-end"></select>
+          </div>
+
+          <!-- Save settings button -->
+          <button type="button" id="settings-save" data-ripple="true" class="btn-blue">
+            Save settings
+          </button>
         </div>
       </div>
+    </div>
   </div>
 
   <div class="gl_viewport" id="gl_viewport" tabindex="0">
     <div class="ui absolute z-10 w-full h-full">
       <div id="viewport-gizmo-container" class="absolute top-8 left-5 w-24 h-24 bg-transparent z-20">
       </div>
-  
+
       <!-- Hover Tooltip -->
       <div id="hover-tooltip"
         class="hidden fixed bg-sky-900/75 text-teal-300 text-sm px-2 py-1 rounded border border-teal-300 pointer-events-none z-50">
@@ -702,7 +725,7 @@
           <div id="popup-skeleton" class="space-y-4 p-4 text-teal-300">
             <p class="loading-text">Loading</p>
           </div>
-          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300 max-h-[95%]"></div> 
+          <div id="popup-content" class="hidden space-y-2 p-4 text-teal-300 max-h-[95%]"></div>
         </div>
 
         <div id="toggle-arrow" class="flex justify-center items-center absolute bottom-3 w-full cursor-pointer py-2"
