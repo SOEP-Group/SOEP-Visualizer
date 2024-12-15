@@ -3,13 +3,13 @@ import {
   InstancedMesh,
   Matrix4,
   Vector3,
-  Vector4,
   Color,
   Quaternion,
   SphereGeometry,
   MeshBasicMaterial,
   Raycaster,
 } from "three";
+import { globalState } from "../globalState.js"; // Import global state for tracking selection mode
 
 export class Satellites {
   instancedMesh;
@@ -17,7 +17,8 @@ export class Satellites {
   group;
   raycaster;
   instanceIdToSatelliteIdMap = {};
-  baseColor = new Color().setHex(0xFF0000);
+  instanceIdToDataMap = {}; // Map for storing satellite data
+  baseColor = new Color().setHex(0xff0000);
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
   focusedSatellite = -1;
@@ -36,7 +37,7 @@ export class Satellites {
         satellite.position.y,
         satellite.position.z
       );
-      this.addInstance(satellite.id, position);
+      this.addInstance(satellite.id, position, satellite);
     });
   }
 
@@ -53,7 +54,7 @@ export class Satellites {
     this.instancedMesh = { mesh: instancedMesh, count: 0 };
   }
 
-  addInstance(satellite_id, position = new Vector3()) {
+  addInstance(satellite_id, position = new Vector3(), satelliteData) {
     if (this.instancedMesh.count >= this.instanceCount) {
       console.warn("Max instances reached for", this.instancedMesh.mesh);
       return;
@@ -64,7 +65,9 @@ export class Satellites {
     matrix.compose(position, new Quaternion(), new Vector3(1, 1, 1));
     this.instancedMesh.mesh.setMatrixAt(instanceId, matrix);
     this.instancedMesh.mesh.instanceMatrix.needsUpdate = true;
+
     this.instanceIdToSatelliteIdMap[instanceId] = satellite_id;
+    this.instanceIdToDataMap[instanceId] = satelliteData; // Save satellite data
     this.instancedMesh.count += 1;
     this.instancedMesh.mesh.geometry.computeBoundingBox();
     this.instancedMesh.mesh.geometry.computeBoundingSphere();
@@ -78,9 +81,20 @@ export class Satellites {
 
     const intersects = this.raycaster.intersectObject(this.instancedMesh.mesh);
     if (intersects.length > 0) {
-      return intersects[0].instanceId;
-    }
+      const clickedInstanceId = intersects[0].instanceId;
+      const satelliteData = this.instanceIdToDataMap[clickedInstanceId];
 
+      if (globalState.get("pickingSatellite")) {
+        const satelliteInputField = document.getElementById("satellite-pass");
+        if (satelliteInputField && satelliteData.name) {
+          satelliteInputField.value = satelliteData.name; // Update input field with satellite name
+        }
+        globalState.set({ pickingSatellite: false }); // Exit selection mode
+        console.log(`Satellite selected: ${satelliteData.name}`);
+      }
+
+      return clickedInstanceId;
+    }
     return null;
   }
 

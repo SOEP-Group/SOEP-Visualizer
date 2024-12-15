@@ -23,6 +23,16 @@ function onGlobalStateChanged(changedStates) {
       }
     }
   }
+  if (changedStates["pickingSatellite"]) {
+    const pickingSatellite = globalState.get("pickingSatellite");
+    if (isMobileScreen()) {
+      if (!pickingSatellite) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }
+  }
 }
 
 export function initHeader() {

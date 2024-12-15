@@ -5,7 +5,7 @@ import { publish } from "./eventBuss.js";
 export class State {
   constructor(eventName, initialState) {
     if (!eventName) {
-      console.error("No eventName provided when create a state");
+      console.error("No eventName provided when creating a state");
     }
     this.eventName = eventName;
     this.state = { ...initialState };
@@ -61,4 +61,6 @@ export let globalState = new State("onGlobalStateChanged", {
   pickingLocation: false,
   pick_passing: false,
   pick_pass_prediction: false,
+  pickingSatellite: false, // Tracks whether satellite selection mode is active
+  selectedSatellite: null, // Stores the currently selected satellite's data
 });

@@ -86,3 +86,5 @@ export function reloadScene() {
   loadBackground();
   addSatellites(globalState.get("satellites"));
 }
+
+

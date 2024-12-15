@@ -1,52 +1,72 @@
 <div class="flex justify-items-center items-center justify-between">
-  <h2 class="text-2xl">
-    <%= name %>
-  </h2>
-  <p>(NoID: <%= satellite_id %>)</p>
+  <h2 class="text-2xl font-bold"><%= name %></h2>
+  <p class="text-gray-500">(NoID: <%= satellite_id %>)</p>
 </div>
-<hr class="border-teal-300" />
-<p>
-  <strong>Speed:</strong> <span id="satellite_speed_visualizer">0.00km/h</span>
-</p>
-<p>
-  <strong>Longitude:</strong> <span id="satellite_long_visualizer"></span>
-</p>
-<p>
-  <strong>Latitude:</strong> <span id="satellite_lat_visualizer"></span>
-</p>
-<p>
-  <strong>Orbit distance:</strong>
-  <%= farthest_orbit_distance %> km (Farthest) / <%= lowest_orbit_distance %> km (Lowest)
-</p>
-<p>
-  <strong>Inclination:</strong>
-  <%= inclination %>°
-</p>
-<p>
-  <strong>Revolution Time:</strong>
-  <%= revolution %> hours
-</p>
-<p>
-  <strong>Launch Date:</strong>
-  <%= launch_date %>
-</p>
-<p>
-  <strong>Launch Site:</strong>
-  <%= launch_site %>
-</p>
-<p>
-  <strong>Owner:</strong>
-  <%= owner %>
-</p>
-<!-- <p>
-  <strong>Status:</strong>
-  <%= status %>
-</p>
-<p>
-  <strong>Object Type:</strong>
-  <%= object_type %>
-</p> -->
-<p>
-  <strong>Description:</strong>
-  <%= description %>
-</p>
+<hr class="border-teal-300 my-4" />
+
+<div class="space-y-2">
+  <p>
+    <strong>Speed:</strong> 
+    <span id="satellite_speed_visualizer">0.00 km/h</span>
+  </p>
+  <p>
+    <strong>Longitude:</strong> 
+    <span id="satellite_long_visualizer">N/A</span>
+  </p>
+  <p>
+    <strong>Latitude:</strong> 
+    <span id="satellite_lat_visualizer">N/A</span>
+  </p>
+  <p>
+    <strong>Orbit Distance:</strong> 
+    <%= farthest_orbit_distance %> km (Farthest) / <%= lowest_orbit_distance %> km (Lowest)
+  </p>
+  <p>
+    <strong>Inclination:</strong> 
+    <%= inclination %>°
+  </p>
+  <p>
+    <strong>Revolution Time:</strong> 
+    <%= revolution %> hours
+  </p>
+  <p>
+    <strong>Launch Date:</strong> 
+    <%= launch_date %>
+  </p>
+  <p>
+    <strong>Launch Site:</strong> 
+    <%= launch_site %>
+  </p>
+  <p>
+    <strong>Owner:</strong> 
+    <%= owner %>
+  </p>
+  <p>
+    <strong>Description:</strong> 
+    <%= description %>
+  </p>
+</div>
+
+<!-- Button for Selecting Satellite -->
+<div class="mt-4">
+  <button 
+    class="select-satellite-button location-button-styling bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+    data-satellite-name="<%= name %>"
+    onclick="selectSatellite('<%= name %>')"
+  >
+    Choose Satellite
+  </button>
+</div>
+
+<script>
+  /**
+   * Function to handle satellite selection.
+   * Updates the input field with the selected satellite's name.
+   */
+  function selectSatellite(satelliteName) {
+    const inputField = document.getElementById('satellite-pass');
+    if (inputField) {
+      inputField.value = satelliteName;
+    }
+  }
+</script>

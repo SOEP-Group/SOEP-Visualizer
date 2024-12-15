@@ -1,6 +1,17 @@
 import { getLocation } from "./utils.js";
 import { globalState } from "../globalState.js";
 import { subscribe } from "../eventBuss.js";
+import { fetchSatellites } from "../api/satellites.js";
+import { scene } from '../gl/scene.js'; // Adjust the path to the location of `scene.js`
+import { camera } from '../gl/renderer.js'; // Import the camera
+import { satellites } from '../gl/scene.js'; // Import satellites or globalState reference
+
+
+
+
+
+
+
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
 
@@ -118,7 +129,48 @@ export function initPredictions() {
       toggleIconState();
     }
   });
-}
+  const selectSatelliteBtn = document.querySelector(".select-satellite-button");
+
+selectSatelliteBtn.addEventListener("click", async function () {
+    let pickingSatellite = globalState.get("pickingSatellite");
+    globalState.set({ pickingSatellite: !pickingSatellite });
+
+    if (!pickingSatellite) {
+        selectSatelliteBtn.innerText = "Click on a Satellite (Press here to Cancel)";
+
+        const handleSatelliteClick = (e) => {
+            const clickedSatellite = getClickedSatellite(e, camera);
+
+            if (clickedSatellite) {
+                console.log('Clicked Satellite:', clickedSatellite); // Debugging
+                const satelliteName = clickedSatellite.name || 'Unknown Satellite'; // Fallback
+                const satelliteInput = document.getElementById("satellite-pass");
+                satelliteInput.value = satelliteName;
+
+                selectSatelliteBtn.innerText = "Choose Satellite";
+                globalState.set({ pickingSatellite: false });
+
+                document.removeEventListener("click", handleSatelliteClick);
+            }
+        };
+
+        document.addEventListener("click", handleSatelliteClick);
+    } else {
+        selectSatelliteBtn.innerText = "Choose Satellite";
+        globalState.set({ pickingSatellite: false });
+    }
+});
+
+  }
+document.addEventListener('click', (event) => {
+  const satelliteData = getClickedSatellite(event, camera);
+  if (satelliteData) {
+      console.log('Satellite Data:', satelliteData);
+  } else {
+      console.log('No satellite clicked.');
+  }
+});
+
 
 function toggleSection(contentId, arrowId) {
   const contentElement = document.getElementById(contentId);
@@ -133,6 +185,31 @@ function toggleSection(contentId, arrowId) {
     arrowElement.querySelector("svg").classList.add("rotate-90");
   }
 }
+function getClickedSatellite(event, camera) {
+  const mouse = {
+      x: (event.clientX / window.innerWidth) * 2 - 1,
+      y: -(event.clientY / window.innerHeight) * 2 + 1,
+  };
+
+  const instanceId = satellites.checkForClick(mouse, camera);
+
+  if (instanceId !== null) {
+      const satelliteData = satellites.getIdByInstanceId(instanceId);
+      console.log('Satellite Data:', satelliteData); // Debugging
+      return satelliteData;
+  }
+
+  return null;
+}
+
+
+
+
+
+
+
+
+
 
 export function toggleIconState() {
   const toggleText = document.getElementById("toggle-text");
@@ -152,3 +229,5 @@ export function toggleIconState() {
     );
   }
 }
+
+

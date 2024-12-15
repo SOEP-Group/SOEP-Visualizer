@@ -171,3 +171,6 @@ function toggleMobilePopupSize() {
   mobilePopupContainer.classList.toggle("h-[95%]");
   mobileArrowIcon.classList.toggle("rotate-180");
 }
+
+
+

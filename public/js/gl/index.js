@@ -146,6 +146,14 @@ function onViewportClick(event) {
   }
 }
 
+// selectSatelliteBtn.forEach((btn) => {
+//   btn.addEventListener("click", () => {
+//     const isPicking = globalState.get("pickingSatellite");
+//     globalState.set("pickingSatellite", !isPicking); // Toggle the state
+//   });
+// });
+
+
 function onLoadFinished() {
   finishedLoadingImages();
   publish("initalLoadingDone");
@@ -206,4 +214,5 @@ function onGlobalStateChanged(changedStates) {
     satellites.hide(picking);
     earth.togglePickingLocation(picking);
   }
+
 }
