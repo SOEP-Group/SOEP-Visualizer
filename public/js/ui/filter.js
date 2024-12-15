@@ -308,16 +308,35 @@ export function isFiltered(selectedFilters, instanceId) {
   if (!selectedFilters || Object.keys(selectedFilters).length <= 0) {
     return false;
   }
-  const speedRange = selectedFilters["Speed (km/s)"].map(Number);
-  const latRange = selectedFilters["Latitude (°)"].map(Number);
-  const longRange = selectedFilters["Longitude (°)"].map(Number);
-  const orbitDistanceRange = selectedFilters["Orbit Distance (km)"].map(Number);
-  const inclinationRange = selectedFilters["Inclination (°)"].map(Number);
-  const revolutionTimeRange =
-    selectedFilters["Revolution Time (hours)"].map(Number);
+  const speedRange = selectedFilters?.["Speed (km/s)"]?.map(Number) || [
+    -Infinity,
+    Infinity,
+  ];
 
-  const launchDateStart = new Date(selectedFilters["Launch Date"].start);
-  const launchDateEnd = new Date(selectedFilters["Launch Date"].end);
+  const latRange = selectedFilters?.["Latitude (°)"]?.map(Number) || [-90, 90];
+
+  const longRange = selectedFilters?.["Longitude (°)"]?.map(Number) || [
+    -180, 180,
+  ];
+
+  const orbitDistanceRange = selectedFilters?.["Orbit Distance (km)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const inclinationRange = selectedFilters?.["Inclination (°)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const revolutionTimeRange = selectedFilters?.["Revolution Time (hours)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const launchDateRange = selectedFilters?.["Launch Date"]
+    ? [
+        new Date(selectedFilters["Launch Date"].start),
+        new Date(selectedFilters["Launch Date"].end),
+      ]
+    : [new Date(-8640000000000000), new Date(8640000000000000)];
 
   const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
   const speedVector = satellites.getSpeed(instanceId);
@@ -345,8 +364,8 @@ export function isFiltered(selectedFilters, instanceId) {
     inclination <= inclinationRange[1] &&
     revolutionTime >= revolutionTimeRange[0] &&
     revolutionTime <= revolutionTimeRange[1] &&
-    satelliteLaunchDate >= launchDateStart &&
-    satelliteLaunchDate <= launchDateEnd &&
+    satelliteLaunchDate >= launchDateRange[0] &&
+    satelliteLaunchDate <= launchDateRange[1] &&
     (selectedFilters["Owner"] === "Any" ||
       owner === selectedFilters["Owner"]) &&
     (selectedFilters["Launch Site"] === "Any" ||
@@ -363,16 +382,35 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
   const matchedSatellites = [];
   const ignore_list_set = new Set(ignore_list);
 
-  const speedRange = selectedFilters["Speed (km/s)"].map(Number);
-  const latRange = selectedFilters["Latitude (°)"].map(Number);
-  const longRange = selectedFilters["Longitude (°)"].map(Number);
-  const orbitDistanceRange = selectedFilters["Orbit Distance (km)"].map(Number);
-  const inclinationRange = selectedFilters["Inclination (°)"].map(Number);
-  const revolutionTimeRange =
-    selectedFilters["Revolution Time (hours)"].map(Number);
+  const speedRange = selectedFilters?.["Speed (km/s)"]?.map(Number) || [
+    -Infinity,
+    Infinity,
+  ];
 
-  const launchDateStart = new Date(selectedFilters["Launch Date"].start);
-  const launchDateEnd = new Date(selectedFilters["Launch Date"].end);
+  const latRange = selectedFilters?.["Latitude (°)"]?.map(Number) || [-90, 90];
+
+  const longRange = selectedFilters?.["Longitude (°)"]?.map(Number) || [
+    -180, 180,
+  ];
+
+  const orbitDistanceRange = selectedFilters?.["Orbit Distance (km)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const inclinationRange = selectedFilters?.["Inclination (°)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const revolutionTimeRange = selectedFilters?.["Revolution Time (hours)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const launchDateRange = selectedFilters?.["Launch Date"]
+    ? [
+        new Date(selectedFilters["Launch Date"].start),
+        new Date(selectedFilters["Launch Date"].end),
+      ]
+    : [new Date(-8640000000000000), new Date(8640000000000000)];
 
   for (
     let instanceId = 0;
@@ -414,8 +452,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       inclination <= inclinationRange[1] &&
       revolutionTime >= revolutionTimeRange[0] &&
       revolutionTime <= revolutionTimeRange[1] &&
-      satelliteLaunchDate >= launchDateStart &&
-      satelliteLaunchDate <= launchDateEnd &&
+      satelliteLaunchDate >= launchDateRange[0] &&
+      satelliteLaunchDate <= launchDateRange[1] &&
       (selectedFilters["Owner"] === "Any" ||
         owner === selectedFilters["Owner"]) &&
       (selectedFilters["Launch Site"] === "Any" ||

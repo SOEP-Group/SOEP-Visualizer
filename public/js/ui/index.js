@@ -1,5 +1,5 @@
 import { subscribe } from "../eventBuss.js";
-import { State } from "../globalState.js";
+import { State, globalState } from "../globalState.js";
 import { initSettings } from "./settings.js";
 import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
@@ -21,6 +21,15 @@ export * from "./popup.js";
 export * from "./toggle_view.js";
 
 const hoverTooltip = document.getElementById("hover-tooltip");
+subscribe("onGlobalStateChanged", onGlobalStateChanged);
+
+function onGlobalStateChanged(prevState) {
+  if ("visible_satellites" in prevState) {
+    document.getElementById("sat-count").innerHTML = `${
+      globalState.get("visible_satellites").length
+    }`;
+  }
+}
 
 function hideTooltip() {
   hoverTooltip.classList.add("hidden");
