@@ -64,8 +64,8 @@ export function initViewer() {
     viewer_camera.updateProjectionMatrix();
   });
 
-  subscribe("glStateChanged", (changedStates) => {
-    if (changedStates["clickedSatellite"]) {
+  subscribe("glStateChanged", (prevState) => {
+    if ("clickedSatellite" in prevState) {
       const satellite = glState.get("clickedSatellite");
       if (satellite === undefined || satellite === null) {
         loadNewSatelliteModel(undefined);

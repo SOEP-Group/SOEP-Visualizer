@@ -25,8 +25,8 @@ export function initOrbit() {
   subscribe("glStateChanged", onGlStateChanged);
 }
 
-function onGlStateChanged(changedStates) {
-  if (changedStates["clickedSatellite"]) {
+function onGlStateChanged(prevState) {
+  if ("clickedSatellite" in prevState) {
     const clicked_satellite = glState.get("clickedSatellite");
     if (clicked_satellite !== undefined && clicked_satellite !== null) {
       displayOrbit(clicked_satellite);

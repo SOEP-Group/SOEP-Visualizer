@@ -40,3 +40,42 @@ export function geodeticToThree(lat, long, alt) {
 
   return { x, y, z };
 }
+
+function defaultHash(x) {
+  return x;
+}
+
+// For quick mask intersection
+export function fastIntersect(arrays, hash = defaultHash) {
+  if (arrays.length === 0) return [];
+
+  for (let i = 1; i < arrays.length; i++) {
+    if (arrays[i].length < arrays[0].length) {
+      let tmp = arrays[0];
+      arrays[0] = arrays[i];
+      arrays[i] = tmp;
+    }
+  }
+  const set = new Map();
+  for (const elem of arrays[0]) {
+    set.set(hash(elem), 1);
+  }
+  for (let i = 1; i < arrays.length; i++) {
+    let found = 0;
+    for (const elem of arrays[i]) {
+      const hashed = hash(elem);
+      const count = set.get(hashed);
+      if (count === i) {
+        set.set(hashed, count + 1);
+        found++;
+      }
+    }
+    if (found === 0) return [];
+  }
+  return arrays[0].filter((e) => {
+    const hashed = hash(e);
+    const count = set.get(hashed);
+    if (count !== undefined) set.set(hashed, 0);
+    return count === arrays.length;
+  });
+}

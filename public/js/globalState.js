@@ -33,30 +33,29 @@ export class State {
     return null;
   }
 
-  set(updates) {
-    let dirtyFlags = {};
-    Object.keys(this.state).forEach((key) => {
-      dirtyFlags[key] = false;
-    });
+  async set(updates) {
+    let prevState = {};
     let hasChanges = false;
     Object.keys(updates).forEach((key) => {
       if (
         !(key in this.state) ||
         !this.deepEqual(this.state[key], updates[key])
       ) {
+        prevState[key] = this.deepCopy(this.state[key]);
         this.state[key] = this.deepCopy(updates[key]);
-        dirtyFlags[key] = true;
         hasChanges = true;
       }
     });
     if (hasChanges) {
-      publish(this.eventName, dirtyFlags);
+      publish(this.eventName, prevState);
     }
   }
 }
 
 export let globalState = new State("onGlobalStateChanged", {
   visible_satellites: [],
+  location_mask: [], // That should be ignored
+  filter_parameters: {},
   passing_location: null,
   togglePassing: false,
   events_location: null,

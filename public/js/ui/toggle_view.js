@@ -83,13 +83,13 @@ function updateViewButtons(selectedView) {
   }
 }
 
-function onGlStateChanged(changedStates) {
-  if (changedStates["focusedTarget"]) {
+function onGlStateChanged(prevState) {
+  if ("focusedTarget" in prevState) {
     const selectedView = glState.get("focusedTarget");
     updateViewButtons(selectedView);
   }
 
-  if (changedStates["clickedSatellite"]) {
+  if ("clickedSatellite" in prevState) {
     let clickedSatellite = glState.get("clickedSatellite");
 
     if (!clickedSatellite) {

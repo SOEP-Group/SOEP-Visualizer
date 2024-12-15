@@ -5,8 +5,10 @@ export function subscribe(event, callback) {
   subscribers[event].push(callback);
 }
 
-export function publish(event, data) {
+export function publish(event, ...args) {
   if (subscribers[event]) {
-    subscribers[event].forEach((callback) => callback(data));
+    subscribers[event].forEach((callback) => {
+      Promise.resolve().then(() => callback(...args));
+    });
   }
 }

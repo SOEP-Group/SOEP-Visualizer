@@ -99,8 +99,8 @@ export function initDebug() {
   subscribe("glStateChanged", updateDebugMenu);
 }
 
-function updateDebugMenu(changedStates) {
-   if (!changedStates["rendererInfo"]) {
+function updateDebugMenu(prevState) {
+   if (!("rendererInfo" in prevState)) {
     return;
   }
 
@@ -109,7 +109,7 @@ function updateDebugMenu(changedStates) {
 
 ```
 
-Notice how the function also gets a variable called changedStates. This is a simle key-value map `{"rendererInfo": true, "some_other_state_variable": false}`. This let's you know if
+Notice how the function also gets a variable called prevState. This is a simle key-value map `{"rendererInfo": true, "some_other_state_variable": false}`. This let's you know if
 a certain state variable has been changed during this event call. Use this in order to not call some function every time a state change has occured as that would be taxing on the system.
 
 To then get that variables value, use `const rendererInfo = glState.get("rendererInfo");`.
