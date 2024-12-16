@@ -96,11 +96,11 @@ export function initPredictions() {
       toggleSection("passing-content", "arrow-passing");
     });
 
-  // document
-  //   .getElementById("pass-prediction-header")
-  //   .addEventListener("click", function () {
-  //     toggleSection("pass-content", "arrow-pass");
-  //   });
+  document
+    .getElementById("pass-prediction-header")
+    .addEventListener("click", function () {
+      toggleSection("pass-content", "arrow-pass");
+    });
 
   document
     .getElementById("collision-prediction-header")
