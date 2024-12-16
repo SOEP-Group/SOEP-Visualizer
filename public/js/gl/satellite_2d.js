@@ -393,6 +393,11 @@ export class Satellites {
     );
   }
 
+  getName(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.name : null;
+  }
+
   getOrbitDistance(instanceId) {
     const data = this.instanceIdToDataMap[instanceId];
     return data

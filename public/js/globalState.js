@@ -57,6 +57,8 @@ export let globalState = new State("onGlobalStateChanged", {
   location_mask: [], // That should be ignored
   filter_parameters: {},
   passing_location: null,
+  collision_prediction_satellite: null,
+  pickingSatellite: false,
   togglePassing: false,
   events_location: null,
   pass_prediction_location: null,
