@@ -23,14 +23,16 @@ const closeFiltersButton = document.getElementById("close-filters-button");
 const clearFiltersButton = document.getElementById("clear-filters-button");
 const applyFiltersButton = document.getElementById("apply-filters-button");
 const satelliteDropdown = document.getElementById("satellite-dropdown");
+const searchInput = document.getElementById("satellite-search");
 
 let firstMenuOpen = true;
 
 function onGlobalStateChanged(prevState) {
-  if ("pickingLocation" in prevState) {
-    const picking = globalState.get("pickingLocation");
+  if ("pickingLocation" in prevState || "pickingSatellite" in prevState) {
+    const picking_location = globalState.get("pickingLocation");
+    const picking_sat = globalState.get("pickingSatellite");
     if (isMobileScreen()) {
-      if (!picking) {
+      if (!picking_location && !picking_sat) {
         openMenu();
       } else {
         closeMenu();
@@ -65,7 +67,6 @@ function getAllSatellites() {
 
 export function initHeader() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
-  const searchInput = document.getElementById("satellite-search");
 
   searchInput.addEventListener("input", (event) => {
     event.stopPropagation();
@@ -113,11 +114,18 @@ export function initHeader() {
 }
 
 function focusSatellite(id) {
-  globalState.set({ togglePassing: false });
   let clicked_satellite = satellites.getInstanceIdById(id);
-  glState.set({
-    clickedSatellite: clicked_satellite,
-  });
+  if (globalState.get("pickingSatellite")) {
+    const sat_name = satellites.getName(clicked_satellite);
+    globalState.set({
+      collision_prediction_satellite: sat_name,
+      pickingSatellite: false,
+    });
+  } else {
+    glState.set({
+      clickedSatellite: clicked_satellite,
+    });
+  }
 
   const searchInput = document.getElementById("satellite-search");
   if (searchInput) {

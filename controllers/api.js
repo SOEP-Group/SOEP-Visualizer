@@ -364,3 +364,18 @@ exports.getBodyEvents = async function (req, res) {
     });
   }
 };
+
+exports.predictCollision = async function (req, res) {
+  const { id } = req.params;
+  try {
+    const query = `
+      SELECT *
+      FROM top_collision_probabilities
+      WHERE satellite_id = ${id};
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.stack });
+  }
+};

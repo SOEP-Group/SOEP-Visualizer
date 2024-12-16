@@ -140,6 +140,14 @@ function onViewportClick(event) {
       globalState.set({ pickingLocation: false });
     }
     return;
+  } else if (globalState.get("pickingSatellite")) {
+    let clicked_satellite = satellites.checkForClick(mouse, camera);
+    const sat_name = satellites.getName(clicked_satellite);
+    globalState.set({
+      collision_prediction_satellite: sat_name,
+      pickingSatellite: false,
+    });
+    return;
   }
   let clicked_satellite = satellites.checkForClick(mouse, camera);
   if (clicked_satellite !== null) {

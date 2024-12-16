@@ -450,7 +450,7 @@ export function initRenderer() {
   viewport_div.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.noPan = true;
+  controls.enablePan = false;
   controls.minDistance = 0.65;
   controls.maxDistance = 10;
   controls.enableDamping = true;

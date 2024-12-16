@@ -5,6 +5,9 @@ import { satellites } from "../gl/scene.js";
 import { glState } from "../gl/index.js";
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
+const selectSatelliteBtn = document.querySelectorAll(
+  ".select-satellite-button"
+);
 
 function onGlobalStateChanged(prevState) {
   if ("pickingLocation" in prevState) {
@@ -18,7 +21,8 @@ function onGlobalStateChanged(prevState) {
           "Click on earth (Press here to Cancel)";
       }
     }
-  } else if ("passing_location" in prevState) {
+  }
+  if ("passing_location" in prevState) {
     const passing_location = globalState.get("passing_location");
     const toggleButton = document.getElementById("toggle-section");
 
@@ -37,7 +41,8 @@ function onGlobalStateChanged(prevState) {
         break;
       }
     }
-  } else if ("pass_prediction_location" in prevState) {
+  }
+  if ("pass_prediction_location" in prevState) {
     const pass_prediction_location = globalState.get(
       "pass_prediction_location"
     );
@@ -50,8 +55,27 @@ function onGlobalStateChanged(prevState) {
         break;
       }
     }
-  } else if ("togglePassing" in prevState) {
+  }
+  if ("togglePassing" in prevState) {
     toggleIconState();
+  }
+
+  if ("pickingSatellite" in prevState) {
+    const picking = globalState.get("pickingSatellite");
+
+    for (let i = 0; i < selectSatelliteBtn.length; i++) {
+      if (!picking) {
+        selectSatelliteBtn[i].innerText = "Select Satellite";
+      } else {
+        selectSatelliteBtn[i].innerText =
+          "Click on a satellite (Press here to Cancel)";
+      }
+    }
+  }
+
+  if ("collision_prediction_satellite" in prevState) {
+    const sat_name = globalState.get("collision_prediction_satellite");
+    document.getElementById("satellite-collision").value = sat_name;
   }
 }
 
@@ -84,14 +108,55 @@ export function initPredictions() {
       toggleSection("collision-content", "arrow-collision");
     });
 
-  document
-    .getElementById("calculate-pass-button")
-    .addEventListener("click", function () {});
+  // document
+  //   .getElementById("calculate-pass-button")
+  //   .addEventListener("click", function () {});
 
   document
     .getElementById("calculate-collision-button")
     .addEventListener("click", function () {
-      // Future use
+      const sat_name = document.getElementById("satellite-collision").value;
+      let noradId = null;
+      for (const [instanceId, data] of Object.entries(
+        satellites.instanceIdToDataMap
+      )) {
+        if (data.name === sat_name) {
+          noradId = data.satellite_id;
+          break;
+        }
+      }
+      fetch(`/api/predictions/predict_collision/${noradId}`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          let other_sat_name;
+          for (const [instanceId, instance_data] of Object.entries(
+            satellites.instanceIdToDataMap
+          )) {
+            if (instance_data.satellite_id === data.other_satellite_id) {
+              other_sat_name = instance_data.name;
+              break;
+            }
+          }
+          document.getElementById(
+            "collision-prediction-result"
+          ).innerHTML = `Has a ${data["probability"]}% chance to collide with ${other_sat_name}`;
+        })
+        .catch((error) => {
+          console.error("Error fetching collision prediction:", error);
+          document.getElementById("collision-prediction-result").innerHTML =
+            "No collisions detected";
+        });
+    });
+
+  document
+    .getElementById("pick-satellite-collision-button")
+    .addEventListener("click", (event) => {
+      globalState.set({
+        pickingSatellite: !globalState.get("pickingSatellite"),
+        pickingLocation: false,
+      });
     });
 
   const location_btns = document.querySelectorAll(".get-location-btn");
@@ -118,7 +183,7 @@ export function initPredictions() {
       if (picking == null) {
         picking = false;
       }
-      globalState.set({ pickingLocation: !picking });
+      globalState.set({ pickingLocation: !picking, pickingSatellite: false });
       let pick_passing = false;
       let pick_pass_prediction = false;
       if (!picking) {

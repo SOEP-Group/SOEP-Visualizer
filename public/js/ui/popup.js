@@ -25,7 +25,10 @@ function onGlStateChanged(prevState) {
     if (clicked_satellite !== undefined && clicked_satellite !== null) {
       openPopup();
       openMobilePopup();
-      getContent(satellites.getIdByInstanceId(clicked_satellite));
+      getContent(
+        satellites.getIdByInstanceId(clicked_satellite),
+        clicked_satellite
+      );
     } else {
       closePopup();
       closeMobilePopup();
@@ -81,7 +84,7 @@ function openPopup() {
   popupOpen = true;
 }
 
-function getContent(satellite) {
+function getContent(satellite, instanceId) {
   mobileContent.innerHTML = "";
   fetchSatellite(satellite).then((res) => {
     content.classList.remove("hidden");
@@ -90,6 +93,24 @@ function getContent(satellite) {
     mobileContent.classList.remove("hidden");
     mobileSkeleton.classList.add("hidden");
     mobileContent.innerHTML = res;
+
+    const satelliteImage = document.getElementsByClassName("satellite-image");
+    for (let satellite_image_el of satelliteImage) {
+      if (satellite_image_el) {
+        const sat_name = satellites
+          .getName(instanceId)
+          .split(" ")[0]
+          .split("-")[0];
+        const satelliteImagePath = `images/satellites/${sat_name}.jpg`;
+        satellite_image_el.src = satelliteImagePath;
+        satellite_image_el.alt = `Image of Satellite ${sat_name}`;
+
+        satellite_image_el.onerror = () => {
+          satellite_image_el.src = "images/satellites/404.png";
+          satellite_image_el.alt = "Satellite Image Not Found";
+        };
+      }
+    }
   });
 }
 
