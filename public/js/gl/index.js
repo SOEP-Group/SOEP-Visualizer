@@ -16,6 +16,7 @@ import {
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites, addSatellites } from "./scene.js";
 import { getMatchedSatellites, isFiltered } from "../ui/filter.js";
+import { hideSearchDropdown } from "../ui/header.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -118,6 +119,10 @@ function onStart() {
     if (!isDraggingMouse) {
       onViewportClick(event);
     }
+  });
+
+  gl_viewport.addEventListener("focus", (event) => {
+    hideSearchDropdown();
   });
 }
 
