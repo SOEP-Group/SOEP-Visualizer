@@ -12,7 +12,7 @@ import {
   ToneMappingMode,
   BlendFunction,
 } from "postprocessing";
-import { scene, reloadScene, sun, satellites } from "./scene.js";
+import { scene, reloadScene, sun, satellites, earth } from "./scene.js";
 import { glState } from "./index.js";
 import { publish, subscribe } from "../eventBuss.js";
 import { LensFlarePass } from "./lensflare.js";
@@ -75,11 +75,17 @@ let renderer;
 export let camera;
 let composer; // Use this to add render passes for different post processing effects
 export let controls;
+let animating_camera = true;
 clock.start();
 
 let orientationGizmo;
 
-function updateCameraFocus(focusTarget) {
+function cancelRotationAnimation() {
+  gsap.killTweensOf(camera.position);
+}
+
+function updateCameraFocus(focusTarget, shouldAnimate) {
+  animating_camera = shouldAnimate;
   const { target, instanceIndex } = focusTarget;
   const targetGroup = scene.getObjectById(target);
 
@@ -154,33 +160,57 @@ function updateCameraFocus(focusTarget) {
     .copy(focusPosition)
     .add(direction.multiplyScalar(distance));
 
-  gsap.to(camera.position, {
-    duration: 1,
-    x: newPosition.x,
-    y: newPosition.y,
-    z: newPosition.z,
-    onUpdate: () => {
-      orientationGizmo.update();
-      controls.update();
-    },
-  });
+  if (shouldAnimate) {
+    gsap.to(camera.position, {
+      duration: 1,
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      onStart: () => {
+        controls.addEventListener("start", cancelRotationAnimation);
+      },
+      onUpdate: () => {
+        orientationGizmo.update();
+        controls.update();
+      },
+      onComplete: () => {
+        controls.removeEventListener("start", cancelRotationAnimation);
+      },
+    });
 
-  gsap.to(controls.target, {
-    duration: 1,
-    x: focusPosition.x,
-    y: focusPosition.y,
-    z: focusPosition.z,
-    onUpdate: () => {
-      orientationGizmo.update();
-      controls.update();
-    },
-  });
+    gsap.to(controls.target, {
+      duration: 1,
+      x: focusPosition.x,
+      y: focusPosition.y,
+      z: focusPosition.z,
+      onStart: () => {
+        animating_camera = true;
+      },
+      onUpdate: () => {
+        orientationGizmo.update();
+        controls.update();
+      },
+      onComplete: () => {
+        animating_camera = false;
+      },
+    });
+    return;
+  }
+
+  // No animation
+  camera.position.set(newPosition.x, newPosition.y, newPosition.z);
+  controls.target.set(focusPosition.x, focusPosition.y, focusPosition.z);
+  controls.update();
+  orientationGizmo.update();
 }
 
 let prevTime = performance.now();
 
 function animate() {
   composer.render();
+  if (!animating_camera) {
+    updateCameraFocus(glState.get("focusedTarget"), false);
+  }
   if (controls.enabled && !orientationGizmo.animating) controls.update();
   let renderer_info = glState.get("rendererInfo");
   renderer_info.frames++;
@@ -217,6 +247,10 @@ function animate() {
         loadingScreen.classList.add("hidden");
       }, 500);
     }, 1000);
+    glState.set({
+      focusedTarget: { target: earth.getGroup().id },
+    });
+    loadedImages = false;
   }
 }
 
@@ -416,7 +450,7 @@ export function initRenderer() {
   viewport_div.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.noPan = true;
+  controls.enablePan = false;
   controls.minDistance = 0.65;
   controls.maxDistance = 10;
   controls.enableDamping = true;
@@ -424,7 +458,7 @@ export function initRenderer() {
   controls.zoomSpeed = 0.3;
   controls.update();
   orientationGizmo.attachControls(controls);
-  camera.position.set(3, 0, 0);
+  camera.position.set(-3, 0, 0);
   let graphics_preset = detectIdealSettings();
   glState.set({ currentGraphics: graphics_preset });
   initEventListeners();
@@ -453,10 +487,10 @@ function updateRenderer() {
   reloadScene();
 }
 
-function onStateChanged(changedStates) {
-  if (changedStates["currentGraphics"]) {
+function onStateChanged(prevState) {
+  if ("currentGraphics" in prevState) {
     updateRenderer();
-  } else if (changedStates["focusedTarget"]) {
-    updateCameraFocus(glState.get("focusedTarget"));
+  } else if ("focusedTarget" in prevState) {
+    updateCameraFocus(glState.get("focusedTarget"), true);
   }
 }

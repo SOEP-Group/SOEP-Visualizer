@@ -1,4 +1,5 @@
 import { satellites } from "../gl/scene.js";
+import { globalState } from "../globalState.js";
 
 const DEFAULT_SLIDER_RANGES = {
   minSpeed: 0,
@@ -15,14 +16,17 @@ const DEFAULT_SLIDER_RANGES = {
   maxRevolution: 40000,
 };
 
+const filtersButton = document.getElementById('filters-button');
+
 export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
   filtersDropdown.classList.toggle("invisible", !isOpen);
   filtersDropdown.classList.toggle("opacity-0", !isOpen);
-  filtersDropdown.classList.toggle("translate-y-2", !isOpen);
+  filtersDropdown.classList.toggle("md:translate-y-2", !isOpen);
   filtersDropdown.classList.toggle("pointer-events-none", !isOpen);
   filtersDropdown.classList.toggle("opacity-100", isOpen);
-  filtersDropdown.classList.toggle("translate-y-0", isOpen);
+  filtersDropdown.classList.toggle("md:translate-y-0", isOpen);
+  filtersButton.classList.toggle("active", isOpen);
 
   if (!isOpen) {
     setTimeout(() => filtersDropdown.classList.add("invisible"), 300);
@@ -303,19 +307,128 @@ export function resetFiltersToDefault() {
   if (ownerSelect) ownerSelect.value = "";
 }
 
-export function getUnmatchedSatellites(selectedFilters) {
+export function isFiltered(selectedFilters, instanceId) {
+  if (!selectedFilters || Object.keys(selectedFilters).length <= 0) {
+    return false;
+  }
+  const speedRange = selectedFilters?.["Speed (km/s)"]?.map(Number) || [
+    -Infinity,
+    Infinity,
+  ];
+
+  const latRange = selectedFilters?.["Latitude (°)"]?.map(Number) || [-90, 90];
+
+  const longRange = selectedFilters?.["Longitude (°)"]?.map(Number) || [
+    -180, 180,
+  ];
+
+  const orbitDistanceRange = selectedFilters?.["Orbit Distance (km)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const inclinationRange = selectedFilters?.["Inclination (°)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const revolutionTimeRange = selectedFilters?.["Revolution Time (hours)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const launchDateRange = selectedFilters?.["Launch Date"]
+    ? [
+        new Date(selectedFilters["Launch Date"].start),
+        new Date(selectedFilters["Launch Date"].end),
+      ]
+    : [new Date(-8640000000000000), new Date(8640000000000000)];
+
+  const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
+  const speedVector = satellites.getSpeed(instanceId);
+  const speed = Math.sqrt(
+    speedVector.x ** 2 + speedVector.y ** 2 + speedVector.z ** 2
+  );
+  const orbitDistance = satellites.getOrbitDistance(instanceId);
+  const inclination = satellites.getInclination(instanceId);
+  const revolutionTime = satellites.getRevolutionTime(instanceId);
+  const launchDate = satellites.getLaunchDate(instanceId);
+  const owner = satellites.getOwner(instanceId);
+  const launchSite = satellites.getLaunchSite(instanceId);
+
+  const satelliteLaunchDate = new Date(launchDate);
+  const isWithinFilters =
+    speed >= speedRange[0] &&
+    speed <= speedRange[1] &&
+    geodeticCoords.lat >= latRange[0] &&
+    geodeticCoords.lat <= latRange[1] &&
+    geodeticCoords.long >= longRange[0] &&
+    geodeticCoords.long <= longRange[1] &&
+    orbitDistance.min >= orbitDistanceRange[0] &&
+    orbitDistance.max <= orbitDistanceRange[1] &&
+    inclination >= inclinationRange[0] &&
+    inclination <= inclinationRange[1] &&
+    revolutionTime >= revolutionTimeRange[0] &&
+    revolutionTime <= revolutionTimeRange[1] &&
+    satelliteLaunchDate >= launchDateRange[0] &&
+    satelliteLaunchDate <= launchDateRange[1] &&
+    (selectedFilters["Owner"] === "Any" ||
+      owner === selectedFilters["Owner"]) &&
+    (selectedFilters["Launch Site"] === "Any" ||
+      launchSite === selectedFilters["Launch Site"]);
+
+  return !isWithinFilters;
+}
+
+export function getMatchedSatellites(selectedFilters, ignore_list) {
   if (!satellites || typeof satellites.instanceCount === "undefined") {
     console.warn("Satellites are not initialized.");
     return [];
   }
+  const matchedSatellites = [];
+  const ignore_list_set = new Set(ignore_list);
 
-  const unmatchedSatellites = [];
+  const speedRange = selectedFilters?.["Speed (km/s)"]?.map(Number) || [
+    -Infinity,
+    Infinity,
+  ];
+
+  const latRange = selectedFilters?.["Latitude (°)"]?.map(Number) || [-90, 90];
+
+  const longRange = selectedFilters?.["Longitude (°)"]?.map(Number) || [
+    -180, 180,
+  ];
+
+  const orbitDistanceRange = selectedFilters?.["Orbit Distance (km)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const inclinationRange = selectedFilters?.["Inclination (°)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const revolutionTimeRange = selectedFilters?.["Revolution Time (hours)"]?.map(
+    Number
+  ) || [-Infinity, Infinity];
+
+  const launchDateRange = selectedFilters?.["Launch Date"]
+    ? [
+        new Date(selectedFilters["Launch Date"].start),
+        new Date(selectedFilters["Launch Date"].end),
+      ]
+    : [new Date(-8640000000000000), new Date(8640000000000000)];
 
   for (
     let instanceId = 0;
     instanceId < satellites.instanceCount;
     instanceId++
   ) {
+    if (ignore_list_set.has(instanceId)) {
+      continue;
+    }
+
+    if (!selectedFilters || Object.keys(selectedFilters).length <= 0) {
+      matchedSatellites.push(instanceId);
+      continue;
+    }
+
     const geodeticCoords = satellites.getGeodeticCoordinates(instanceId);
     const speedVector = satellites.getSpeed(instanceId);
     const speed = Math.sqrt(
@@ -328,18 +441,7 @@ export function getUnmatchedSatellites(selectedFilters) {
     const owner = satellites.getOwner(instanceId);
     const launchSite = satellites.getLaunchSite(instanceId);
 
-    const filters = selectedFilters;
-    const speedRange = filters["Speed (km/s)"].map(Number);
-    const latRange = filters["Latitude (°)"].map(Number);
-    const longRange = filters["Longitude (°)"].map(Number);
-    const orbitDistanceRange = filters["Orbit Distance (km)"].map(Number);
-    const inclinationRange = filters["Inclination (°)"].map(Number);
-    const revolutionTimeRange = filters["Revolution Time (hours)"].map(Number);
-
-    const launchDateStart = new Date(filters["Launch Date"].start);
-    const launchDateEnd = new Date(filters["Launch Date"].end);
     const satelliteLaunchDate = new Date(launchDate);
-
     const isWithinFilters =
       speed >= speedRange[0] &&
       speed <= speedRange[1] &&
@@ -353,16 +455,16 @@ export function getUnmatchedSatellites(selectedFilters) {
       inclination <= inclinationRange[1] &&
       revolutionTime >= revolutionTimeRange[0] &&
       revolutionTime <= revolutionTimeRange[1] &&
-      satelliteLaunchDate >= launchDateStart &&
-      satelliteLaunchDate <= launchDateEnd &&
-      (filters["Owner"] === "Any" || owner === filters["Owner"]) &&
-      (filters["Launch Site"] === "Any" ||
-        launchSite === filters["Launch Site"]);
+      satelliteLaunchDate >= launchDateRange[0] &&
+      satelliteLaunchDate <= launchDateRange[1] &&
+      (selectedFilters["Owner"] === "Any" ||
+        owner === selectedFilters["Owner"]) &&
+      (selectedFilters["Launch Site"] === "Any" ||
+        launchSite === selectedFilters["Launch Site"]);
 
-    if (!isWithinFilters) {
-      unmatchedSatellites.push(instanceId);
+    if (isWithinFilters) {
+      matchedSatellites.push(instanceId);
     }
   }
-
-  return unmatchedSatellites;
+  return matchedSatellites;
 }

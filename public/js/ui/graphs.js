@@ -18,8 +18,8 @@ export function initGraphs() {
   subscribe("glStateChanged", onGlStateChanged);
 }
 
-function onGlStateChanged(changedStates) {
-  if (changedStates["clickedSatellite"]) {
+function onGlStateChanged(prevState) {
+  if ("clickedSatellite" in prevState) {
     const clickedSatellite = glState.get("clickedSatellite");
 
     if (clickedSatellite) {

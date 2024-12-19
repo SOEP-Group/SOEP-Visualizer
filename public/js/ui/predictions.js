@@ -5,9 +5,12 @@ import { satellites } from "../gl/scene.js";
 import { glState } from "../gl/index.js";
 
 const selectLocationBtn = document.querySelectorAll(".select-location-button");
+const selectSatelliteBtn = document.querySelectorAll(
+  ".select-satellite-button"
+);
 
-function onGlobalStateChanged(changedStates) {
-  if (changedStates["pickingLocation"]) {
+function onGlobalStateChanged(prevState) {
+  if ("pickingLocation" in prevState) {
     const picking = globalState.get("pickingLocation");
 
     for (let i = 0; i < selectLocationBtn.length; i++) {
@@ -18,7 +21,8 @@ function onGlobalStateChanged(changedStates) {
           "Click on earth (Press here to Cancel)";
       }
     }
-  } else if (changedStates["passing_location"]) {
+  }
+  if ("passing_location" in prevState) {
     const passing_location = globalState.get("passing_location");
     const toggleButton = document.getElementById("toggle-section");
 
@@ -37,7 +41,8 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
-  } else if (changedStates["pass_prediction_location"]) {
+  }
+  if ("pass_prediction_location" in prevState) {
     const pass_prediction_location = globalState.get(
       "pass_prediction_location"
     );
@@ -50,58 +55,28 @@ function onGlobalStateChanged(changedStates) {
         break;
       }
     }
-  } else if (changedStates["togglePassing"]) {
-    const isDisplayingPassing = globalState.get("togglePassing");
-    const dropdown = document.getElementById("passing-satellites-dropdown");
-    if (isDisplayingPassing) {
-      const passingSatellites = getPassingSatellites();
-      populateDropdown(passingSatellites, dropdown);
-      dropdown.classList.remove("hidden");
-    } else {
-      dropdown.classList.add("hidden");
+  }
+  if ("togglePassing" in prevState) {
+    toggleIconState();
+  }
+
+  if ("pickingSatellite" in prevState) {
+    const picking = globalState.get("pickingSatellite");
+
+    for (let i = 0; i < selectSatelliteBtn.length; i++) {
+      if (!picking) {
+        selectSatelliteBtn[i].innerText = "Select Satellite";
+      } else {
+        selectSatelliteBtn[i].innerText =
+          "Click on a satellite (Press here to Cancel)";
+      }
     }
   }
-}
 
-function getPassingSatellites() {
-  if (!satellites || typeof satellites.instanceCount === "undefined") {
-    return [];
+  if ("collision_prediction_satellite" in prevState) {
+    const sat_name = globalState.get("collision_prediction_satellite");
+    document.getElementById("satellite-collision").value = sat_name;
   }
-
-  const passingSatellites = [];
-  for (let instanceId = 0; instanceId < satellites.instanceCount; instanceId++) {
-    const id = satellites.getIdByInstanceId(instanceId);
-    const name = satellites.instanceIdToDataMap[instanceId]?.name || `${id}`;
-    passingSatellites.push({id, name});
-  }
-  return passingSatellites;
-}
-
-function populateDropdown(satellites, dropdown) {
-  dropdown.innerHTML = "";
-
-  if (!satellites || satellites.length === 0) {
-    const noPassingSatellites = document.createElement("a");
-    noPassingSatellites.textContent = "No passing satellites";
-    noPassingSatellites.classList.add("block", "px-4", "py-2", "text-gray-500");
-    dropdown.appendChild(noPassingSatellites);
-    return;
-  }
-  satellites.forEach((satellite) => {
-    const option = document.createElement("a");
-    option.textContent = satellite.name;
-    option.dataset.satelliteId = satellite.id;
-    option.classList.add("block", "px-4", "py-2", "hover:bg-gray-700", "cursor-pointer");
-    option.addEventListener("click", () => focusSatellite(satellite.id));
-    dropdown.appendChild(option);
-  })
-}
-
-function focusSatellite(id) {
-  let clicked_satellite = satellites.getInstanceIdById(id);
-  glState.set({
-    clickedSatellite: clicked_satellite,
-  });
 }
 
 export function initPredictions() {
@@ -128,19 +103,60 @@ export function initPredictions() {
     });
 
   document
-    .getElementById("re-entry-prediction-header")
+    .getElementById("collision-prediction-header")
     .addEventListener("click", function () {
-      toggleSection("re-entry-content", "arrow-re-entry");
+      toggleSection("collision-content", "arrow-collision");
+    });
+
+  // document
+  //   .getElementById("calculate-pass-button")
+  //   .addEventListener("click", function () {});
+
+  document
+    .getElementById("calculate-collision-button")
+    .addEventListener("click", function () {
+      const sat_name = document.getElementById("satellite-collision").value;
+      let noradId = null;
+      for (const [instanceId, data] of Object.entries(
+        satellites.instanceIdToDataMap
+      )) {
+        if (data.name === sat_name) {
+          noradId = data.satellite_id;
+          break;
+        }
+      }
+      fetch(`/api/predictions/predict_collision/${noradId}`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          let other_sat_name;
+          for (const [instanceId, instance_data] of Object.entries(
+            satellites.instanceIdToDataMap
+          )) {
+            if (instance_data.satellite_id === data.other_satellite_id) {
+              other_sat_name = instance_data.name;
+              break;
+            }
+          }
+          document.getElementById(
+            "collision-prediction-result"
+          ).innerHTML = `Has a ${data["probability"]}% chance to collide with ${other_sat_name}`;
+        })
+        .catch((error) => {
+          console.error("Error fetching collision prediction:", error);
+          document.getElementById("collision-prediction-result").innerHTML =
+            "No collisions detected";
+        });
     });
 
   document
-    .getElementById("calculate-pass-button")
-    .addEventListener("click", function () {});
-
-  document
-    .getElementById("calculate-re-entry-button")
-    .addEventListener("click", function () {
-      // Future use
+    .getElementById("pick-satellite-collision-button")
+    .addEventListener("click", (event) => {
+      globalState.set({
+        pickingSatellite: !globalState.get("pickingSatellite"),
+        pickingLocation: false,
+      });
     });
 
   const location_btns = document.querySelectorAll(".get-location-btn");
@@ -167,7 +183,7 @@ export function initPredictions() {
       if (picking == null) {
         picking = false;
       }
-      globalState.set({ pickingLocation: !picking });
+      globalState.set({ pickingLocation: !picking, pickingSatellite: false });
       let pick_passing = false;
       let pick_pass_prediction = false;
       if (!picking) {
@@ -185,12 +201,23 @@ export function initPredictions() {
     });
   });
 
-  // Fix for later
-  document.addEventListener("click", function (event) {
-    if (event.target.closest("#toggle-section")) {
-      toggleIconState();
-    }
-  });
+  document
+    .getElementById("toggle-section")
+    .addEventListener("hover", function (event) {
+      const passing_location = globalState.get("passing_location");
+      if (!passing_location) {
+        document.body.style.cursor = "default";
+      }
+    });
+
+  document
+    .getElementById("toggle-section")
+    .addEventListener("click", function (event) {
+      const passing_location = globalState.get("passing_location");
+      if (passing_location) {
+        globalState.set({ togglePassing: !globalState.get("togglePassing") });
+      }
+    });
 }
 
 function toggleSection(contentId, arrowId) {
@@ -212,7 +239,7 @@ export function toggleIconState() {
   const togglePath = document.getElementById("toggle-path");
   const isDisplayingPassing = globalState.get("togglePassing");
 
-  if (!isDisplayingPassing) {
+  if (isDisplayingPassing) {
     const location = globalState.get("passing_location");
     if (!location) {
       return;
@@ -222,14 +249,12 @@ export function toggleIconState() {
       "d",
       "M192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192s-86-192-192-192L192 64zm192 96a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"
     );
-    globalState.set({ togglePassing: true });
   } else {
     toggleText.innerText = "Displaying All Satellites";
     togglePath.setAttribute(
       "d",
       "M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128l-192 0c-70.7 0-128-57.3-128-128s57.3-128 128-128l192 0zM576 256c0-106-86-192-192-192L192 64C86 64 0 150 0 256S86 448 192 448l192 0c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
     );
-    globalState.set({ togglePassing: false });
   }
-  glState.set({clickedSatellite: null});
+  glState.set({ clickedSatellite: null });
 }

@@ -1,5 +1,7 @@
 html {
   height: 100%;
+  overflow: hidden;
+  width: 100%;
 }
 
 body {
@@ -8,6 +10,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  width: 100%;
   padding: 0;
 }
 
@@ -30,10 +33,14 @@ body {
   --aug-border-y: 1px;
   --aug-border-x: 1px;
   --aug-border-bg: linear-gradient(to bottom right, teal, #00b4d8);
+  overflow: hidden;
+  position: relative;
 }
 
-.popup-container-extended .popup-window {
+.popup-content-extended,
+.mobile-popup-content-extended {
   overflow-y: auto;
+  max-height: 95%;
 }
 
 .loading-text::after {
@@ -63,34 +70,11 @@ body {
   }
 }
 
-/* ############ Reset Position (Compass) ############### */
-
-.reset-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.reset-icon {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-}
-
-#ui {
+.ui {
   pointer-events: none;
 }
 
-#ui * {
+.ui * {
   pointer-events: auto;
 }
 
@@ -150,7 +134,7 @@ span.ripple {
 
 /* Circular handles */
 .noUi-handle {
-  background-color: #5eead4; 
+  background-color: #5eead4;
   border: none;
   border-radius: 50%;
   width: 16px !important;

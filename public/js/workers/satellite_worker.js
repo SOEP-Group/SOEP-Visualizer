@@ -9,9 +9,11 @@ import {
   degreesLong,
 } from "../../libs/satellite.js/dist/satellite.es.js";
 
-import { scalePosition } from "../utils/utils.js";
+import { geodeticToThree, scalePosition } from "../utils/utils.js";
 
 let tle_data = [];
+
+const EARTH_RADIUS = 6378;
 
 self.onmessage = async function (event) {
   if (event.data.command === "update") {
@@ -47,12 +49,11 @@ self.onmessage = async function (event) {
       const sgp4Result = propagate(satrec, now);
 
       if (sgp4Result.position && sgp4Result.velocity) {
-        let eciCoords = sgp4Result.position;
+        let position = sgp4Result.position;
         const gmst = gstime(now);
-        let position = eciToEcf(eciCoords, gmst);
-        const velocity = sgp4Result.velocity;
+        let velocity = sgp4Result.velocity;
 
-        const geodeticCoordinates = eciToGeodetic(eciCoords, gmst);
+        const geodeticCoordinates = eciToGeodetic(position, gmst);
         const latitude = geodeticCoordinates.latitude;
         const longitude = geodeticCoordinates.longitude;
         const altitude = geodeticCoordinates.height;

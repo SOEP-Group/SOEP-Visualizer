@@ -1,10 +1,12 @@
 import { subscribe } from "../eventBuss.js";
-import { State } from "../globalState.js";
+import { State, globalState } from "../globalState.js";
 import { initSettings } from "./settings.js";
 import { initHeader } from "./header.js";
 import { initPredictions } from "./predictions.js";
+import { initEvents } from "./events.js";
 import { initResizer } from "./resizer.js";
 import { initPopup } from "./popup.js";
+import { initToggleView } from "./toggle_view.js";
 import { glState } from "../gl/index.js";
 import { initOrbit } from "../gl/orbit.js";
 import { satellites } from "../gl/scene.js";
@@ -14,13 +16,34 @@ export * from "./settings.js";
 export * from "./header.js";
 export * from "./resizer.js";
 export * from "./predictions.js";
+export * from "./events.js";
 export * from "./popup.js";
+export * from "./toggle_view.js";
 
 const hoverTooltip = document.getElementById("hover-tooltip");
+subscribe("onGlobalStateChanged", onGlobalStateChanged);
+
+function onGlobalStateChanged(prevState) {
+  if ("visible_satellites" in prevState) {
+    document.getElementById("sat-count").innerHTML = `${
+      globalState.get("visible_satellites").length
+    }`;
+  }
+}
+
+function hideTooltip() {
+  hoverTooltip.classList.add("hidden");
+}
+
+subscribe("glStateChanged", (prevState) => {
+  if ("clickedSatellite" in prevState) {
+    hideTooltip();
+  }
+});
 
 subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
   if (instanceId === -1) {
-    hoverTooltip.classList.add("hidden");
+    hideTooltip();
   } else {
     const satData = satellites.instanceIdToDataMap[instanceId];
 
@@ -36,6 +59,8 @@ subscribe("hoveredSatellite", ({ instanceId, mouseX, mouseY }) => {
   }
 });
 
+document.addEventListener("touchstart", hideTooltip);
+
 subscribe("appStartup", onStart);
 // subscribe("glStateChanged", onGlStateChanged);
 // const satellite_default = document.getElementById("satellite-info-default");
@@ -46,9 +71,11 @@ function onStart() {
   initHeader();
   initSettings();
   initPredictions();
+  initEvents();
   initResizer();
   initPopup();
   initOrbit();
+  initToggleView();
   initGraphs();
 
   const tabs = document.querySelectorAll(".tab");
@@ -72,8 +99,8 @@ const initialUIState = { currentGraphics: undefined };
 
 export const uiState = new State("uiStateChanged", initialUIState);
 
-// function onGlStateChanged(changedStates) {
-//   if (changedStates["clickedSatellite"]) {
+// function onGlStateChanged(prevState) {
+//   if ("clickedSatellite" in prevState) {
 //     const clicked_satellite = glState.get("clickedSatellite");
 //     if (clicked_satellite === undefined || clicked_satellite === null) {
 //       satellite_default.classList.remove("hidden");

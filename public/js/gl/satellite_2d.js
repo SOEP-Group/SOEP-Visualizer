@@ -26,6 +26,7 @@ export class Satellites {
   ids;
   speeds;
   instanceIdToSatelliteIdMap = {};
+  instanceIdToDataMap = {};
   baseColor = new Color().setHex(0x289dba);
   hoverColor = new Color(1, 1, 0);
   hoveredSatellite = -1;
@@ -48,7 +49,6 @@ export class Satellites {
     this.animate = this.createAnimateFunction();
     this.animate();
 
-    this.instanceIdToDataMap = {};
     data.forEach((satellite, index) => {
       this.instanceIdToDataMap[index] = {
         name: satellite.name,
@@ -393,6 +393,11 @@ export class Satellites {
     );
   }
 
+  getName(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.name : null;
+  }
+
   getOrbitDistance(instanceId) {
     const data = this.instanceIdToDataMap[instanceId];
     return data
@@ -552,5 +557,9 @@ export class Satellites {
     const distance = R * c;
 
     return distance <= radius;
+  }
+
+  instanceIdsToArray() {
+    return Object.keys(this.instanceIdToSatelliteIdMap).map(Number);
   }
 }

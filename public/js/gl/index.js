@@ -15,6 +15,7 @@ import {
 } from "./renderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { initScene, earth, satellites, addSatellites } from "./scene.js";
+import { getMatchedSatellites, isFiltered } from "../ui/filter.js";
 export * from "./renderer.js";
 export * from "./scene.js";
 export * from "./debug.js";
@@ -58,10 +59,6 @@ function onStart() {
   initDebug();
   // loadAllModels();
   // initViewer();
-
-  glState.set({
-    focusedTarget: { target: earth.getGroup().id },
-  });
 
   const gl_viewport = document.getElementById("gl_viewport");
   gl_viewport.addEventListener(
@@ -137,9 +134,19 @@ function onViewportClick(event) {
         globalState.set({ passing_location: { lat, long } });
       } else if (globalState.get("pick_pass_prediction")) {
         globalState.set({ pass_prediction_location: { lat, long } });
+      } else if (globalState.get("pick_events")) {
+        globalState.set({ events_location: { lat, long } });
       }
       globalState.set({ pickingLocation: false });
     }
+    return;
+  } else if (globalState.get("pickingSatellite")) {
+    let clicked_satellite = satellites.checkForClick(mouse, camera);
+    const sat_name = satellites.getName(clicked_satellite);
+    globalState.set({
+      collision_prediction_satellite: sat_name,
+      pickingSatellite: false,
+    });
     return;
   }
   let clicked_satellite = satellites.checkForClick(mouse, camera);
@@ -184,14 +191,27 @@ function onLoadError(url) {
   console.error("There was an error loading " + url);
 }
 
-function onStateChanged(changedStates) {
-  if (changedStates["clickedSatellite"]) {
+function onStateChanged(prevState) {
+  if ("clickedSatellite" in prevState) {
     const clicked_satellite = glState.get("clickedSatellite");
     if (clicked_satellite === undefined || clicked_satellite === null) {
       glState.set({
         focusedTarget: { target: earth.getGroup().id },
       });
       satellites.setFocused(-1);
+
+      const visible_satellites = globalState.get("visible_satellites");
+      const location_mask = globalState.get("location_mask");
+      const is_filtered = isFiltered(
+        globalState.get("filter_parameters"),
+        prevState["clickedSatellite"]
+      );
+      if (
+        is_filtered ||
+        location_mask.includes(prevState["clickedSatellite"])
+      ) {
+        publish("onGlobalStateChanged", { visible_satellites });
+      }
     } else {
       glState.set({
         focusedTarget: {
@@ -204,49 +224,87 @@ function onStateChanged(changedStates) {
   }
 }
 
-function onGlobalStateChanged(changedStates) {
-  if (changedStates["pickingLocation"]) {
+function onGlobalStateChanged(prevState) {
+  if ("pickingLocation" in prevState) {
     const picking = globalState.get("pickingLocation");
     if (picking) {
       satellites.hide();
     } else {
-      satellites.show();
+      satellites.unmask(globalState.get("visible_satellites"));
     }
     earth.togglePickingLocation(picking);
   }
-  if (changedStates["togglePassing"]) {
+  if ("togglePassing" in prevState) {
     const radius = 500;
     const isDisplayingPassing = globalState.get("togglePassing");
     const location = globalState.get("passing_location");
-    let out_of_range = satellites
-      .getSatellitesOutOfRange(location, radius)
-      .sort();
-    function updateSatelliteVisibility() {
-      if (!globalState.get("togglePassing")) return;
-      const current_location = globalState.get("passing_location");
-      const current_out_of_range = satellites
-        .getSatellitesOutOfRange(current_location, radius)
-        .sort();
-
-      const arraysDiffer =
-        current_out_of_range.length !== out_of_range.length ||
-        current_out_of_range.some(
-          (satellite, index) => satellite !== out_of_range[index]
-        );
-
-      if (arraysDiffer) {
-        satellites.show();
-        satellites.mask(current_out_of_range);
-        out_of_range = current_out_of_range;
-      }
-      requestAnimationFrame(updateSatelliteVisibility);
-    }
-
     if (isDisplayingPassing && location) {
-      satellites.mask(out_of_range);
+      let out_of_range = satellites
+        .getSatellitesOutOfRange(location, radius)
+        .sort();
+      function updateSatelliteVisibility() {
+        if (!globalState.get("togglePassing")) return;
+        const current_location = globalState.get("passing_location");
+        const current_out_of_range = satellites
+          .getSatellitesOutOfRange(current_location, radius)
+          .sort();
+
+        const arraysDiffer =
+          current_out_of_range.length !== out_of_range.length ||
+          current_out_of_range.some(
+            (satellite, index) => satellite !== out_of_range[index]
+          );
+
+        const picking = globalState.get("pickingLocation");
+        if (arraysDiffer && !picking) {
+          globalState.set({ location_mask: current_out_of_range });
+          out_of_range = current_out_of_range;
+        }
+        requestAnimationFrame(updateSatelliteVisibility);
+      }
+      globalState.set({ location_mask: out_of_range });
       updateSatelliteVisibility();
     } else {
-      satellites.show();
+      globalState.set({ location_mask: [] });
     }
+  }
+
+  if ("visible_satellites" in prevState) {
+    const new_visible_satellites = globalState.get("visible_satellites") || [];
+    const clicked_satellite = glState.get("clickedSatellite");
+    if (
+      clicked_satellite &&
+      !new_visible_satellites.includes(clicked_satellite)
+    ) {
+      new_visible_satellites.push(clicked_satellite);
+    }
+    satellites.hide();
+    satellites.unmask(new_visible_satellites);
+  }
+
+  if ("location_mask" in prevState) {
+    const shouldMaskLocation = globalState.get("togglePassing");
+    const location_mask = shouldMaskLocation
+      ? globalState.get("location_mask") || []
+      : [];
+    const filter_params = globalState.get("filter_parameters") || {};
+    let filtered_satellites = getMatchedSatellites(
+      filter_params,
+      location_mask
+    );
+    globalState.set({ visible_satellites: filtered_satellites });
+  }
+
+  if ("filter_parameters" in prevState) {
+    const shouldMaskLocation = globalState.get("togglePassing");
+    const location_mask = shouldMaskLocation
+      ? globalState.get("location_mask") || []
+      : [];
+    const filter_params = globalState.get("filter_parameters") || {};
+    let filtered_satellites = getMatchedSatellites(
+      filter_params,
+      location_mask
+    );
+    globalState.set({ visible_satellites: filtered_satellites });
   }
 }
