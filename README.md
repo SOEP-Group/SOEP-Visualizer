@@ -1,6 +1,6 @@
 # SOEP
 
-Satellite Orbit and Event Predictor (SOEP) is a C++ application that predicts satellite passes, collision risks, orbital decay, and re-entry events. It provides real-time data, visualizations, and a interface for satellite tracking and space object management.
+The Satellite Orbit and Event Predictor (SOEP) is a website that calculates and visualizes when satellites pass a specified geographical location, collision risks between two chosen satellites, orbital trajectories, and re-entry of satellites. It offers 3D visualizations of the earth and its active satellites in real-time.
 
 # Installation 
 
@@ -26,4 +26,6 @@ Satellite Orbit and Event Predictor (SOEP) is a C++ application that predicts sa
 ## 3. Open a web browser and navigate to
    ```bash
    http://localhost:3000
-  
+   ```
+
+NOTE: You need the .env file to run the application.
