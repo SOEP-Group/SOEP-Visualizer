@@ -238,7 +238,7 @@
         </div>
       </div>
 
-      <div class="relative w-full max-w-4xl mx-auto scrollbar-hide flex items-center border-b border-gray-300" id="tabs_wrapper">
+      <div class="absolute top-0 left-0 w-full flex items-center border-b-2 border-gray-300 bg-black" id="tabs_wrapper">
         <!-- Left scroll button -->
         <button id="scroll-left" 
           class="absolute top-0 left-0 z-10 h-full px-3 flex items-center justify-center text-white bg-black hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed" 
@@ -248,7 +248,7 @@
         </button>
 
         <!-- Tabs -->
-        <div class="tabs flex flex-nowrap space-x-1 overflow-x-auto items-center scrollbar-hide" id="tabs-container">
+        <div class="flex flex-nowrap space-x-1 overflow-x-auto items-center scrollbar-hide pl-0 h-full" id="tabs-container">
 
           <!-- Events -->
           <button data-ripple="true" class="tab group relative flex-shrink-0" id="events-tab" title="Events">
@@ -331,12 +331,12 @@
           </button>
 
           <!-- Community -->
-          <button data-ripple="true" class="tab group relative flex-shrink-0" title="Community">
+          <!-- <button data-ripple="true" class="tab group relative flex-shrink-0" title="Community">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </svg>
-          </button>          
+          </button> -->
 
           <!-- Donate -->
           <button data-ripple="true" class="tab group relative flex-shrink-0" title="Donate">
@@ -369,7 +369,7 @@
 
       <!-- Content -->
       <!-- Events -->
-      <div class="tab-content mt-4 h-full p-2 overflow-y-auto">
+      <div class="tab-content pt-16 h-full p-4 overflow-y-auto">
         <div class="tab-panel space-y-6">
           <div class="flex items-center justify-between">
             <h2 class="text-2xl font-semibold">Events</h2>
@@ -686,7 +686,7 @@
         </div>
 
         <!-- Community Tab Content -->
-        <div id="community-tab" class="tab-panel">
+        <!-- <div id="community-tab" class="tab-panel">
           <h2 class="text-2xl font-semibold text-white">Join Our Community</h2>
           <p class="mt-2 text-sm md:text-base text-gray-400">
             Connect with a vibrant community of satellite enthusiasts, share your ideas, and stay updated with the latest features. Our Discord server offers a space for discussions, Q&A, and event announcements.
@@ -699,17 +699,34 @@
             Have feedback or suggestions? Reach out to us at <strong>soep.helper@gmail.com</strong> or visit our 
             <a href="https://github.com/SOEP-Group/SOEP-Visualizer/issues" class="text-teal-300 hover:underline">GitHub Issues Page</a>.
           </p>
-        </div>
+        </div> -->
 
         <!-- Donate Tab Content -->
         <div id="donate-tab" class="tab-panel">
           <h2 class="text-2xl font-semibold text-white">Support Our Project</h2>
           <p class="mt-2 text-sm md:text-base text-gray-400">
-            Your contributions make it possible for us to maintain and enhance the SOEP platform. By donating, you help us continue delivering valuable tools and features for satellite enthusiasts worldwide.
+              Your contributions make it possible for us to maintain and enhance the SOEP platform. By donating, you help us
+              continue delivering valuable tools and features for satellite enthusiasts worldwide.
           </p>
           <a href="https://buymeacoffee.com/soep_tech" class="btn-blue mt-4 inline-block text-center">
-            Donate ❤️
+              Donate ❤️
           </a>
+      
+          <!-- Community Section -->
+          <h2 class="text-2xl font-semibold text-white mt-8">Join Our Community</h2>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+              Connect with a vibrant community of satellite enthusiasts, share your ideas, and stay updated with the latest
+              features. Our Discord server offers a space for discussions, Q&A, and event announcements.
+          </p>
+          <a href="https://discord.gg/KugYbYKX2k" class="btn-blue mt-4 inline-block text-center">
+              Join the Discord Community
+          </a>
+          <h3 class="mt-6 text-lg font-semibold text-gray-200">Contact Us</h3>
+          <p class="mt-2 text-sm md:text-base text-gray-400">
+              Have feedback or suggestions? Reach out to us at <strong>soep.helper@gmail.com</strong> or visit our
+              <a href="https://github.com/SOEP-Group/SOEP-Visualizer/issues" class="text-teal-300 hover:underline">GitHub
+                  Issues Page</a>.
+          </p>
         </div>
 
         <!-- Settings -->
@@ -736,7 +753,7 @@
           </button>
         </div>
       </div>
-      <div class="mt-auto text-center text-gray-400 text-sm py-4 border-t border-gray-700">
+      <div class="mt-auto text-center text-gray-400 text-xs py-2 border-t border-gray-700">
         &copy; SOEP. All rights reserved.
       </div>
     </div>
