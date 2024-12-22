@@ -237,100 +237,119 @@
           </svg>
         </div>
       </div>
-      <!-- Tabs -->
-      <div class="tabs flex space-x-4 border-b border-gray-300">
 
-        <!-- Calender (Events) -->
-        <button data-ripple="true" class="tab group relative" id="events-tab" title="Events">
-          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-            fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" />
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-          </svg>
+      <div class="relative w-full max-w-4xl mx-auto scrollbar-hide flex items-center border-b border-gray-300" id="tabs_wrapper">
+        <!-- Left scroll button -->
+        <button id="scroll-left" 
+          class="absolute top-0 left-0 z-10 h-full px-3 flex items-center justify-center text-white bg-black hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed" 
+          data-ripple="true"
+          aria-label="Scroll Left">
+          &#x276E;
         </button>
 
-        <!-- Predictions -->
-        <button data-ripple="true" class="tab group relative" id="prediction-tab-icon" title="Predictions">
-          <!-- Satellite -->
-          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-            fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <g id="Satellite" transform="matrix(0.0665082,5.91071e-18,-5.91071e-18,0.0665082,-51.1746,-44.2688)">
-              <g transform="matrix(1.20588,0,0,1.23214,-193.299,-187.108)">
-                <path
-                  d="M982,764.627L982,851.681C982,857.376 977.276,862 971.456,862L924.544,862C918.724,862 914,857.376 914,851.681L914,764.627C914,758.932 918.724,754.308 924.544,754.308L971.456,754.308C977.276,754.308 982,758.932 982,764.627Z"
-                  style="fill:none;stroke:currentColor;stroke-width:23.13px;" />
-              </g>
-              <g transform="matrix(0.965225,3.09049e-18,3.09049e-18,1,39.1654,-0.345951)">
-                <path
-                  d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
-                  style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
-              </g>
-              <g transform="matrix(-0.965225,-3.09049e-18,3.09049e-18,1,1860.59,-0.345951)">
-                <path
-                  d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
-                  style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
-              </g>
-              <g transform="matrix(1,-6.38485e-17,-6.38485e-17,0.281568,1.3776,722.692)">
-                <path
-                  d="M956,886.637L956,921.363C956,936.065 952.639,948 948.5,948C944.361,948 941,936.065 941,921.363L941,886.637C941,871.935 944.361,860 948.5,860C952.639,860 956,871.935 956,886.637Z"
-                  style="fill:none;stroke:currentColor;stroke-width:25.58px;" />
-              </g>
-              <g transform="matrix(1,-5.0114e-17,-5.0114e-17,0.43611,1.3776,499.945)">
-                <path
-                  d="M956,877.197L956,930.803C956,940.294 952.639,948 948.5,948C944.361,948 941,940.294 941,930.803L941,877.197C941,867.706 944.361,860 948.5,860C952.639,860 956,867.706 956,877.197Z"
-                  style="fill:none;stroke:currentColor;stroke-width:24.36px;" />
-              </g>
-              <g transform="matrix(-1.1427,-1.39941e-16,2.39363e-16,-1.95455,2052.51,2741.52)">
-                <path
-                  d="M908.878,909L964.939,909L1021,909C1021,921.15 995.901,931 964.939,931C933.977,931 908.878,921.15 908.878,909Z"
-                  style="fill:none;stroke:currentColor;stroke-width:15.65px;" />
-              </g>
-            </g>
-          </svg>
+        <!-- Tabs -->
+        <div class="tabs flex flex-nowrap space-x-2 overflow-x-auto items-center scrollbar-hide" id="tabs-container">
 
-          <!-- Question mark -->
-          <svg class="absolute right-1 top-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12" />
-          </svg>
+          <!-- Events -->
+          <button data-ripple="true" class="tab group relative flex-shrink-0" id="events-tab" title="Events">
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
+            </svg>
+          </button>
+
+          <!-- Predictions -->
+          <button data-ripple="true" class="tab group relative flex-shrink-0" id="prediction-tab-icon" title="Predictions">
+            <!-- Satellite -->
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <g id="Satellite" transform="matrix(0.0665082,5.91071e-18,-5.91071e-18,0.0665082,-51.1746,-44.2688)">
+                <g transform="matrix(1.20588,0,0,1.23214,-193.299,-187.108)">
+                  <path
+                    d="M982,764.627L982,851.681C982,857.376 977.276,862 971.456,862L924.544,862C918.724,862 914,857.376 914,851.681L914,764.627C914,758.932 918.724,754.308 924.544,754.308L971.456,754.308C977.276,754.308 982,758.932 982,764.627Z"
+                    style="fill:none;stroke:currentColor;stroke-width:23.13px;" />
+                </g>
+                <g transform="matrix(0.965225,3.09049e-18,3.09049e-18,1,39.1654,-0.345951)">
+                  <path
+                    d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
+                    style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
+                </g>
+                <g transform="matrix(-0.965225,-3.09049e-18,3.09049e-18,1,1860.59,-0.345951)">
+                  <path
+                    d="M998,817L986,817L986,801L998,801L998,795C998,787.273 1004.27,781 1012,781L1112.26,781C1119.99,781 1126.26,787.273 1126.26,795L1126.26,823C1126.26,830.727 1119.99,837 1112.26,837L1012,837C1004.27,837 998,830.727 998,823L998,817Z"
+                    style="fill:none;stroke:currentColor;stroke-width:28.69px;" />
+                </g>
+                <g transform="matrix(1,-6.38485e-17,-6.38485e-17,0.281568,1.3776,722.692)">
+                  <path
+                    d="M956,886.637L956,921.363C956,936.065 952.639,948 948.5,948C944.361,948 941,936.065 941,921.363L941,886.637C941,871.935 944.361,860 948.5,860C952.639,860 956,871.935 956,886.637Z"
+                    style="fill:none;stroke:currentColor;stroke-width:25.58px;" />
+                </g>
+                <g transform="matrix(1,-5.0114e-17,-5.0114e-17,0.43611,1.3776,499.945)">
+                  <path
+                    d="M956,877.197L956,930.803C956,940.294 952.639,948 948.5,948C944.361,948 941,940.294 941,930.803L941,877.197C941,867.706 944.361,860 948.5,860C952.639,860 956,867.706 956,877.197Z"
+                    style="fill:none;stroke:currentColor;stroke-width:24.36px;" />
+                </g>
+                <g transform="matrix(-1.1427,-1.39941e-16,2.39363e-16,-1.95455,2052.51,2741.52)">
+                  <path
+                    d="M908.878,909L964.939,909L1021,909C1021,921.15 995.901,931 964.939,931C933.977,931 908.878,921.15 908.878,909Z"
+                    style="fill:none;stroke:currentColor;stroke-width:15.65px;" />
+                </g>
+              </g>
+            </svg>
+
+            <!-- Question mark -->
+            <svg class="absolute right-1 top-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12" />
+            </svg>
+          </button>
+
+          <!-- Graphs -->
+          <button data-ripple="true" class="tab group relative flex-shrink-0" title="Graphs">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v15a1 1 0 0 0 1 1h15M8 16l2.5-5.5 3 3L17.273 7 20 9.667" />
+            </svg>
+            <!-- Hover Text -->
+            <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+              Graphs
+            </span> -->
+          </button>
+
+          <!-- Info -->
+          <button data-ripple="true" class="tab group relative flex-shrink-0" title="Info">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+          </button>
+
+          <!-- Settings -->
+          <button data-ripple="true" class="tab group relative flex-shrink-0" title="Settings">
+            <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z" />
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+            </svg>
+          </button>
+
+        </div>
+
+        <!-- Right scroll button -->
+        <button id="scroll-right" 
+          class="absolute top-0 right-0 z-10 h-full px-3 flex items-center justify-center text-white bg-black hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          data-ripple="true"
+          aria-label="Scroll Right">
+          &#x276F;
         </button>
-
-        <!-- Graphs -->
-        <button data-ripple="true" class="tab group relative" title="Graphs">
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v15a1 1 0 0 0 1 1h15M8 16l2.5-5.5 3 3L17.273 7 20 9.667" />
-          </svg>
-          <!-- Hover Text -->
-          <!-- <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-            Graphs
-          </span> -->
-        </button>
-
-        <!-- Info -->
-        <button data-ripple="true" class="tab group relative" title="Info">
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg>
-        </button>
-
-        <!-- Settings -->
-        <button data-ripple="true" class="tab group relative" title="Settings">
-          <svg class="h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-            fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z" />
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-          </svg>
-        </button>
-
       </div>
 
       <!-- Content -->
