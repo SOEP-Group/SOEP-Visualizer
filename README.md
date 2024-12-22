@@ -1,6 +1,6 @@
 # SOEP
 
-The Satellite Orbit and Event Predictor (SOEP) is a website that calculates and visualizes when satellites pass a specified geographical location, collision risks between two chosen satellites, orbital trajectories, and re-entry of satellites. It offers 3D visualizations of the earth and its active satellites in real-time.
+SOEP (Satellite Orbit and Event Predictor) is a website that calculates and visualizes when satellites pass a specified geographical location, collision risks between two chosen satellites, orbital trajectories, and re-entry of satellites. It offers 3D visualizations of the earth and its active satellites in real-time.
 
 # Installation 
 
@@ -29,3 +29,34 @@ The Satellite Orbit and Event Predictor (SOEP) is a website that calculates and 
    ```
 
 NOTE: You need the .env file to run the application.
+
+# Live Demo
+
+Check out the live version of SOEP here: www.soep.tech
+
+# Contributing
+
+We’re excited to open this project to the community! Contributions are welcome—whether it's fixing bugs, adding features, or improving the design.
+
+## How to Contribute
+
+1. Fork the repository.
+
+2. Create a new branch:
+
+   ```git checkout -b feature/new-feature
+   ```
+
+3. Commit your changes:
+   ```git commit -m "Add new feature"
+   ```
+
+4. Push to your branch:
+   ```git push origin feature/new-feature
+   ```
+
+5. Open a Pull Request!
+
+## Join Us on Discord!
+
+Got questions or ideas? Join our Discord community to chat with the team and other contributors: [Join Discord] (https://discord.gg/e8K6QEEjKD)
