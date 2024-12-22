@@ -7,7 +7,7 @@ export function initializeScrollButtons(
     const isAtStart = tabsContainer.scrollLeft <= 0;
     const isAtEnd =
       Math.ceil(tabsContainer.scrollLeft + tabsContainer.clientWidth) >=
-      tabsContainer.scrollWidth;
+      tabsContainer.scrollWidth - 1;
 
     const isScrollable = tabsContainer.scrollWidth > tabsContainer.clientWidth;
 
