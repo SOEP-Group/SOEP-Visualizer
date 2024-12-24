@@ -3,6 +3,7 @@ import { globalState } from "../globalState.js";
 import { isMobileScreen } from "./utils.js";
 import { satellites } from "../gl/scene.js";
 import { glState } from "../gl/index.js";
+import { initializeScrollButtons } from "./scrollArrow.js";
 import {
   toggleDropdown,
   fetchFilterData,
@@ -24,6 +25,9 @@ const clearFiltersButton = document.getElementById("clear-filters-button");
 const applyFiltersButton = document.getElementById("apply-filters-button");
 const satelliteDropdown = document.getElementById("satellite-dropdown");
 const searchInput = document.getElementById("satellite-search");
+const tabsContainer = document.getElementById("tabs-container");
+const scrollLeftButton = document.getElementById("scroll-left");
+const scrollRightButton = document.getElementById("scroll-right");
 
 let firstMenuOpen = true;
 
@@ -93,6 +97,11 @@ export function initHeader() {
     event.stopPropagation();
     const menuClosed = dropdownMenu.classList.contains("-translate-x-full");
     if (menuClosed) {
+      initializeScrollButtons(
+        tabsContainer,
+        scrollLeftButton,
+        scrollRightButton
+      );
       return openMenu();
     }
     closeMenu();
