@@ -156,3 +156,13 @@ span.ripple {
 .noUi-target:hover {
   border-color: #818180;
 }
+
+/* Hide scrollbar for tabs container */
+#tabs-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#tabs-container::-webkit-scrollbar {
+  display: none;
+}

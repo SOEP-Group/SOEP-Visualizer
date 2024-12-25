@@ -56,7 +56,10 @@ app.use(function (req, res, next) {
 app.use("/", index_routes);
 app.use("/api/", api_routes);
 
-module.exports = app;
+app.use((req, res, next) => {
+  console.error(`404 Error - Page not found: ${req.originalUrl}`);
+  res.status(404).render("404", { url: req.originalUrl });
+});
 
 const PORT = process.env.PORT || 3000;
 
@@ -76,3 +79,5 @@ if (require.main === module) {
     console.log(`Server listening on port::${PORT}`);
   });
 }
+
+module.exports = app;
