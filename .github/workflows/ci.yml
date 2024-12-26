@@ -18,6 +18,15 @@ jobs:
         with:
           node-version: "16"
 
+      - name: Set Environment Variables
+        run: |
+          echo DB_USER=${{ secrets.DB_USER }} >> .env.development
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env.development
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env.development
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env.development
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env.development
+          echo NODE_ENV=development >> .env.development
+
       - name: Install dependencies
         run: npm install
 
