@@ -69,6 +69,10 @@ function getAllSatellites() {
   return satelliteList;
 }
 
+export function hideSearchDropdown() {
+  satelliteDropdown.classList.add("hidden");
+}
+
 export function initHeader() {
   subscribe("onGlobalStateChanged", onGlobalStateChanged);
 
