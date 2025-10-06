@@ -1,0 +1,4 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/sh
+
+0 2 * * * cd /server && NODE_ENV=production /usr/local/bin/node scripts/updateSatellites.js >> /var/log/cron.log 2>&1

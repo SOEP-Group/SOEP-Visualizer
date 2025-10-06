@@ -8,7 +8,8 @@
     "build": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css && node generate-sitemap.js",
     "dev": "nodemon",
     "optimize": "node optimize-gltf.js",
-    "test": "cross-env NODE_ENV=development jest"
+    "test": "cross-env NODE_ENV=development jest",
+    "update-satellites": "node scripts/updateSatellites.js"
   },
   "author": "SOEP Team",
   "license": "ISC",
@@ -24,10 +25,10 @@
     "ejs": "^3.1.10",
     "express": "^4.20.0",
     "nouislider": "^15.8.1",
-    "pg": "^8.13.0",
     "pug": "^3.0.3",
     "satellite.js": "^5.0.0",
     "sitemap": "^8.0.0",
+    "sqlite3": "^5.1.7",
     "tailwind-hamburgers": "^1.3.5"
   },
   "devDependencies": {

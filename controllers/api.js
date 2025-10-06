@@ -1,16 +1,42 @@
-const pool = require("../db");
+const db = require("../db");
 const Astronomy = require("astronomy-engine");
 
 exports.getAllSatellites = async function (req, res) {
   // Suck it Alpha
   try {
     const query = `
-      SELECT sd.*, s.name, s.inclination, s.revolution, s.lowest_orbit_distance, s.farthest_orbit_distance,
-            s.launch_date, s.launch_site, s.owner
+      SELECT
+        sd.satellite_id,
+        s.name,
+        s.object_id,
+        s.object_type,
+        s.status,
+        s.owner,
+        s.launch_date,
+        s.launch_site,
+        s.revolution,
+        s.inclination,
+        s.lowest_orbit_distance,
+        s.farthest_orbit_distance,
+        s.rcs,
+        s.description,
+        s.country_code,
+        sd.tle_line1,
+        sd.tle_line2,
+        sd.epoch,
+        sd.mean_motion_dot,
+        sd.mean_motion_ddot,
+        sd.eccentricity,
+        sd.ra_of_asc_node,
+        sd.arg_of_pericenter,
+        sd.mean_anomaly,
+        sd.bstar,
+        sd.updated_at AS tle_updated_at
       FROM satellite_data sd
-      JOIN satellites s ON s.satellite_id = sd.satellite_id;
+      JOIN satellites s ON s.satellite_id = sd.satellite_id
+      ORDER BY s.name ASC;
     `;
-    const result = await pool.query(query);
+    const result = await db.query(query);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.stack });
@@ -19,18 +45,57 @@ exports.getAllSatellites = async function (req, res) {
 
 exports.getFilterData = async function (req, res) {
   try {
-    const query = `
-      SELECT 
-        MIN(revolution) AS min_revolution, MAX(revolution) AS max_revolution,
-        MIN(inclination) AS min_inclination, MAX(inclination) AS max_inclination,
-        MIN(lowest_orbit_distance) AS min_orbit_distance, MAX(farthest_orbit_distance) AS max_orbit_distance,
-        MIN(launch_date) AS min_launch_date, MAX(launch_date) AS max_launch_date,
-        ARRAY_AGG(DISTINCT launch_site) AS launch_sites,
-        ARRAY_AGG(DISTINCT owner) AS owners
+    const statsQuery = `
+      SELECT
+        MIN(revolution) AS min_revolution,
+        MAX(revolution) AS max_revolution,
+        MIN(inclination) AS min_inclination,
+        MAX(inclination) AS max_inclination,
+        MIN(lowest_orbit_distance) AS min_orbit_distance,
+        MAX(farthest_orbit_distance) AS max_orbit_distance,
+        MIN(launch_date) AS min_launch_date,
+        MAX(launch_date) AS max_launch_date
       FROM satellites;
     `;
-    const result = await pool.query(query);
-    res.json(result.rows[0]);
+
+    const launchSitesQuery = `
+      SELECT DISTINCT launch_site
+      FROM satellites
+      WHERE launch_site IS NOT NULL AND launch_site <> ''
+      ORDER BY launch_site;
+    `;
+
+    const ownersQuery = `
+      SELECT DISTINCT owner
+      FROM satellites
+      WHERE owner IS NOT NULL AND owner <> ''
+      ORDER BY owner;
+    `;
+
+    const [{ rows: statsRows }, { rows: launchSiteRows }, { rows: ownerRows }] =
+      await Promise.all([
+        db.query(statsQuery),
+        db.query(launchSitesQuery),
+        db.query(ownersQuery),
+      ]);
+
+    const stats =
+      statsRows[0] || {
+        min_revolution: null,
+        max_revolution: null,
+        min_inclination: null,
+        max_inclination: null,
+        min_orbit_distance: null,
+        max_orbit_distance: null,
+        min_launch_date: null,
+        max_launch_date: null,
+      };
+
+    res.json({
+      ...stats,
+      launch_sites: launchSiteRows.map((row) => row.launch_site),
+      owners: ownerRows.map((row) => row.owner),
+    });
   } catch (err) {
     res.status(500).json({ error: err.stack });
   }
@@ -371,9 +436,14 @@ exports.predictCollision = async function (req, res) {
     const query = `
       SELECT *
       FROM top_collision_probabilities
-      WHERE satellite_id = ${id};
+      WHERE satellite_id = ?;
     `;
-    const result = await pool.query(query);
+    const result = await db.query(query, [id]);
+
+    if (!result.rows.length) {
+      return res.status(404).json({ error: "Collision data not found" });
+    }
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.stack });

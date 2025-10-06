@@ -3,6 +3,7 @@
 Check out the live version of SOEP here: [soep.tech](https://www.soep.tech)
 
 ## Table of Contents
+
 - [SOEP (Satellite Orbit and Event Predictor)](#soep-satellite-orbit-and-event-predictor)
   - [Table of Contents](#table-of-contents)
   - [About the Project](#about-the-project)
@@ -16,7 +17,9 @@ Check out the live version of SOEP here: [soep.tech](https://www.soep.tech)
   - [Get in Touch](#get-in-touch)
 
 ## About the Project
+
 SOEP (Satellite Orbit and Event Predictor) is a platform for satellite tracking, visualization, and event prediction. It provides:
+
 - Real-time 3D Earth-based satellite tracking.
 - Detailed satellite data (orbital parameters, launch info, ownership).
 - Celestial event predictions (sun/moon rise/set, planetary events).
@@ -28,11 +31,13 @@ Whether you are a space enthusiast, amateur astronomer, or just curious about th
 ## Getting Started
 
 ### Prerequisites
+
 - **Node.js** (v14 or higher recommended)
 - **npm** (v6 or higher recommended)
 - **Docker** (optional, if you plan to use the containerized approach)
 
 ### Installation & Running Locally
+
 1. **Clone the repository** or download the source code.
 2. **Navigate** to the project folder.
 3. **Install dependencies**:
@@ -48,22 +53,38 @@ Whether you are a space enthusiast, amateur astronomer, or just curious about th
 > **Note:** You will need a valid `.env` file to run the project in full. Please [get in touch](#get-in-touch) with us to obtain the necessary environment variables.
 
 ### Docker Option
+
 1. **Build the Docker image**:
    ```bash
-   docker build -t my-node-app .
+   docker build -t soep .
    ```
-2. **Run the Docker container**:
+2. **Run the Docker container** (persist the sqlite database locally):
    ```bash
-   docker run -p 3000:3000 my-node-app
+   docker run -d \
+     --name soep \
+     -p 3000:3000 \
+     -v "$(pwd)/data:/server/data" \
+     soep
    ```
-3. Access the application at `http://localhost:3000` in your browser.
+3. **Seed the database (first run only)**:
+   ```bash
+   docker exec soep node scripts/updateSatellites.js
+   ```
+   The entrypoint runs this on startup, but you can rerun it manually any time.
+4. Tail logs to confirm the initial sync:
+   ```bash
+   docker logs -f soep
+   ```
+5. Access the application at `http://localhost:3000` in your browser.
 
 > **Note:** Even with Docker, you still require a valid `.env` file. Please [contact us](#get-in-touch) for details on obtaining it.
 
 ## Contributing
+
 We’re excited to open this project to the community! Contributions are welcome—whether it's fixing bugs, adding features, or improving the design.
 
 Here’s how you can help:
+
 1. **Fork the Repository** on GitHub.
 2. **Create a New Branch** for your feature or bug fix:
    ```bash
@@ -80,6 +101,7 @@ Here’s how you can help:
 5. **Open a Pull Request** and provide a detailed description of your changes.
 
 ## License
+
 ```
 MIT License
 
@@ -105,12 +127,14 @@ SOFTWARE.
 ```
 
 ## Donations
+
 If you find this project useful and would like to support its development, you can buy us a coffee here:  
 [**https://buymeacoffee.com/soep_tech**](https://buymeacoffee.com/soep_tech)
 
 Any contribution goes a long way in helping us maintain and enhance SOEP for the community!
 
 ## Get in Touch
+
 - **Email:** [soep.helper@gmail.com](mailto:soep.helper@gmail.com)
 - **Discord Community:** [https://discord.gg/KugYbYKX2k](https://discord.gg/KugYbYKX2k)
 

@@ -8,12 +8,12 @@ require('dotenv').config({
   const { SitemapStream, streamToPromise } = require('sitemap');
   const { createWriteStream } = require('fs');
   const path = require('path');
-  const pool = require('./db');
+const db = require('./db');
   
   (async () => {
     try {
       const hostname = process.env.HOSTNAME || 'http://localhost:3000';
-      const result = await pool.query('SELECT satellite_id FROM satellites');
+      const result = await db.query('SELECT satellite_id FROM satellites');
       const satelliteIds = result.rows.map((row) => row.satellite_id);
   
       const links = [
@@ -40,8 +40,8 @@ require('dotenv').config({
       console.log('Sitemap generated successfully.');
     } catch (error) {
       console.error('Error generating sitemap:', error);
-    } finally {
-      await pool.end();
-    }
-  })();
+  } finally {
+      await db.close();
+  }
+})();
   
