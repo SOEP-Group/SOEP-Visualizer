@@ -1,4 +1,4 @@
-const pool = require("../db");
+const db = require("../db");
 const path = require("path");
 const fs = require("fs");
 
@@ -24,10 +24,10 @@ exports.RenderSatellite = async function (req, res) {
 
   try {
     const query = `
-      SELECT * FROM satellites WHERE satellite_id = ${satelliteId};
+      SELECT * FROM satellites WHERE satellite_id = ?;
     `;
 
-    const result = await pool.query(query);
+    const result = await db.query(query, [satelliteId]);
     if (result.rows.length > 0) {
       res.render("satellite", result.rows[0], (err, html) => {
         if (err) {

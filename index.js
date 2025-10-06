@@ -3,7 +3,7 @@ const index_routes = require("./routes/index");
 const api_routes = require("./routes/api");
 const path = require("path");
 const cors = require("cors");
-const pool = require("./db");
+const db = require("./db");
 
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
@@ -17,6 +17,8 @@ require("dotenv").config({
 const app = express(),
   bodyParser = require("body-parser");
 
+const allowedOrigin = process.env.NODE_ORIGIN || "*";
+
 app.set("view engine", "ejs");
 
 app.set("views", "./views");
@@ -29,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // It's recommended to pass 
 app.use(
   express.static(path.join(__dirname, "public"), {
     setHeaders: (res) => {
-      res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ORIGIN);
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
       res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
       res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
     },
@@ -44,7 +46,7 @@ app.use(function (req, res, next) {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.header("Access-Control-Allow-Origin", process.env.NODE_ORIGIN);
+  res.header("Access-Control-Allow-Origin", allowedOrigin);
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Cross-Origin-Opener-Policy", "same-origin");
   res.header("Cross-Origin-Embedder-Policy", "require-corp");
@@ -63,12 +65,16 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-function Shutdown() {
+async function Shutdown() {
   console.log("Shutting down server...");
-  pool.end(() => {
-    console.log("Database connection pool has ended.");
+  try {
+    await db.close();
+    console.log("SQLite connection closed.");
+  } catch (error) {
+    console.error("Error closing sqlite connection", error);
+  } finally {
     process.exit(0);
-  });
+  }
 }
 
 process.on("SIGTERM", Shutdown); // e.g., kill command

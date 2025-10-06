@@ -44,6 +44,13 @@ self.onmessage = async function (event) {
 
       const { tle_line1, tle_line2 } = tle;
 
+      if (!tle_line1 || !tle_line2) {
+        console.warn(
+          `Incomplete TLE lines for satellite at index ${startIndex + i}`
+        );
+        continue;
+      }
+
       const satrec = twoline2satrec(tle_line1, tle_line2);
       const now = new Date();
       const sgp4Result = propagate(satrec, now);
