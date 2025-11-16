@@ -163,7 +163,7 @@ async function fetchSatnogsRecord(noradId) {
 
 async function fetchSatelliteDetails(id) {
   const normalized = Number.parseInt(id, 10);
-  if (!Number.isFinite(normalized)) {
+  if (!Number.isFinite(normalized) || normalized <= 0) {
     const error = new Error("Invalid satellite id");
     error.statusCode = 400;
     throw error;
