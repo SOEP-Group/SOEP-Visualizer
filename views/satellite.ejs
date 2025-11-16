@@ -1,8 +1,30 @@
-<div class="flex justify-items-center items-center justify-between">
-  <h2 class="text-2xl"><%= name %></h2>
-  <p>(NoID: <%= satellite_id %>)</p>
+<% const statusColors = {
+  active: { text: "text-emerald-500", dot: "bg-emerald-400" },
+  inactive: { text: "text-rose-500", dot: "bg-rose-400" },
+  unknown: { text: "text-amber-500", dot: "bg-amber-400" },
+}; %>
+<% const statusMeta = statusColors[status_state] || statusColors.unknown; %>
+<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+  <h2 class="text-2xl font-semibold"><%= name %></h2>
+  <p class="text-sm text-slate-400">(NORAD ID: <%= satellite_id %>)</p>
 </div>
 <hr class="border-teal-300" />
+
+<div
+  class="mb-4 mt-3 flex items-center gap-3 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2"
+>
+  <span
+    class="inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full <%= statusMeta.dot %>"
+  >
+    <span class="h-2 w-2 rounded-full bg-white/80"></span>
+  </span>
+  <div class="flex flex-col leading-tight text-sm">
+    <span class="text-xs uppercase tracking-wide text-slate-400">Status</span>
+    <span class="font-semibold <%= statusMeta.text %>">
+      <%= status_label %>
+    </span>
+  </div>
+</div>
 <p>
   <strong>Speed:</strong>
   <span class="satellite_speed_visualizer">0.00km/h</span>
