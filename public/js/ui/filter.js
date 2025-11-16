@@ -75,6 +75,9 @@ function createSlider(id, range, step, minLabelElem, maxLabelElem) {
     Math.ceil(range[1] * 10) / 10,
   ];
 
+  slider.dataset.defaultMin = adjustedRange[0];
+  slider.dataset.defaultMax = adjustedRange[1];
+
   noUiSlider.create(slider, {
     start: adjustedRange,
     connect: true,
@@ -339,47 +342,46 @@ export function getFilterValues() {
 }
 
 export function resetFiltersToDefault() {
-  const sliders = [
-    {
-      id: "speed-slider",
-      range: [DEFAULT_SLIDER_RANGES.minSpeed, DEFAULT_SLIDER_RANGES.maxSpeed],
-    },
-    {
-      id: "latitude-slider",
-      range: [DEFAULT_SLIDER_RANGES.minLat, DEFAULT_SLIDER_RANGES.maxLat],
-    },
-    {
-      id: "longitude-slider",
-      range: [DEFAULT_SLIDER_RANGES.minLong, DEFAULT_SLIDER_RANGES.maxLong],
-    },
-    {
-      id: "orbit-distance-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minOrbitDistance,
-        DEFAULT_SLIDER_RANGES.maxOrbitDistance,
-      ],
-    },
-    {
-      id: "inclination-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minInclination,
-        DEFAULT_SLIDER_RANGES.maxInclination,
-      ],
-    },
-    {
-      id: "revolution-time-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minRevolution,
-        DEFAULT_SLIDER_RANGES.maxRevolution,
-      ],
-    },
-  ];
+  const sliderFallbackRanges = {
+    "speed-slider": [
+      DEFAULT_SLIDER_RANGES.minSpeed,
+      DEFAULT_SLIDER_RANGES.maxSpeed,
+    ],
+    "latitude-slider": [
+      DEFAULT_SLIDER_RANGES.minLat,
+      DEFAULT_SLIDER_RANGES.maxLat,
+    ],
+    "longitude-slider": [
+      DEFAULT_SLIDER_RANGES.minLong,
+      DEFAULT_SLIDER_RANGES.maxLong,
+    ],
+    "orbit-distance-slider": [
+      DEFAULT_SLIDER_RANGES.minOrbitDistance,
+      DEFAULT_SLIDER_RANGES.maxOrbitDistance,
+    ],
+    "inclination-slider": [
+      DEFAULT_SLIDER_RANGES.minInclination,
+      DEFAULT_SLIDER_RANGES.maxInclination,
+    ],
+    "revolution-time-slider": [
+      DEFAULT_SLIDER_RANGES.minRevolution,
+      DEFAULT_SLIDER_RANGES.maxRevolution,
+    ],
+  };
 
-  sliders.forEach(({ id, range }) => {
-    const slider = document.getElementById(id).noUiSlider;
-    if (slider) {
-      slider.set(range);
-    }
+  Object.entries(sliderFallbackRanges).forEach(([id, fallbackRange]) => {
+    const sliderElement = document.getElementById(id);
+    const slider = sliderElement?.noUiSlider;
+    if (!slider) return;
+
+    const defaultMin = parseFloat(sliderElement.dataset.defaultMin);
+    const defaultMax = parseFloat(sliderElement.dataset.defaultMax);
+    const targetRange =
+      Number.isFinite(defaultMin) && Number.isFinite(defaultMax)
+        ? [defaultMin, defaultMax]
+        : fallbackRange;
+
+    slider.set(targetRange);
   });
 
   const launchDateStart = document.getElementById("launch-date-start");
@@ -446,11 +448,13 @@ export function isFiltered(selectedFilters, instanceId) {
   const launchDate = satellites.getLaunchDate(instanceId);
   const owner = satellites.getOwner(instanceId);
   const launchSite = satellites.getLaunchSite(instanceId);
-  const statusState = satellites.getStatusState(instanceId);
+  const statusState = (satellites.getStatusState(instanceId) || "").toLowerCase();
   const name = satellites.getName(instanceId) || "";
 
   const satelliteLaunchDate = new Date(launchDate);
-  const filterStatus = selectedFilters["Status"] || null;
+  const filterStatus = selectedFilters["Status"]
+    ? selectedFilters["Status"].toLowerCase()
+    : null;
   const nameRegex = buildNameRegex(selectedFilters["Name Pattern"]);
   const isWithinFilters =
     speed >= speedRange[0] &&
@@ -542,8 +546,10 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
     const launchDate = satellites.getLaunchDate(instanceId);
     const owner = satellites.getOwner(instanceId);
     const launchSite = satellites.getLaunchSite(instanceId);
-    const statusState = satellites.getStatusState(instanceId);
-    const filterStatus = selectedFilters["Status"] || null;
+    const statusState = (satellites.getStatusState(instanceId) || "").toLowerCase();
+    const filterStatus = selectedFilters["Status"]
+      ? selectedFilters["Status"].toLowerCase()
+      : null;
     const name = satellites.getName(instanceId) || "";
 
     const satelliteLaunchDate = new Date(launchDate);

@@ -80,18 +80,21 @@ export function initHeader() {
 
   searchInput.addEventListener("focus", (event) => {
     event.stopPropagation();
-    const allSatellites = getAllSatellites();
-    populateDropdown(allSatellites);
+    const query = searchInput.value.trim();
+    handleFilter(query);
   });
 
-  document.addEventListener("click", (event) => {
+  const hideDropdown = (event) => {
     if (
       !satelliteDropdown.contains(event.target) &&
       !searchInput.contains(event.target)
     ) {
       satelliteDropdown.classList.add("hidden");
     }
-  });
+  };
+
+  document.addEventListener("mousedown", hideDropdown);
+  document.addEventListener("click", hideDropdown);
 
   dropdownButton.addEventListener("click", function (event) {
     event.stopPropagation();
@@ -143,20 +146,17 @@ function focusSatellite(id) {
   satelliteDropdown.classList.add("hidden");
 }
 
-function populateDropdown(filteredSatellites) {
-  satelliteDropdown.innerHTML = "";
+const MAX_RESULTS_PER_PAGE = 100;
+let cachedResults = [];
+let itemsRendered = 0;
 
-  if (!filteredSatellites || filteredSatellites.length === 0) {
-    const noResult = document.createElement("a");
-    noResult.textContent = "No satellites found";
-    noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
-    satelliteDropdown.appendChild(noResult);
-    satelliteDropdown.classList.remove("hidden");
-    return;
-  }
+function renderNextBatch() {
+  const nextSlice = cachedResults.slice(
+    itemsRendered,
+    itemsRendered + MAX_RESULTS_PER_PAGE
+  );
 
-  // const satellitesToShow = filteredSatellites.slice(0, 20);
-  filteredSatellites.forEach((satellite) => {
+  nextSlice.forEach((satellite) => {
     const option = document.createElement("a");
     option.dataset.satelliteId = satellite.id;
     option.classList.add(
@@ -188,7 +188,34 @@ function populateDropdown(filteredSatellites) {
     satelliteDropdown.appendChild(option);
   });
 
+  itemsRendered += nextSlice.length;
+}
+
+function populateDropdown(filteredSatellites) {
+  satelliteDropdown.innerHTML = "";
+  cachedResults = filteredSatellites || [];
+  itemsRendered = 0;
+
+  if (!cachedResults.length) {
+    const noResult = document.createElement("a");
+    noResult.textContent = "No satellites found";
+    noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
+    satelliteDropdown.appendChild(noResult);
+    satelliteDropdown.classList.remove("hidden");
+    return;
+  }
+
+  renderNextBatch();
   satelliteDropdown.classList.remove("hidden");
+
+  const onScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
+    if (scrollTop + clientHeight >= scrollHeight - 8) {
+      renderNextBatch();
+    }
+  };
+
+  satelliteDropdown.onscroll = onScroll;
 }
 
 function filterSatellites(query) {
