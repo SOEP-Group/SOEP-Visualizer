@@ -45,7 +45,6 @@ function numberOrNull(value) {
   if (!Number.isFinite(parsed)) return null;
   return parsed;
 }
-}
 
 function resolveImageUrl(value) {
   const sanitized = sanitizeString(value);
