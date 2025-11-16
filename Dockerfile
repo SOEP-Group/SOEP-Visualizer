@@ -14,6 +14,8 @@ RUN chmod +x /server/docker-entrypoint.sh
 
 EXPOSE 3000
 
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    SATNOGS_API_BASE_URL="https://db.satnogs.org/api/satellites" \
+    SATNOGS_API_TIMEOUT_MS=5000
 
 CMD ["/server/docker-entrypoint.sh"]
