@@ -32,7 +32,11 @@ const MAX_SATELLITES = Number(process.env.CELESTRAK_MAX_SATELLITES || 0);
 const METADATA_PATH =
   process.env.SATELLITE_METADATA_PATH ||
   path.join(__dirname, "..", "resources", "satellite_data.json");
-const SATNOGS_CONCURRENCY = Number(process.env.SATNOGS_CONCURRENCY || 5);
+// Ensure SATNOGS_CONCURRENCY is a positive integer, defaulting to 5 if invalid
+const SATNOGS_CONCURRENCY = (() => {
+  const val = Number(process.env.SATNOGS_CONCURRENCY);
+  return Number.isFinite(val) && val > 0 && Number.isInteger(val) ? val : 5;
+})();
 const REFRESH_INTERVAL_HOURS = Number(
   process.env.SATELLITE_REFRESH_INTERVAL_HOURS || 24
 );

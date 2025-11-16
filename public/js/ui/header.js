@@ -149,6 +149,7 @@ const MAX_RESULTS_PER_PAGE = 100;
 const SCROLL_LOAD_THRESHOLD = 8;
 let cachedResults = [];
 let itemsRendered = 0;
+let isDropdownScrollAttached = false;
 
 function renderNextBatch() {
   const nextSlice = cachedResults.slice(
@@ -208,14 +209,17 @@ function populateDropdown(filteredSatellites) {
   renderNextBatch();
   satelliteDropdown.classList.remove("hidden");
 
-  const onScroll = () => {
-    const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
-    if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_THRESHOLD) {
-      renderNextBatch();
-    }
-  };
+  if (!isDropdownScrollAttached) {
+    satelliteDropdown.addEventListener("scroll", handleSatelliteDropdownScroll);
+    isDropdownScrollAttached = true;
+  }
+}
 
-  satelliteDropdown.onscroll = onScroll;
+function handleSatelliteDropdownScroll() {
+  const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
+  if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_THRESHOLD) {
+    renderNextBatch();
+  }
 }
 
 function filterSatellites(query) {
