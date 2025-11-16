@@ -225,7 +225,8 @@ filtersButton.addEventListener("click", async (event) => {
 
     if (filterData && apiFilterData) {
       const mergedFilterData = { ...apiFilterData, ...filterData };
-      initializeFilters(mergedFilterData);
+      const selectedFilters = globalState.get("filter_parameters") || {};
+      initializeFilters(mergedFilterData, selectedFilters);
     }
   }
 });

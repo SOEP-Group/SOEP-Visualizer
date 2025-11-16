@@ -17,7 +17,7 @@ const DEFAULT_SLIDER_RANGES = {
   maxRevolution: 40000,
 };
 
-const filtersButton = document.getElementById('filters-button');
+const filtersButton = document.getElementById("filters-button");
 const DEFAULT_STATUS_FILTERS = STATUS_OPTIONS;
 
 export function toggleDropdown(isOpen) {
@@ -72,12 +72,13 @@ function createSlider(id, range, step, minLabelElem, maxLabelElem) {
   });
 }
 
-export async function initializeFilters(filterData) {
+export async function initializeFilters(filterData, selectedFilters = null) {
   if (!filterData) return;
 
   const sliderConfigs = [
     {
       id: "speed-slider",
+      label: "Speed (km/s)",
       minLabel: "speed-min-label",
       maxLabel: "speed-max-label",
       range: [
@@ -88,6 +89,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "latitude-slider",
+      label: "Latitude (°)",
       minLabel: "latitude-min-label",
       maxLabel: "latitude-max-label",
       range: [
@@ -98,6 +100,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "longitude-slider",
+      label: "Longitude (°)",
       minLabel: "longitude-min-label",
       maxLabel: "longitude-max-label",
       range: [
@@ -108,6 +111,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "orbit-distance-slider",
+      label: "Orbit Distance (km)",
       minLabel: "orbit-distance-min-label",
       maxLabel: "orbit-distance-max-label",
       range: [
@@ -118,6 +122,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "inclination-slider",
+      label: "Inclination (°)",
       minLabel: "inclination-min-label",
       maxLabel: "inclination-max-label",
       range: [
@@ -128,6 +133,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "revolution-time-slider",
+      label: "Revolution Time (hours)",
       minLabel: "revolution-time-min-label",
       maxLabel: "revolution-time-max-label",
       range: [
@@ -138,10 +144,17 @@ export async function initializeFilters(filterData) {
     },
   ];
 
-  sliderConfigs.forEach(({ id, minLabel, maxLabel, range, step }) => {
+  sliderConfigs.forEach(({ id, minLabel, maxLabel, range, step, label }) => {
     const minLabelElem = document.getElementById(minLabel);
     const maxLabelElem = document.getElementById(maxLabel);
     createSlider(id, range, step, minLabelElem, maxLabelElem);
+    if (
+      selectedFilters &&
+      selectedFilters[label] &&
+      Array.isArray(selectedFilters[label])
+    ) {
+      document.getElementById(id).noUiSlider.set(selectedFilters[label]);
+    }
   });
 
   const launchDateStart = document.getElementById("launch-date-start");
@@ -153,8 +166,12 @@ export async function initializeFilters(filterData) {
   const minLaunchDate = filterData.min_launch_date || "1957-01-01";
   const maxLaunchDate = filterData.max_launch_date || "2025-12-31";
 
-  launchDateStart.value = minLaunchDate;
-  launchDateEnd.value = maxLaunchDate;
+  const selectedStart =
+    selectedFilters?.["Launch Date"]?.start || minLaunchDate;
+  const selectedEnd = selectedFilters?.["Launch Date"]?.end || maxLaunchDate;
+
+  launchDateStart.value = selectedStart;
+  launchDateEnd.value = selectedEnd;
 
   launchDateStart.dataset.minValue = minLaunchDate;
   launchDateEnd.dataset.maxValue = maxLaunchDate;
@@ -178,6 +195,28 @@ export async function initializeFilters(filterData) {
   populateSelect(launchSiteSelect, filterData.launch_sites);
   populateSelect(ownerSelect, filterData.owners);
   populateSelect(statusSelect, DEFAULT_STATUS_FILTERS);
+
+  const selectedOwner = selectedFilters?.["Owner"];
+  const selectedSite = selectedFilters?.["Launch Site"];
+  const selectedStatus = selectedFilters?.["Status"];
+
+  if (selectedSite && selectedSite !== "Any") {
+    launchSiteSelect.value = selectedSite;
+  } else {
+    launchSiteSelect.value = "";
+  }
+
+  if (selectedOwner && selectedOwner !== "Any") {
+    ownerSelect.value = selectedOwner;
+  } else {
+    ownerSelect.value = "";
+  }
+
+  if (selectedStatus) {
+    statusSelect.value = selectedStatus;
+  } else {
+    statusSelect.value = "";
+  }
 }
 
 export async function getFilterData() {
