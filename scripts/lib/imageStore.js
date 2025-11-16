@@ -87,7 +87,12 @@ function inferExtensionFromUrl(url) {
       return ext;
     }
   } catch (error) {
-    return ".jpg";
+    console.warn(`inferExtensionFromUrl: Failed to parse URL "${url}":`, error);
+    // Only fallback for known URL parsing errors (TypeError)
+    if (error instanceof TypeError) {
+      return ".jpg";
+    }
+    throw error;
   }
   return ".jpg";
 }
