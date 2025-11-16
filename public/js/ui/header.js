@@ -149,6 +149,7 @@ function focusSatellite(id) {
 const MAX_RESULTS_PER_PAGE = 100;
 let cachedResults = [];
 let itemsRendered = 0;
+let isDropdownScrollAttached = false;
 
 function renderNextBatch() {
   const nextSlice = cachedResults.slice(
@@ -208,14 +209,17 @@ function populateDropdown(filteredSatellites) {
   renderNextBatch();
   satelliteDropdown.classList.remove("hidden");
 
-  const onScroll = () => {
-    const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
-    if (scrollTop + clientHeight >= scrollHeight - 8) {
-      renderNextBatch();
-    }
-  };
+  if (!isDropdownScrollAttached) {
+    satelliteDropdown.addEventListener("scroll", handleSatelliteDropdownScroll);
+    isDropdownScrollAttached = true;
+  }
+}
 
-  satelliteDropdown.onscroll = onScroll;
+function handleSatelliteDropdownScroll() {
+  const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
+  if (scrollTop + clientHeight >= scrollHeight - 8) {
+    renderNextBatch();
+  }
 }
 
 function filterSatellites(query) {
