@@ -206,11 +206,16 @@ export async function initializeFilters(filterData, selectedFilters = null) {
     options.forEach((option) => {
       if (!option) return;
       const optElem = document.createElement("option");
-      const value =
+      let value =
         typeof option === "string" ? option : option.value ?? option.label;
-      const label =
+      let label =
         typeof option === "string" ? option : option.label ?? option.value;
 
+      // Fallback if both value and label are missing or undefined/null
+      if (value == null && label == null) {
+        value = "";
+        label = "(Unknown)";
+      }
       optElem.value = value;
       optElem.textContent = label;
       selectElement.appendChild(optElem);
