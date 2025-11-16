@@ -32,7 +32,11 @@ const MAX_SATELLITES = Number(process.env.CELESTRAK_MAX_SATELLITES || 0);
 const METADATA_PATH =
   process.env.SATELLITE_METADATA_PATH ||
   path.join(__dirname, "..", "resources", "satellite_data.json");
-const SATNOGS_CONCURRENCY = Number(process.env.SATNOGS_CONCURRENCY || 5);
+// Ensure SATNOGS_CONCURRENCY is a positive integer, defaulting to 5 if invalid
+const SATNOGS_CONCURRENCY = (() => {
+  const val = Number(process.env.SATNOGS_CONCURRENCY);
+  return Number.isFinite(val) && val > 0 && Number.isInteger(val) ? val : 5;
+})();
 const REFRESH_INTERVAL_HOURS = Number(
   process.env.SATELLITE_REFRESH_INTERVAL_HOURS || 24
 );
@@ -303,6 +307,7 @@ function mergeMetadata(staticEntries, dynamicMap, satnogMap) {
       parsed.status_message = statusMessage || null;
     } else {
       parsed.name = parsed.name || dynamic?.name || null;
+      // Fallback order for owner: parsed.owner > dynamic?.owner > null (satnog not available here)
       parsed.owner = parsed.owner || dynamic?.owner || null;
       parsed.description = parsed.description || null;
       parsed.country_code = parsed.country_code || dynamic?.country_code || null;

@@ -94,7 +94,6 @@ export function initHeader() {
   };
 
   document.addEventListener("mousedown", hideDropdown);
-  document.addEventListener("click", hideDropdown);
 
   dropdownButton.addEventListener("click", function (event) {
     event.stopPropagation();

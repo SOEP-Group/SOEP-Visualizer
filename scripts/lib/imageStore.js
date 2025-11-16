@@ -87,7 +87,12 @@ function inferExtensionFromUrl(url) {
       return ext;
     }
   } catch (error) {
-    return ".jpg";
+    console.warn(`inferExtensionFromUrl: Failed to parse URL "${url}":`, error);
+    // Only fallback for known URL parsing errors (TypeError)
+    if (error instanceof TypeError) {
+      return ".jpg";
+    }
+    throw error;
   }
   return ".jpg";
 }
@@ -107,6 +112,7 @@ async function downloadImage(url, slug, timeoutMs = DOWNLOAD_TIMEOUT_MS) {
     response.data.pipe(stream);
     stream.on("finish", resolve);
     stream.on("error", reject);
+    response.data.on("error", reject);
   });
 
   return `/images/satellites/${fileName}`;

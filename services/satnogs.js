@@ -43,8 +43,8 @@ function numberOrNull(value) {
   if (value === undefined || value === null) return null;
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return null;
-  if (parsed <= 0) return null;
   return parsed;
+}
 }
 
 function resolveImageUrl(value) {
@@ -140,13 +140,7 @@ async function fetchSatnogsRecord(noradId) {
       params: { format: "json", norad_cat_id: noradId },
     }));
   } catch (error) {
-    if (error.response?.status === 404) {
-      const notFoundError = new Error(
-        `Satellite ${noradId} not found in SatNOGS database`
-      );
-      notFoundError.statusCode = 404;
-      throw notFoundError;
-    }
+    // A 404 from the list endpoint may indicate an API issue, not just "not found"
     throw error;
   }
 
@@ -169,7 +163,7 @@ async function fetchSatnogsRecord(noradId) {
 
 async function fetchSatelliteDetails(id) {
   const normalized = Number.parseInt(id, 10);
-  if (!Number.isFinite(normalized)) {
+  if (!Number.isFinite(normalized) || normalized <= 0) {
     const error = new Error("Invalid satellite id");
     error.statusCode = 400;
     throw error;
