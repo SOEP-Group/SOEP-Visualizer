@@ -1,5 +1,6 @@
 import { satellites } from "../gl/scene.js";
 import { globalState } from "../globalState.js";
+import { STATUS_OPTIONS } from "../utils/status.js";
 
 const DEFAULT_SLIDER_RANGES = {
   minSpeed: 0,
@@ -17,6 +18,7 @@ const DEFAULT_SLIDER_RANGES = {
 };
 
 const filtersButton = document.getElementById('filters-button');
+const DEFAULT_STATUS_FILTERS = STATUS_OPTIONS;
 
 export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
@@ -146,6 +148,7 @@ export async function initializeFilters(filterData) {
   const launchDateEnd = document.getElementById("launch-date-end");
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
+  const statusSelect = document.getElementById("status-filter");
 
   const minLaunchDate = filterData.min_launch_date || "1957-01-01";
   const maxLaunchDate = filterData.max_launch_date || "2025-12-31";
@@ -156,18 +159,25 @@ export async function initializeFilters(filterData) {
   launchDateStart.dataset.minValue = minLaunchDate;
   launchDateEnd.dataset.maxValue = maxLaunchDate;
 
-  const populateSelect = (selectElement, options) => {
+  const populateSelect = (selectElement, options = []) => {
     selectElement.innerHTML = '<option value="">Any</option>';
     options.forEach((option) => {
+      if (!option) return;
       const optElem = document.createElement("option");
-      optElem.value = option;
-      optElem.textContent = option;
+      const value =
+        typeof option === "string" ? option : option.value ?? option.label;
+      const label =
+        typeof option === "string" ? option : option.label ?? option.value;
+
+      optElem.value = value;
+      optElem.textContent = label;
       selectElement.appendChild(optElem);
     });
   };
 
   populateSelect(launchSiteSelect, filterData.launch_sites);
   populateSelect(ownerSelect, filterData.owners);
+  populateSelect(statusSelect, DEFAULT_STATUS_FILTERS);
 }
 
 export async function getFilterData() {
@@ -241,9 +251,17 @@ export function getFilterValues() {
     start: document.getElementById("launch-date-start").value || "1957-01-01",
     end: document.getElementById("launch-date-end").value || "2025-12-31",
   };
-  filterValues["Launch Site"] =
-    document.getElementById("launch-site").value || "Any";
-  filterValues["Owner"] = document.getElementById("owner").value || "Any";
+  const launchSiteValue = document.getElementById("launch-site").value;
+  const ownerValue = document.getElementById("owner").value;
+  const statusValue = document.getElementById("status-filter").value;
+
+  filterValues["Launch Site"] = launchSiteValue || "Any";
+  filterValues["Owner"] = ownerValue || "Any";
+  if (statusValue) {
+    filterValues["Status"] = statusValue;
+  } else {
+    delete filterValues["Status"];
+  }
 
   return filterValues;
 }
@@ -302,9 +320,11 @@ export function resetFiltersToDefault() {
 
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
+  const statusSelect = document.getElementById("status-filter");
 
   if (launchSiteSelect) launchSiteSelect.value = "";
   if (ownerSelect) ownerSelect.value = "";
+  if (statusSelect) statusSelect.value = "";
 }
 
 export function isFiltered(selectedFilters, instanceId) {
@@ -352,8 +372,10 @@ export function isFiltered(selectedFilters, instanceId) {
   const launchDate = satellites.getLaunchDate(instanceId);
   const owner = satellites.getOwner(instanceId);
   const launchSite = satellites.getLaunchSite(instanceId);
+  const statusState = satellites.getStatusState(instanceId);
 
   const satelliteLaunchDate = new Date(launchDate);
+  const filterStatus = selectedFilters["Status"] || null;
   const isWithinFilters =
     speed >= speedRange[0] &&
     speed <= speedRange[1] &&
@@ -372,7 +394,8 @@ export function isFiltered(selectedFilters, instanceId) {
     (selectedFilters["Owner"] === "Any" ||
       owner === selectedFilters["Owner"]) &&
     (selectedFilters["Launch Site"] === "Any" ||
-      launchSite === selectedFilters["Launch Site"]);
+      launchSite === selectedFilters["Launch Site"]) &&
+    (!filterStatus || statusState === filterStatus);
 
   return !isWithinFilters;
 }
@@ -440,6 +463,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
     const launchDate = satellites.getLaunchDate(instanceId);
     const owner = satellites.getOwner(instanceId);
     const launchSite = satellites.getLaunchSite(instanceId);
+    const statusState = satellites.getStatusState(instanceId);
+    const filterStatus = selectedFilters["Status"] || null;
 
     const satelliteLaunchDate = new Date(launchDate);
     const isWithinFilters =
@@ -460,7 +485,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       (selectedFilters["Owner"] === "Any" ||
         owner === selectedFilters["Owner"]) &&
       (selectedFilters["Launch Site"] === "Any" ||
-        launchSite === selectedFilters["Launch Site"]);
+        launchSite === selectedFilters["Launch Site"]) &&
+      (!filterStatus || statusState === filterStatus);
 
     if (isWithinFilters) {
       matchedSatellites.push(instanceId);

@@ -12,6 +12,7 @@ import {
 import { textureLoader } from "./index.js";
 import { clock } from "./renderer.js";
 import { earth } from "./scene.js";
+import { determineStatus } from "../utils/status.js";
 
 export class Satellites {
   points;
@@ -50,6 +51,7 @@ export class Satellites {
     this.animate();
 
     data.forEach((satellite, index) => {
+      const statusInfo = determineStatus(satellite.status);
       this.instanceIdToDataMap[index] = {
         name: satellite.name,
         inclination: satellite.inclination,
@@ -62,6 +64,7 @@ export class Satellites {
         satellite_id: satellite.satellite_id,
         tle_line1: satellite.tle_line1,
         tle_line2: satellite.tle_line2,
+        status_state: statusInfo.state,
       };
     });
   }
@@ -428,6 +431,11 @@ export class Satellites {
   getLaunchSite(instanceId) {
     const data = this.instanceIdToDataMap[instanceId];
     return data ? data.launch_site : null;
+  }
+
+  getStatusState(instanceId) {
+    const data = this.instanceIdToDataMap[instanceId];
+    return data ? data.status_state || "unknown" : "unknown";
   }
 
   getOrbitDistance(instanceId) {

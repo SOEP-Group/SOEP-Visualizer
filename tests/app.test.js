@@ -54,6 +54,11 @@ describe("API - Satellites", () => {
     expect(res.body).toHaveProperty("max_launch_date");
     expect(res.body).toHaveProperty("launch_sites");
     expect(res.body).toHaveProperty("owners");
+    expect(res.body).toHaveProperty("statuses");
+    expect(Array.isArray(res.body.statuses)).toBe(true);
+    expect(res.body.statuses.length).toBeGreaterThanOrEqual(3);
+    expect(res.body.statuses[0]).toHaveProperty("value");
+    expect(res.body.statuses[0]).toHaveProperty("label");
   });
 });
 

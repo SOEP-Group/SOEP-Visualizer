@@ -2,57 +2,7 @@ const db = require("../db");
 const path = require("path");
 const fs = require("fs");
 const { fetchSatelliteDetails } = require("../services/satnogs");
-
-const activeKeywords = [
-  "active",
-  "operational",
-  "operating",
-  "alive",
-  "commissioned",
-  "on-orbit",
-  "in orbit",
-];
-
-const inactiveKeywords = [
-  "inactive",
-  "retired",
-  "decommissioned",
-  "decayed",
-  "failed",
-  "lost",
-  "planned",
-  "non-operational",
-  "dead",
-];
-
-function determineStatus(statusValue) {
-  const base = { state: "unknown", label: "Unknown" };
-  if (!statusValue) {
-    return base;
-  }
-
-  const trimmed = String(statusValue).trim();
-  if (!trimmed) {
-    return base;
-  }
-
-  const normalized = trimmed.toLowerCase();
-  if (normalized === "unknown") {
-    return base;
-  }
-  if (activeKeywords.some((keyword) => normalized.includes(keyword))) {
-    return { state: "active", label: trimmed };
-  }
-  if (inactiveKeywords.some((keyword) => normalized.includes(keyword))) {
-    return { state: "inactive", label: trimmed };
-  }
-
-  const placeholderTokens = new Set(["+", "-", "?", "n/a"]);
-  return {
-    state: "unknown",
-    label: placeholderTokens.has(trimmed.toLowerCase()) ? "Unknown" : trimmed,
-  };
-}
+const { determineStatus } = require("../utils/status");
 
 exports.Home = async function (req, res) {
   // We embedd the svg, which allows us to do stuff like svg animation
