@@ -43,8 +43,8 @@ function numberOrNull(value) {
   if (value === undefined || value === null) return null;
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return null;
-  if (parsed <= 0) return null;
   return parsed;
+}
 }
 
 function resolveImageUrl(value) {
