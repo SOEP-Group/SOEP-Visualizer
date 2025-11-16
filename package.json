@@ -4,9 +4,14 @@
   "description": "SOEP visualizer",
   "main": "index.js",
   "scripts": {
+    "generate-status-client": "node scripts/generateStatusClient.js",
+    "prestart": "npm run generate-status-client",
     "start": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css && node index.js",
+    "prebuild": "npm run generate-status-client",
     "build": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css && node generate-sitemap.js",
+    "predev": "npm run generate-status-client",
     "dev": "nodemon",
+    "pretest": "npm run generate-status-client",
     "optimize": "node optimize-gltf.js",
     "test": "cross-env NODE_ENV=development jest",
     "update-satellites": "node scripts/updateSatellites.js"

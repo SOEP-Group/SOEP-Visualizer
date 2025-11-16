@@ -1,6 +1,7 @@
 const db = require("../db");
 const path = require("path");
 const fs = require("fs");
+const { determineStatus } = require("../utils/status");
 
 exports.Home = async function (req, res) {
   // We embedd the svg, which allows us to do stuff like svg animation
@@ -26,21 +27,32 @@ exports.RenderSatellite = async function (req, res) {
     const query = `
       SELECT * FROM satellites WHERE satellite_id = ?;
     `;
-
     const result = await db.query(query, [satelliteId]);
-    if (result.rows.length > 0) {
-      res.render("satellite", result.rows[0], (err, html) => {
-        if (err) {
-          console.error("Error rendering satellite view:", err);
-          res.status(500).send("Server Error");
-        } else {
-          res.send({ body: html });
-        }
-      });
-    } else {
-      res.status(404).json({ error: "Satellite not found" });
+    if (!result.rows.length) {
+      return res.status(404).json({ error: "Satellite not found" });
     }
+
+    const record = result.rows[0];
+    const statusInfo = determineStatus(
+      record.status_message || record.status || null
+    );
+    const model = {
+      ...record,
+      status_state: statusInfo.state,
+      status_label: record.status_message || statusInfo.label,
+      image_url: record.image_url || null,
+      description: record.description || "No description available.",
+    };
+
+    res.render("satellite", model, (err, html) => {
+      if (err) {
+        console.error("Error rendering satellite view:", err);
+        return res.status(500).json({ error: "Server Error" });
+      }
+      res.send({ body: html });
+    });
   } catch (err) {
+    console.error("Failed to load satellite from database:", err);
     res.status(500).json({ error: err.stack });
   }
 };

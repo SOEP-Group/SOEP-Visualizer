@@ -1,5 +1,6 @@
 import { satellites } from "../gl/scene.js";
 import { globalState } from "../globalState.js";
+import { STATUS_OPTIONS } from "../utils/status.js";
 
 const DEFAULT_SLIDER_RANGES = {
   minSpeed: 0,
@@ -16,7 +17,29 @@ const DEFAULT_SLIDER_RANGES = {
   maxRevolution: 40000,
 };
 
-const filtersButton = document.getElementById('filters-button');
+const filtersButton = document.getElementById("filters-button");
+const DEFAULT_STATUS_FILTERS = STATUS_OPTIONS;
+
+function escapeRegexCharacter(character) {
+  return character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildNameRegex(pattern) {
+  if (!pattern) return null;
+  const trimmed = pattern.trim();
+  if (!trimmed) return null;
+
+  let regexBody = "";
+  for (const char of trimmed) {
+    if (char === "*") {
+      regexBody += ".*";
+    } else {
+      regexBody += escapeRegexCharacter(char);
+    }
+  }
+
+  return new RegExp(`^${regexBody}$`, "i");
+}
 
 export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
@@ -52,6 +75,9 @@ function createSlider(id, range, step, minLabelElem, maxLabelElem) {
     Math.ceil(range[1] * 10) / 10,
   ];
 
+  slider.dataset.defaultMin = adjustedRange[0];
+  slider.dataset.defaultMax = adjustedRange[1];
+
   noUiSlider.create(slider, {
     start: adjustedRange,
     connect: true,
@@ -70,12 +96,13 @@ function createSlider(id, range, step, minLabelElem, maxLabelElem) {
   });
 }
 
-export async function initializeFilters(filterData) {
+export async function initializeFilters(filterData, selectedFilters = null) {
   if (!filterData) return;
 
   const sliderConfigs = [
     {
       id: "speed-slider",
+      label: "Speed (km/s)",
       minLabel: "speed-min-label",
       maxLabel: "speed-max-label",
       range: [
@@ -86,6 +113,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "latitude-slider",
+      label: "Latitude (°)",
       minLabel: "latitude-min-label",
       maxLabel: "latitude-max-label",
       range: [
@@ -96,6 +124,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "longitude-slider",
+      label: "Longitude (°)",
       minLabel: "longitude-min-label",
       maxLabel: "longitude-max-label",
       range: [
@@ -106,6 +135,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "orbit-distance-slider",
+      label: "Orbit Distance (km)",
       minLabel: "orbit-distance-min-label",
       maxLabel: "orbit-distance-max-label",
       range: [
@@ -116,6 +146,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "inclination-slider",
+      label: "Inclination (°)",
       minLabel: "inclination-min-label",
       maxLabel: "inclination-max-label",
       range: [
@@ -126,6 +157,7 @@ export async function initializeFilters(filterData) {
     },
     {
       id: "revolution-time-slider",
+      label: "Revolution Time (hours)",
       minLabel: "revolution-time-min-label",
       maxLabel: "revolution-time-max-label",
       range: [
@@ -136,38 +168,89 @@ export async function initializeFilters(filterData) {
     },
   ];
 
-  sliderConfigs.forEach(({ id, minLabel, maxLabel, range, step }) => {
+  sliderConfigs.forEach(({ id, minLabel, maxLabel, range, step, label }) => {
     const minLabelElem = document.getElementById(minLabel);
     const maxLabelElem = document.getElementById(maxLabel);
     createSlider(id, range, step, minLabelElem, maxLabelElem);
+    if (
+      selectedFilters &&
+      selectedFilters[label] &&
+      Array.isArray(selectedFilters[label])
+    ) {
+      document.getElementById(id).noUiSlider.set(selectedFilters[label]);
+    }
   });
 
   const launchDateStart = document.getElementById("launch-date-start");
   const launchDateEnd = document.getElementById("launch-date-end");
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
+  const statusSelect = document.getElementById("status-filter");
+  const namePatternInput = document.getElementById("name-pattern");
 
   const minLaunchDate = filterData.min_launch_date || "1957-01-01";
   const maxLaunchDate = filterData.max_launch_date || "2025-12-31";
 
-  launchDateStart.value = minLaunchDate;
-  launchDateEnd.value = maxLaunchDate;
+  const selectedStart =
+    selectedFilters?.["Launch Date"]?.start || minLaunchDate;
+  const selectedEnd = selectedFilters?.["Launch Date"]?.end || maxLaunchDate;
+
+  launchDateStart.value = selectedStart;
+  launchDateEnd.value = selectedEnd;
 
   launchDateStart.dataset.minValue = minLaunchDate;
   launchDateEnd.dataset.maxValue = maxLaunchDate;
 
-  const populateSelect = (selectElement, options) => {
+  const populateSelect = (selectElement, options = []) => {
     selectElement.innerHTML = '<option value="">Any</option>';
     options.forEach((option) => {
+      if (!option) return;
       const optElem = document.createElement("option");
-      optElem.value = option;
-      optElem.textContent = option;
+      let value =
+        typeof option === "string" ? option : option.value ?? option.label;
+      let label =
+        typeof option === "string" ? option : option.label ?? option.value;
+
+      // Fallback if both value and label are missing or undefined/null
+      if (value == null && label == null) {
+        value = "";
+        label = "(Unknown)";
+      }
+      optElem.value = value;
+      optElem.textContent = label;
       selectElement.appendChild(optElem);
     });
   };
 
   populateSelect(launchSiteSelect, filterData.launch_sites);
   populateSelect(ownerSelect, filterData.owners);
+  populateSelect(statusSelect, DEFAULT_STATUS_FILTERS);
+
+  const selectedOwner = selectedFilters?.["Owner"];
+  const selectedSite = selectedFilters?.["Launch Site"];
+  const selectedStatus = selectedFilters?.["Status"];
+
+  if (selectedSite && selectedSite !== "Any") {
+    launchSiteSelect.value = selectedSite;
+  } else {
+    launchSiteSelect.value = "";
+  }
+
+  if (selectedOwner && selectedOwner !== "Any") {
+    ownerSelect.value = selectedOwner;
+  } else {
+    ownerSelect.value = "";
+  }
+
+  if (selectedStatus) {
+    statusSelect.value = selectedStatus;
+  } else {
+    statusSelect.value = "";
+  }
+
+  if (namePatternInput) {
+    namePatternInput.value = selectedFilters?.["Name Pattern"] || "";
+  }
 }
 
 export async function getFilterData() {
@@ -241,55 +324,69 @@ export function getFilterValues() {
     start: document.getElementById("launch-date-start").value || "1957-01-01",
     end: document.getElementById("launch-date-end").value || "2025-12-31",
   };
-  filterValues["Launch Site"] =
-    document.getElementById("launch-site").value || "Any";
-  filterValues["Owner"] = document.getElementById("owner").value || "Any";
+  const launchSiteValue = document.getElementById("launch-site").value;
+  const ownerValue = document.getElementById("owner").value;
+  const statusValue = document.getElementById("status-filter").value;
+  const namePattern = document.getElementById("name-pattern").value.trim();
+
+  filterValues["Launch Site"] = launchSiteValue || "Any";
+  filterValues["Owner"] = ownerValue || "Any";
+  if (statusValue) {
+    filterValues["Status"] = statusValue;
+  } else {
+    delete filterValues["Status"];
+  }
+
+  if (namePattern) {
+    filterValues["Name Pattern"] = namePattern;
+  } else {
+    delete filterValues["Name Pattern"];
+  }
 
   return filterValues;
 }
 
 export function resetFiltersToDefault() {
-  const sliders = [
-    {
-      id: "speed-slider",
-      range: [DEFAULT_SLIDER_RANGES.minSpeed, DEFAULT_SLIDER_RANGES.maxSpeed],
-    },
-    {
-      id: "latitude-slider",
-      range: [DEFAULT_SLIDER_RANGES.minLat, DEFAULT_SLIDER_RANGES.maxLat],
-    },
-    {
-      id: "longitude-slider",
-      range: [DEFAULT_SLIDER_RANGES.minLong, DEFAULT_SLIDER_RANGES.maxLong],
-    },
-    {
-      id: "orbit-distance-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minOrbitDistance,
-        DEFAULT_SLIDER_RANGES.maxOrbitDistance,
-      ],
-    },
-    {
-      id: "inclination-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minInclination,
-        DEFAULT_SLIDER_RANGES.maxInclination,
-      ],
-    },
-    {
-      id: "revolution-time-slider",
-      range: [
-        DEFAULT_SLIDER_RANGES.minRevolution,
-        DEFAULT_SLIDER_RANGES.maxRevolution,
-      ],
-    },
-  ];
+  const sliderFallbackRanges = {
+    "speed-slider": [
+      DEFAULT_SLIDER_RANGES.minSpeed,
+      DEFAULT_SLIDER_RANGES.maxSpeed,
+    ],
+    "latitude-slider": [
+      DEFAULT_SLIDER_RANGES.minLat,
+      DEFAULT_SLIDER_RANGES.maxLat,
+    ],
+    "longitude-slider": [
+      DEFAULT_SLIDER_RANGES.minLong,
+      DEFAULT_SLIDER_RANGES.maxLong,
+    ],
+    "orbit-distance-slider": [
+      DEFAULT_SLIDER_RANGES.minOrbitDistance,
+      DEFAULT_SLIDER_RANGES.maxOrbitDistance,
+    ],
+    "inclination-slider": [
+      DEFAULT_SLIDER_RANGES.minInclination,
+      DEFAULT_SLIDER_RANGES.maxInclination,
+    ],
+    "revolution-time-slider": [
+      DEFAULT_SLIDER_RANGES.minRevolution,
+      DEFAULT_SLIDER_RANGES.maxRevolution,
+    ],
+  };
 
-  sliders.forEach(({ id, range }) => {
-    const slider = document.getElementById(id).noUiSlider;
-    if (slider) {
-      slider.set(range);
-    }
+  Object.entries(sliderFallbackRanges).forEach(([id, fallbackRange]) => {
+    const sliderElement = document.getElementById(id);
+    const slider = sliderElement?.noUiSlider;
+    if (!slider) return;
+
+    const defaultMin = parseFloat(sliderElement.dataset.defaultMin);
+    const defaultMax = parseFloat(sliderElement.dataset.defaultMax);
+    const targetRange =
+      Number.isFinite(defaultMin) && Number.isFinite(defaultMax)
+        ? [defaultMin, defaultMax]
+        : fallbackRange;
+
+    slider.set(targetRange);
   });
 
   const launchDateStart = document.getElementById("launch-date-start");
@@ -302,9 +399,13 @@ export function resetFiltersToDefault() {
 
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
+  const statusSelect = document.getElementById("status-filter");
+  const namePatternInput = document.getElementById("name-pattern");
 
   if (launchSiteSelect) launchSiteSelect.value = "";
   if (ownerSelect) ownerSelect.value = "";
+  if (statusSelect) statusSelect.value = "";
+  if (namePatternInput) namePatternInput.value = "";
 }
 
 export function isFiltered(selectedFilters, instanceId) {
@@ -352,8 +453,14 @@ export function isFiltered(selectedFilters, instanceId) {
   const launchDate = satellites.getLaunchDate(instanceId);
   const owner = satellites.getOwner(instanceId);
   const launchSite = satellites.getLaunchSite(instanceId);
+  const statusState = (satellites.getStatusState(instanceId) || "").toLowerCase();
+  const name = satellites.getName(instanceId) || "";
 
   const satelliteLaunchDate = new Date(launchDate);
+  const filterStatus = selectedFilters["Status"]
+    ? selectedFilters["Status"].toLowerCase()
+    : null;
+  const nameRegex = buildNameRegex(selectedFilters["Name Pattern"]);
   const isWithinFilters =
     speed >= speedRange[0] &&
     speed <= speedRange[1] &&
@@ -372,7 +479,9 @@ export function isFiltered(selectedFilters, instanceId) {
     (selectedFilters["Owner"] === "Any" ||
       owner === selectedFilters["Owner"]) &&
     (selectedFilters["Launch Site"] === "Any" ||
-      launchSite === selectedFilters["Launch Site"]);
+      launchSite === selectedFilters["Launch Site"]) &&
+    (!filterStatus || statusState === filterStatus) &&
+    (!nameRegex || nameRegex.test(name));
 
   return !isWithinFilters;
 }
@@ -415,6 +524,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       ]
     : [new Date(-8640000000000000), new Date(8640000000000000)];
 
+  const nameRegex = buildNameRegex(selectedFilters?.["Name Pattern"]);
+
   for (
     let instanceId = 0;
     instanceId < satellites.instanceCount;
@@ -440,6 +551,11 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
     const launchDate = satellites.getLaunchDate(instanceId);
     const owner = satellites.getOwner(instanceId);
     const launchSite = satellites.getLaunchSite(instanceId);
+    const statusState = (satellites.getStatusState(instanceId) || "").toLowerCase();
+    const filterStatus = selectedFilters["Status"]
+      ? selectedFilters["Status"].toLowerCase()
+      : null;
+    const name = satellites.getName(instanceId) || "";
 
     const satelliteLaunchDate = new Date(launchDate);
     const isWithinFilters =
@@ -460,7 +576,9 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       (selectedFilters["Owner"] === "Any" ||
         owner === selectedFilters["Owner"]) &&
       (selectedFilters["Launch Site"] === "Any" ||
-        launchSite === selectedFilters["Launch Site"]);
+        launchSite === selectedFilters["Launch Site"]) &&
+      (!filterStatus || statusState === filterStatus) &&
+      (!nameRegex || nameRegex.test(name));
 
     if (isWithinFilters) {
       matchedSatellites.push(instanceId);

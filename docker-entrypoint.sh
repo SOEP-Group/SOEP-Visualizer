@@ -11,7 +11,7 @@ fi
 crond -b -L /var/log/cron.log
 
 echo "[Entrypoint] Running initial satellite sync..."
-if ! NODE_ENV=${NODE_ENV:-production} /usr/local/bin/node /server/scripts/updateSatellites.js; then
+if ! NODE_ENV=${NODE_ENV:-production} npm run update-satellites; then
   echo "[Entrypoint] Initial satellite sync failed; continuing with existing data" >&2
 fi
 

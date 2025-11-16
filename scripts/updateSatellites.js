@@ -3,6 +3,9 @@
 const axios = require("axios");
 const path = require("path");
 const fs = require("fs");
+const { fetchSatelliteDetails } = require("../services/satnogs");
+const { determineStatus } = require("../utils/status");
+const { ensureLocalImage } = require("./lib/imageStore");
 
 process.env.NODE_ENV = process.env.NODE_ENV || "production";
 
@@ -29,6 +32,18 @@ const MAX_SATELLITES = Number(process.env.CELESTRAK_MAX_SATELLITES || 0);
 const METADATA_PATH =
   process.env.SATELLITE_METADATA_PATH ||
   path.join(__dirname, "..", "resources", "satellite_data.json");
+// Ensure SATNOGS_CONCURRENCY is a positive integer, defaulting to 5 if invalid
+const SATNOGS_CONCURRENCY = (() => {
+  const val = Number(process.env.SATNOGS_CONCURRENCY);
+  return Number.isFinite(val) && val > 0 && Number.isInteger(val) ? val : 5;
+})();
+const REFRESH_INTERVAL_HOURS = Number(
+  process.env.SATELLITE_REFRESH_INTERVAL_HOURS || 24
+);
+const FORCE_REFRESH =
+  String(process.env.FORCE_SATELLITE_REFRESH || "false").toLowerCase() ===
+  "true";
+const DEFAULT_DESCRIPTION = "No description available.";
 
 function numberOrNull(value) {
   const num = Number(value);
@@ -172,6 +187,40 @@ function parseTleCatalog(text) {
   return catalog;
 }
 
+async function fetchSatnogsMetadata(ids) {
+  const uniqueIds = Array.from(
+    new Set(ids.filter((id) => Number.isFinite(id)))
+  );
+  if (!uniqueIds.length) {
+    return new Map();
+  }
+
+  const results = new Map();
+  let index = 0;
+  const concurrency = Math.max(1, SATNOGS_CONCURRENCY);
+
+  async function worker() {
+    while (index < uniqueIds.length) {
+      const currentIndex = index;
+      index += 1;
+      const noradId = uniqueIds[currentIndex];
+      try {
+        const data = await fetchSatelliteDetails(noradId);
+        if (data) {
+          results.set(noradId, data);
+        }
+      } catch (error) {
+        const message = error?.message || error;
+        console.warn(`SatNOGS lookup failed for ${noradId}: ${message}`);
+      }
+    }
+  }
+
+  const workers = Array.from({ length: concurrency }, () => worker());
+  await Promise.all(workers);
+  return results;
+}
+
 async function fetchSatellites() {
   const [jsonResponse, tleResponse] = await Promise.all([
     axios.get(DEFAULT_URL, {
@@ -213,7 +262,7 @@ async function fetchSatellites() {
     .filter((record) => record.satellite_id !== null && record.name);
 }
 
-function mergeMetadata(staticEntries, dynamicMap) {
+function mergeMetadata(staticEntries, dynamicMap, satnogMap) {
   const metadataMap = new Map();
   const merged = [];
 
@@ -222,6 +271,7 @@ function mergeMetadata(staticEntries, dynamicMap) {
     if (!parsed) continue;
 
     const dynamic = dynamicMap.get(parsed.satellite_id);
+    const satnog = satnogMap.get(parsed.satellite_id);
     if (dynamic) {
       parsed.revolution = dynamic.revolution ?? parsed.revolution;
       parsed.inclination = dynamic.inclination ?? parsed.inclination;
@@ -235,6 +285,42 @@ function mergeMetadata(staticEntries, dynamicMap) {
       parsed.country_code = parsed.country_code || dynamic.country_code;
     }
 
+    if (satnog) {
+      parsed.name = parsed.name || satnog.name || dynamic?.name || null;
+      parsed.object_id =
+        parsed.object_id || satnog.object_id || dynamic?.object_id || null;
+      parsed.object_type =
+        parsed.object_type || satnog.object_type || dynamic?.object_type || null;
+      parsed.owner = satnog.owner || parsed.owner || dynamic?.owner || null;
+      parsed.launch_site =
+        parsed.launch_site || satnog.launch_site || dynamic?.launch_site || null;
+      parsed.launch_date =
+        parsed.launch_date || satnog.launch_date || dynamic?.launch_date || null;
+      parsed.description = satnog.description || parsed.description || null;
+      parsed.country_code =
+        satnog.country_code || parsed.country_code || dynamic?.country_code || null;
+      parsed.image_url = satnog.image_url || null;
+
+      const statusMessage = satnog.status || parsed.status || null;
+      const statusInfo = determineStatus(statusMessage);
+      parsed.status = statusInfo.state;
+      parsed.status_message = statusMessage || null;
+    } else {
+      parsed.name = parsed.name || dynamic?.name || null;
+      // Fallback order for owner: parsed.owner > dynamic?.owner > null (satnog not available here)
+      parsed.owner = parsed.owner || dynamic?.owner || null;
+      parsed.description = parsed.description || null;
+      parsed.country_code = parsed.country_code || dynamic?.country_code || null;
+      parsed.image_url = null;
+
+      const fallbackStatus = parsed.status || null;
+      const statusInfo = determineStatus(fallbackStatus);
+      parsed.status = statusInfo.state;
+      parsed.status_message = fallbackStatus || null;
+    }
+
+    parsed.description = parsed.description || DEFAULT_DESCRIPTION;
+
     metadataMap.set(parsed.satellite_id, parsed);
     merged.push(parsed);
   }
@@ -242,26 +328,49 @@ function mergeMetadata(staticEntries, dynamicMap) {
   for (const [satelliteId, dynamic] of dynamicMap.entries()) {
     if (metadataMap.has(satelliteId)) continue;
 
+    const satnog = satnogMap.get(satelliteId);
+    const statusMessage = satnog?.status || null;
+    const statusInfo = determineStatus(statusMessage);
+
     merged.push({
       satellite_id: satelliteId,
-      name: dynamic.name,
-      object_id: dynamic.object_id || null,
-      object_type: dynamic.object_type || null,
-      status: null,
-      owner: dynamic.owner || null,
-      launch_date: dynamic.launch_date || null,
-      launch_site: dynamic.launch_site || null,
+      name: dynamic.name || satnog?.name || `Satellite ${satelliteId}`,
+      object_id: dynamic.object_id || satnog?.object_id || null,
+      object_type: dynamic.object_type || satnog?.object_type || null,
+      status: statusInfo.state,
+      status_message: statusMessage || null,
+      owner: satnog?.owner || dynamic.owner || null,
+      launch_date: dynamic.launch_date || satnog?.launch_date || null,
+      launch_site: dynamic.launch_site || satnog?.launch_site || null,
       revolution: dynamic.revolution,
       inclination: dynamic.inclination,
       farthest_orbit_distance: dynamic.farthest_orbit_distance,
       lowest_orbit_distance: dynamic.lowest_orbit_distance,
       rcs: dynamic.rcs,
-      description: null,
-      country_code: dynamic.country_code || null,
+      description:
+        satnog?.description || DEFAULT_DESCRIPTION,
+      country_code: satnog?.country_code || dynamic.country_code || null,
+      image_url: satnog?.image_url || null,
     });
   }
 
   return merged;
+}
+
+async function ensureImages(mergedRecords, satnogMap) {
+  for (const record of mergedRecords) {
+    const satnog = satnogMap.get(record.satellite_id);
+    // eslint-disable-next-line no-await-in-loop
+    const localImage = await ensureLocalImage(record, satnog, {
+      timeoutMs: REQUEST_TIMEOUT_MS,
+    });
+
+    if (localImage) {
+      record.image_url = localImage;
+    } else if (record.image_url && !record.image_url.startsWith("/images/")) {
+      record.image_url = null;
+    }
+  }
 }
 
 function runAsync(database, sql, params = []) {
@@ -322,11 +431,27 @@ function runBatch(database, sql, rows) {
   });
 }
 
+function fetchExistingImages(database) {
+  return new Promise((resolve, reject) => {
+    database.all(
+      "SELECT satellite_id, image_url FROM satellites",
+      (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows || []);
+      }
+    );
+  });
+}
+
 async function persistMetadata(records) {
   const database = db.getDatabase();
 
   try {
     await runAsync(database, "BEGIN IMMEDIATE TRANSACTION");
+    const existingImageRows = await fetchExistingImages(database).catch(() => []);
+    const existingImages = new Map(
+      existingImageRows.map((row) => [row.satellite_id, row.image_url])
+    );
     await runAsync(database, "DELETE FROM satellites");
 
     const insertSql = `
@@ -336,6 +461,7 @@ async function persistMetadata(records) {
         object_id,
         object_type,
         status,
+        status_message,
         owner,
         launch_date,
         launch_site,
@@ -346,29 +472,41 @@ async function persistMetadata(records) {
         rcs,
         description,
         country_code,
+        image_url,
         updated_at
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')
       );
     `;
 
-    const metadataRows = records.map((record) => [
-      record.satellite_id,
-      record.name,
-      record.object_id,
-      record.object_type,
-      record.status,
-      record.owner,
-      record.launch_date,
-      record.launch_site,
-      record.revolution,
-      record.inclination,
-      record.farthest_orbit_distance,
-      record.lowest_orbit_distance,
-      record.rcs,
-      record.description,
-      record.country_code,
-    ]);
+    const metadataRows = records.map((record) => {
+      const existingImage = existingImages.get(record.satellite_id) || null;
+      const hasLocalImage =
+        existingImage && existingImage.startsWith("/images/");
+      const imageUrl = hasLocalImage
+        ? existingImage
+        : record.image_url || existingImage || null;
+
+      return [
+        record.satellite_id,
+        record.name,
+        record.object_id,
+        record.object_type,
+        record.status,
+        record.status_message || null,
+        record.owner,
+        record.launch_date,
+        record.launch_site,
+        record.revolution,
+        record.inclination,
+        record.farthest_orbit_distance,
+        record.lowest_orbit_distance,
+        record.rcs,
+        record.description || DEFAULT_DESCRIPTION,
+        record.country_code,
+        imageUrl,
+      ];
+    });
 
     await runBatch(database, insertSql, metadataRows);
 
@@ -428,22 +566,75 @@ async function persistTle(records) {
   }
 }
 
+async function getLastUpdatedAt(tableName) {
+  try {
+    const result = await db.query(
+      `SELECT MAX(updated_at) AS last_updated FROM ${tableName}`
+    );
+    const value = result?.rows?.[0]?.last_updated;
+    if (!value) return null;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  } catch (error) {
+    console.warn(`Failed to read last updated timestamp for ${tableName}:`, error);
+    return null;
+  }
+}
+
+async function shouldSkipUpdate() {
+  if (FORCE_REFRESH) {
+    return false;
+  }
+
+  const [satUpdated, tleUpdated] = await Promise.all([
+    getLastUpdatedAt("satellites"),
+    getLastUpdatedAt("satellite_data"),
+  ]);
+
+  const latest = [satUpdated, tleUpdated]
+    .filter((date) => date instanceof Date)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+
+  if (!latest) {
+    return false;
+  }
+
+  const ageHours = (Date.now() - latest.getTime()) / (1000 * 60 * 60);
+  return ageHours < REFRESH_INTERVAL_HOURS;
+}
+
 async function main() {
   const startedAt = new Date().toISOString();
   console.log(`[${startedAt}] Refreshing satellite catalogue from Celestrak...`);
 
   try {
+    if (await shouldSkipUpdate()) {
+      console.log(
+        `Last update was performed less than ${REFRESH_INTERVAL_HOURS} hours ago. Skipping refresh.`
+      );
+      return;
+    }
+
     const [dynamicSatellites, staticMetadata] = await Promise.all([
       fetchSatellites(),
       Promise.resolve(loadMetadata()),
     ]);
 
     console.log(`Fetched ${dynamicSatellites.length} satellites from Celestrak.`);
+    const satnogIds = dynamicSatellites
+      .map((sat) => sat.satellite_id)
+      .filter((id) => Number.isFinite(id));
+    console.log(
+      `Fetching SatNOGS metadata for ${satnogIds.length} tracked satellites...`
+    );
+    const satnogMap = await fetchSatnogsMetadata(satnogIds);
+    console.log(`Fetched ${satnogMap.size} SatNOGS metadata records.`);
 
     const dynamicMap = new Map(
       dynamicSatellites.map((sat) => [sat.satellite_id, sat])
     );
-    const mergedMetadata = mergeMetadata(staticMetadata, dynamicMap);
+    const mergedMetadata = mergeMetadata(staticMetadata, dynamicMap, satnogMap);
+    await ensureImages(mergedMetadata, satnogMap);
     const tleRecords = dynamicSatellites.filter(
       (record) => record.tle_line1 && record.tle_line2
     );

@@ -37,6 +37,8 @@ describe("API - Satellites", () => {
     if (res.body.length > 0) {
       expect(res.body[0]).toHaveProperty("satellite_id");
       expect(res.body[0]).toHaveProperty("name");
+      expect(res.body[0]).toHaveProperty("status");
+      expect(res.body[0]).toHaveProperty("status_message");
     }
   });
 
@@ -54,6 +56,11 @@ describe("API - Satellites", () => {
     expect(res.body).toHaveProperty("max_launch_date");
     expect(res.body).toHaveProperty("launch_sites");
     expect(res.body).toHaveProperty("owners");
+    expect(res.body).toHaveProperty("statuses");
+    expect(Array.isArray(res.body.statuses)).toBe(true);
+    expect(res.body.statuses.length).toBeGreaterThanOrEqual(3);
+    expect(res.body.statuses[0]).toHaveProperty("value");
+    expect(res.body.statuses[0]).toHaveProperty("label");
   });
 });
 

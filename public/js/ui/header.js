@@ -80,18 +80,20 @@ export function initHeader() {
 
   searchInput.addEventListener("focus", (event) => {
     event.stopPropagation();
-    const allSatellites = getAllSatellites();
-    populateDropdown(allSatellites);
+    const query = searchInput.value.trim();
+    handleFilter(query);
   });
 
-  document.addEventListener("click", (event) => {
+  const hideDropdown = (event) => {
     if (
       !satelliteDropdown.contains(event.target) &&
       !searchInput.contains(event.target)
     ) {
       satelliteDropdown.classList.add("hidden");
     }
-  });
+  };
+
+  document.addEventListener("mousedown", hideDropdown);
 
   dropdownButton.addEventListener("click", function (event) {
     event.stopPropagation();
@@ -143,10 +145,59 @@ function focusSatellite(id) {
   satelliteDropdown.classList.add("hidden");
 }
 
+const MAX_RESULTS_PER_PAGE = 100;
+const SCROLL_LOAD_THRESHOLD = 8;
+let cachedResults = [];
+let itemsRendered = 0;
+let isDropdownScrollAttached = false;
+
+function renderNextBatch() {
+  const nextSlice = cachedResults.slice(
+    itemsRendered,
+    itemsRendered + MAX_RESULTS_PER_PAGE
+  );
+
+  nextSlice.forEach((satellite) => {
+    const option = document.createElement("a");
+    option.dataset.satelliteId = satellite.id;
+    option.classList.add(
+      "block",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-700",
+      "cursor-pointer",
+      "flex",
+      "items-center",
+      "justify-between",
+      "gap-2"
+    );
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = satellite.name;
+    nameSpan.classList.add("text-sm", "font-medium", "text-white");
+
+    const idSpan = document.createElement("span");
+    idSpan.textContent = `NORAD ${satellite.id}`;
+    idSpan.classList.add("text-xs", "text-gray-400", "tracking-wide");
+
+    option.appendChild(nameSpan);
+    option.appendChild(idSpan);
+    option.addEventListener("click", (event) => {
+      event.stopPropagation();
+      focusSatellite(satellite.id);
+    });
+    satelliteDropdown.appendChild(option);
+  });
+
+  itemsRendered += nextSlice.length;
+}
+
 function populateDropdown(filteredSatellites) {
   satelliteDropdown.innerHTML = "";
+  cachedResults = filteredSatellites || [];
+  itemsRendered = 0;
 
-  if (!filteredSatellites || filteredSatellites.length === 0) {
+  if (!cachedResults.length) {
     const noResult = document.createElement("a");
     noResult.textContent = "No satellites found";
     noResult.classList.add("block", "px-4", "py-2", "text-gray-500");
@@ -155,33 +206,35 @@ function populateDropdown(filteredSatellites) {
     return;
   }
 
-  // const satellitesToShow = filteredSatellites.slice(0, 20);
-  filteredSatellites.forEach((satellite) => {
-    const option = document.createElement("a");
-    option.textContent = satellite.name;
-    option.dataset.satelliteId = satellite.id;
-    option.classList.add(
-      "block",
-      "px-4",
-      "py-2",
-      "hover:bg-gray-700",
-      "cursor-pointer"
-    );
-    option.addEventListener("click", (event) => {
-      event.stopPropagation();
-      focusSatellite(satellite.id);
-    });
-    satelliteDropdown.appendChild(option);
-  });
-
+  renderNextBatch();
   satelliteDropdown.classList.remove("hidden");
+
+  if (!isDropdownScrollAttached) {
+    satelliteDropdown.addEventListener("scroll", handleSatelliteDropdownScroll);
+    isDropdownScrollAttached = true;
+  }
+}
+
+function handleSatelliteDropdownScroll() {
+  const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
+  if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_THRESHOLD) {
+    renderNextBatch();
+  }
 }
 
 function filterSatellites(query) {
   const allSatellites = getAllSatellites();
-  return allSatellites.filter((satellite) =>
-    satellite.name.toLowerCase().includes(query.toLowerCase())
-  );
+  if (!query) {
+    return allSatellites;
+  }
+  const normalizedQuery = query.toLowerCase();
+  return allSatellites.filter((satellite) => {
+    const nameMatch = satellite.name
+      .toLowerCase()
+      .includes(normalizedQuery);
+    const idMatch = String(satellite.id).includes(normalizedQuery);
+    return nameMatch || idMatch;
+  });
 }
 
 function handleFilter(query) {
@@ -225,7 +278,8 @@ filtersButton.addEventListener("click", async (event) => {
 
     if (filterData && apiFilterData) {
       const mergedFilterData = { ...apiFilterData, ...filterData };
-      initializeFilters(mergedFilterData);
+      const selectedFilters = globalState.get("filter_parameters") || {};
+      initializeFilters(mergedFilterData, selectedFilters);
     }
   }
 });

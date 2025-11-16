@@ -91,75 +91,18 @@
         </div>
 
         <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-          <!-- Speed -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="speed-slider" class="block mb-1 text-sm font-medium">Speed (km/s)</label>
-            <div id="speed-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="speed-min-label">0</span>
-              <span id="speed-max-label">12</span>
-            </div>
-          </div>
-
-          <!-- Longitude -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="longitude-slider" class="block mb-1 text-sm font-medium">Longitude (°)</label>
-            <div id="longitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="longitude-min-label">-180</span>
-              <span id="longitude-max-label">180</span>
-            </div>
-          </div>
-
-          <!-- Latitude -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="latitude-slider" class="block mb-1 text-sm font-medium">Latitude (°)</label>
-            <div id="latitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="latitude-min-label">-90</span>
-              <span id="latitude-max-label">90</span>
-            </div>
-          </div>
-
-          <!-- Orbit distance -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="orbit-distance-slider" class="block mb-1 text-sm font-medium">Orbit Distance (km)</label>
-            <div id="orbit-distance-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="orbit-distance-min-label">100</span>
-              <span id="orbit-distance-max-label">500000</span>
-            </div>
-          </div>
-
-          <!-- Inclination -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="inclination-slider" class="block mb-1 text-sm font-medium">Inclination (°)</label>
-            <div id="inclination-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="inclination-min-label">0</span>
-              <span id="inclination-max-label">180</span>
-            </div>
-          </div>
-
-          <!-- Revolution time -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="revolution-time-slider" class="block mb-1 text-sm font-medium">Revolution Time (hours)</label>
-            <div id="revolution-time-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
-            <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
-              <span id="revolution-time-min-label">80</span>
-              <span id="revolution-time-max-label">40000</span>
-            </div>
-          </div>
-
-          <!-- Launch Date -->
-          <div class="w-full max-w-md mx-auto">
-            <label for="launch-date-start" class="block mb-1 text-sm font-medium">Launch Date Start</label>
-            <input type="date" id="launch-date-start"
-              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
-
-            <label for="launch-date-end" class="block mb-1 text-sm font-medium mt-4">Launch Date End</label>
-            <input type="date" id="launch-date-end"
-              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
+          <!-- Name Pattern -->
+          <div>
+            <label for="name-pattern" class="block mb-1 text-sm font-medium">Name Pattern</label>
+            <input
+              type="text"
+              id="name-pattern"
+              placeholder="e.g. STAR*-*"
+              class="w-full bg-black border border-gray-700 text-white p-1 rounded placeholder:text-gray-500 focus:border-teal-300 focus:outline-none"
+            />
+            <p class="mt-1 text-xs text-gray-500">
+              Use * as a wildcard (case-insensitive). Example: STAR*-* matches STARLINK-3000.
+            </p>
           </div>
 
           <!-- Launch site -->
@@ -184,6 +127,92 @@
               <option value="CN">CN</option>
               <option value="EU">EU</option>
             </select>
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label for="status-filter" class="block mb-1 text-sm font-medium">Status</label>
+            <select id="status-filter"
+              class="w-full bg-black border border-gray-700 outline-none focus:border-teal-300 focus:outline-none rounded p-1">
+              <option value="">Any</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+
+          <!-- Launch Date -->
+          <div>
+            <label for="launch-date-start" class="block mb-1 text-sm font-medium">Launch Date Start</label>
+            <input type="date" id="launch-date-start"
+              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
+
+            <label for="launch-date-end" class="block mb-1 text-sm font-medium mt-4">Launch Date End</label>
+            <input type="date" id="launch-date-end"
+              class="w-full bg-black border border-gray-700 text-white p-1 rounded" />
+          </div>
+
+          <!-- Sliders section -->
+          <div class="space-y-4">
+            <!-- Speed -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="speed-slider" class="block mb-1 text-sm font-medium">Speed (km/s)</label>
+              <div id="speed-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="speed-min-label">0</span>
+                <span id="speed-max-label">12</span>
+              </div>
+            </div>
+
+            <!-- Longitude -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="longitude-slider" class="block mb-1 text-sm font-medium">Longitude (°)</label>
+              <div id="longitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="longitude-min-label">-180</span>
+                <span id="longitude-max-label">180</span>
+              </div>
+            </div>
+
+            <!-- Latitude -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="latitude-slider" class="block mb-1 text-sm font-medium">Latitude (°)</label>
+              <div id="latitude-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="latitude-min-label">-90</span>
+                <span id="latitude-max-label">90</span>
+              </div>
+            </div>
+
+            <!-- Orbit distance -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="orbit-distance-slider" class="block mb-1 text-sm font-medium">Orbit Distance (km)</label>
+              <div id="orbit-distance-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="orbit-distance-min-label">100</span>
+                <span id="orbit-distance-max-label">500000</span>
+              </div>
+            </div>
+
+            <!-- Inclination -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="inclination-slider" class="block mb-1 text-sm font-medium">Inclination (°)</label>
+              <div id="inclination-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="inclination-min-label">0</span>
+                <span id="inclination-max-label">180</span>
+              </div>
+            </div>
+
+            <!-- Revolution time -->
+            <div class="w-full max-w-md mx-auto">
+              <label for="revolution-time-slider" class="block mb-1 text-sm font-medium">Revolution Time (hours)</label>
+              <div id="revolution-time-slider" class="relative h-2 bg-gray-100 rounded-full" style="width: 90%;"></div>
+              <div class="flex justify-between block mb-1 text-sm font-medium text-gray-400">
+                <span id="revolution-time-min-label">80</span>
+                <span id="revolution-time-max-label">40000</span>
+              </div>
+            </div>
           </div>
         </div>
 

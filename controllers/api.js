@@ -1,5 +1,9 @@
 const db = require("../db");
 const Astronomy = require("astronomy-engine");
+const {
+  STATUS_LABELS,
+  STATUS_ORDER,
+} = require("../utils/status");
 
 exports.getAllSatellites = async function (req, res) {
   // Suck it Alpha
@@ -11,6 +15,7 @@ exports.getAllSatellites = async function (req, res) {
         s.object_id,
         s.object_type,
         s.status,
+        s.status_message,
         s.owner,
         s.launch_date,
         s.launch_site,
@@ -21,6 +26,7 @@ exports.getAllSatellites = async function (req, res) {
         s.rcs,
         s.description,
         s.country_code,
+        s.image_url,
         sd.tle_line1,
         sd.tle_line2,
         sd.epoch,
@@ -72,12 +78,15 @@ exports.getFilterData = async function (req, res) {
       ORDER BY owner;
     `;
 
-    const [{ rows: statsRows }, { rows: launchSiteRows }, { rows: ownerRows }] =
-      await Promise.all([
-        db.query(statsQuery),
-        db.query(launchSitesQuery),
-        db.query(ownersQuery),
-      ]);
+    const [
+      { rows: statsRows },
+      { rows: launchSiteRows },
+      { rows: ownerRows },
+    ] = await Promise.all([
+      db.query(statsQuery),
+      db.query(launchSitesQuery),
+      db.query(ownersQuery),
+    ]);
 
     const stats =
       statsRows[0] || {
@@ -91,10 +100,16 @@ exports.getFilterData = async function (req, res) {
         max_launch_date: null,
       };
 
+    const statuses = STATUS_ORDER.map((state) => ({
+      value: state,
+      label: STATUS_LABELS[state] || state,
+    }));
+
     res.json({
       ...stats,
       launch_sites: launchSiteRows.map((row) => row.launch_site),
       owners: ownerRows.map((row) => row.owner),
+      statuses,
     });
   } catch (err) {
     res.status(500).json({ error: err.stack });
