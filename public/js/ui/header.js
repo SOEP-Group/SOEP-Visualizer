@@ -158,15 +158,29 @@ function populateDropdown(filteredSatellites) {
   // const satellitesToShow = filteredSatellites.slice(0, 20);
   filteredSatellites.forEach((satellite) => {
     const option = document.createElement("a");
-    option.textContent = satellite.name;
     option.dataset.satelliteId = satellite.id;
     option.classList.add(
       "block",
       "px-4",
       "py-2",
       "hover:bg-gray-700",
-      "cursor-pointer"
+      "cursor-pointer",
+      "flex",
+      "items-center",
+      "justify-between",
+      "gap-2"
     );
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = satellite.name;
+    nameSpan.classList.add("text-sm", "font-medium", "text-white");
+
+    const idSpan = document.createElement("span");
+    idSpan.textContent = `NORAD ${satellite.id}`;
+    idSpan.classList.add("text-xs", "text-gray-400", "tracking-wide");
+
+    option.appendChild(nameSpan);
+    option.appendChild(idSpan);
     option.addEventListener("click", (event) => {
       event.stopPropagation();
       focusSatellite(satellite.id);
@@ -179,9 +193,17 @@ function populateDropdown(filteredSatellites) {
 
 function filterSatellites(query) {
   const allSatellites = getAllSatellites();
-  return allSatellites.filter((satellite) =>
-    satellite.name.toLowerCase().includes(query.toLowerCase())
-  );
+  if (!query) {
+    return allSatellites;
+  }
+  const normalizedQuery = query.toLowerCase();
+  return allSatellites.filter((satellite) => {
+    const nameMatch = satellite.name
+      .toLowerCase()
+      .includes(normalizedQuery);
+    const idMatch = String(satellite.id).includes(normalizedQuery);
+    return nameMatch || idMatch;
+  });
 }
 
 function handleFilter(query) {

@@ -59,6 +59,7 @@ db.serialize(() => {
       object_id TEXT,
       object_type TEXT,
       status TEXT,
+      status_message TEXT,
       owner TEXT,
       launch_date TEXT,
       launch_site TEXT,
@@ -69,6 +70,7 @@ db.serialize(() => {
       rcs REAL,
       description TEXT,
       country_code TEXT,
+      image_url TEXT,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -101,9 +103,11 @@ db.serialize(() => {
   `);
 
   addColumnIfMissing("satellites", "status", "TEXT");
+  addColumnIfMissing("satellites", "status_message", "TEXT");
   addColumnIfMissing("satellites", "rcs", "REAL");
   addColumnIfMissing("satellites", "description", "TEXT");
   addColumnIfMissing("satellites", "country_code", "TEXT");
+  addColumnIfMissing("satellites", "image_url", "TEXT");
   addColumnIfMissing(
     "satellites",
     "updated_at",

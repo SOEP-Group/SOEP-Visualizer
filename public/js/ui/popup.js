@@ -112,36 +112,6 @@ function getContent(satellite, instanceId) {
     mobileSkeleton.classList.add("hidden");
     mobileContent.innerHTML = res;
 
-    const satelliteImage = document.getElementsByClassName("satellite-image");
-    for (let satellite_image_el of satelliteImage) {
-      if (!satellite_image_el) continue;
-
-      const sat_name = satellites
-        .getName(instanceId)
-        .split(" ")[0]
-        .split("-")[0];
-      const fallbackImage = `images/satellites/${sat_name}.jpg`;
-      const satnogsSrc = satellite_image_el.dataset.satnogsImage;
-
-      if (satnogsSrc) {
-        satellite_image_el.src = satnogsSrc;
-        satellite_image_el.alt = `SatNOGS image for ${sat_name}`;
-      } else {
-        satellite_image_el.src = fallbackImage;
-        satellite_image_el.alt = `Image of Satellite ${sat_name}`;
-      }
-
-      satellite_image_el.onerror = () => {
-        satellite_image_el.onerror = null;
-        if (satellite_image_el.src.endsWith("404.png")) return;
-        satellite_image_el.src = fallbackImage;
-        satellite_image_el.alt = `Image of Satellite ${sat_name}`;
-        satellite_image_el.onerror = () => {
-          satellite_image_el.src = "images/satellites/404.png";
-          satellite_image_el.alt = "Satellite Image Not Found";
-        };
-      };
-    }
   });
 }
 

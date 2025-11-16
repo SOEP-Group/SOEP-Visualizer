@@ -1,10 +1,24 @@
 const axios = require("axios");
 
 const DEFAULT_BASE_URL = "https://db.satnogs.org/api/satellites";
+const DEFAULT_MEDIA_BASE_URL = "https://db.satnogs.org/media";
 const baseUrl =
   (process.env.SATNOGS_API_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
+const mediaBaseUrl = (
+  process.env.SATNOGS_MEDIA_BASE_URL || DEFAULT_MEDIA_BASE_URL
+).replace(/\/$/, "");
 const timeout =
   Number.parseInt(process.env.SATNOGS_API_TIMEOUT_MS, 10) || 5000;
+
+const NULL_STRINGS = new Set(["", "n/a", "none", "null", "unknown"]);
+
+function sanitizeString(value) {
+  if (value === undefined || value === null) return null;
+  const stringValue = String(value).trim();
+  if (!stringValue) return null;
+  if (NULL_STRINGS.has(stringValue.toLowerCase())) return null;
+  return stringValue;
+}
 
 function pickField(record, candidates = []) {
   for (const field of candidates) {
@@ -15,9 +29,34 @@ function pickField(record, candidates = []) {
   return null;
 }
 
+function pickText(record, candidates = []) {
+  for (const field of candidates) {
+    const sanitized = sanitizeString(record[field]);
+    if (sanitized) {
+      return sanitized;
+    }
+  }
+  return null;
+}
+
 function numberOrNull(value) {
+  if (value === undefined || value === null) return null;
   const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
+  if (!Number.isFinite(parsed)) return null;
+  if (parsed <= 0) return null;
+  return parsed;
+}
+
+function resolveImageUrl(value) {
+  const sanitized = sanitizeString(value);
+  if (!sanitized) {
+    return null;
+  }
+  if (/^https?:\/\//i.test(sanitized)) {
+    return sanitized;
+  }
+  const trimmed = sanitized.replace(/^\/+/, "");
+  return `${mediaBaseUrl}/${trimmed}`;
 }
 
 function mapRecordToView(record, fallbackId) {
@@ -30,33 +69,52 @@ function mapRecordToView(record, fallbackId) {
     .filter(Boolean)
     .join(" / ");
 
+  const owner = pickText(record, ["owner", "operator", "operators"]) || null;
+
+  const country =
+    pickText(record, ["country_code", "countries", "country"]) || null;
+
+  let description =
+    pickText(record, [
+      "description",
+      "details",
+      "source",
+      "citation",
+      "website",
+      "info",
+      "info_url",
+      "notes",
+    ]) || null;
+
+  if (description && /^https?:\/\//i.test(description)) {
+    description = null;
+  }
+
   return {
     satellite_id: satelliteId,
     name: fallbackName || (satelliteId ? `Satellite ${satelliteId}` : "Unknown"),
-    object_id: pickField(record, ["intldes", "object_id", "objectId"]),
+    object_id: pickText(record, ["intldes", "object_id", "objectId"]),
     inclination: numberOrNull(
       pickField(record, ["inclination", "orbit_inclination"])
     ),
     revolution: numberOrNull(pickField(record, ["period", "revolution"])),
-    launch_date:
-      pickField(record, ["launch_date", "launched", "date"]) || "Unknown",
-    launch_site:
-      pickField(record, ["launch_site", "site", "launch_location"]) || "Unknown",
-    owner: pickField(record, ["owner", "operator"]) || "Unknown",
-    description:
-      pickField(record, ["description", "details", "source"]) ||
-      "No description available from SatNOGS.",
-    status: pickField(record, ["status"]),
-    object_type: pickField(record, ["type", "object_type"]),
-    country_code: pickField(record, ["country_code", "country"]),
-    image_url: pickField(record, [
-      "image",
-      "image_url",
-      "image_src",
-      "thumbnail",
-      "main_image",
-      "image_link",
-    ]),
+    launch_date: pickText(record, ["launch_date", "launched", "date"]),
+    launch_site: pickText(record, ["launch_site", "site", "launch_location"]),
+    owner,
+    description,
+    status: pickText(record, ["status"]),
+    object_type: pickText(record, ["type", "object_type"]),
+    country_code: country,
+    image_url: resolveImageUrl(
+      pickField(record, [
+        "image",
+        "image_url",
+        "image_src",
+        "thumbnail",
+        "main_image",
+        "image_link",
+      ])
+    ),
   };
 }
 

@@ -37,6 +37,8 @@ describe("API - Satellites", () => {
     if (res.body.length > 0) {
       expect(res.body[0]).toHaveProperty("satellite_id");
       expect(res.body[0]).toHaveProperty("name");
+      expect(res.body[0]).toHaveProperty("status");
+      expect(res.body[0]).toHaveProperty("status_message");
     }
   });
 

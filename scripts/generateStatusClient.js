@@ -1,73 +1,46 @@
-const STATUS_LABELS = {
-  "active": "Active",
-  "inactive": "Inactive",
-  "unknown": "Unknown"
-};
-const STATUS_ORDER = [
-  "active",
-  "inactive",
-  "unknown"
-];
-const STATUS_SYMBOL_MAP = {
-  "+": {
-    "state": "active",
-    "label": "Operational"
-  },
-  "P": {
-    "state": "active",
-    "label": "Partially Operational"
-  },
-  "B": {
-    "state": "active",
-    "label": "Backup"
-  },
-  "X": {
-    "state": "active",
-    "label": "Extended Mission"
-  },
-  "-": {
-    "state": "inactive",
-    "label": "Inactive"
-  },
-  "S": {
-    "state": "inactive",
-    "label": "Spare"
-  },
-  "D": {
-    "state": "inactive",
-    "label": "Decayed"
-  },
-  "?": {
-    "state": "unknown",
-    "label": "Unknown"
-  }
-};
-const ACTIVE_KEYWORDS = [
-  "active",
-  "operational",
-  "operating",
-  "alive",
-  "commissioned",
-  "on-orbit",
-  "in orbit"
-];
-const INACTIVE_KEYWORDS = [
-  "inactive",
-  "retired",
-  "decommissioned",
-  "decayed",
-  "failed",
-  "lost",
-  "planned",
-  "non-operational",
-  "dead"
-];
-const PLACEHOLDER_TOKENS = new Set([
-  "+",
-  "-",
-  "?",
-  "n/a"
-]);
+#!/usr/bin/env node
+
+const fs = require("fs");
+const path = require("path");
+const statusUtils = require("../utils/status");
+
+const OUTPUT_PATH = path.join(
+  __dirname,
+  "..",
+  "public",
+  "js",
+  "utils",
+  "status.js"
+);
+
+const { STATUS_LABELS, STATUS_ORDER } = statusUtils;
+
+const fileContents = `const STATUS_LABELS = ${JSON.stringify(
+  STATUS_LABELS,
+  null,
+  2
+)};
+const STATUS_ORDER = ${JSON.stringify(STATUS_ORDER, null, 2)};
+const STATUS_SYMBOL_MAP = ${JSON.stringify(
+  statusUtils.STATUS_SYMBOL_MAP,
+  null,
+  2
+)};
+const ACTIVE_KEYWORDS = ${JSON.stringify(
+  statusUtils.ACTIVE_KEYWORDS,
+  null,
+  2
+)};
+const INACTIVE_KEYWORDS = ${JSON.stringify(
+  statusUtils.INACTIVE_KEYWORDS,
+  null,
+  2
+)};
+const PLACEHOLDER_TOKENS = new Set(${JSON.stringify(
+  Array.from(statusUtils.PLACEHOLDER_TOKENS),
+  null,
+  2
+)});
 
 function determineStatus(statusValue) {
   const base = { state: "unknown", label: "Unknown" };
@@ -115,3 +88,8 @@ export default {
   STATUS_OPTIONS,
   determineStatus,
 };
+`;
+
+fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
+fs.writeFileSync(OUTPUT_PATH, fileContents, "utf8");
+console.log(`[generate-status-client] Updated ${path.relative(process.cwd(), OUTPUT_PATH)}`);

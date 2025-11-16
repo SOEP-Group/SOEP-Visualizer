@@ -10,7 +10,7 @@ export async function fetchSatellite(id) {
   if (!response.ok) {
     const message =
       response.status === 404
-        ? "Satellite not found in SatNOGS or local cache."
+        ? "Satellite not found."
         : "Failed to load satellite details.";
     throw new Error(message);
   }
