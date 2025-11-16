@@ -146,6 +146,7 @@ function focusSatellite(id) {
 }
 
 const MAX_RESULTS_PER_PAGE = 100;
+const SCROLL_LOAD_THRESHOLD = 8;
 let cachedResults = [];
 let itemsRendered = 0;
 
@@ -209,7 +210,7 @@ function populateDropdown(filteredSatellites) {
 
   const onScroll = () => {
     const { scrollTop, clientHeight, scrollHeight } = satelliteDropdown;
-    if (scrollTop + clientHeight >= scrollHeight - 8) {
+    if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_THRESHOLD) {
       renderNextBatch();
     }
   };
