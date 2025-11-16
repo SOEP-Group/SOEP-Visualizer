@@ -140,13 +140,7 @@ async function fetchSatnogsRecord(noradId) {
       params: { format: "json", norad_cat_id: noradId },
     }));
   } catch (error) {
-    if (error.response?.status === 404) {
-      const notFoundError = new Error(
-        `Satellite ${noradId} not found in SatNOGS database`
-      );
-      notFoundError.statusCode = 404;
-      throw notFoundError;
-    }
+    // A 404 from the list endpoint may indicate an API issue, not just "not found"
     throw error;
   }
 
