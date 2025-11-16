@@ -112,6 +112,7 @@ async function downloadImage(url, slug, timeoutMs = DOWNLOAD_TIMEOUT_MS) {
     response.data.pipe(stream);
     stream.on("finish", resolve);
     stream.on("error", reject);
+    response.data.on("error", reject);
   });
 
   return `/images/satellites/${fileName}`;
