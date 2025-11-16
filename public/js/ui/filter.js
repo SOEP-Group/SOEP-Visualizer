@@ -20,6 +20,27 @@ const DEFAULT_SLIDER_RANGES = {
 const filtersButton = document.getElementById("filters-button");
 const DEFAULT_STATUS_FILTERS = STATUS_OPTIONS;
 
+function escapeRegexCharacter(character) {
+  return character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildNameRegex(pattern) {
+  if (!pattern) return null;
+  const trimmed = pattern.trim();
+  if (!trimmed) return null;
+
+  let regexBody = "";
+  for (const char of trimmed) {
+    if (char === "*") {
+      regexBody += ".*";
+    } else {
+      regexBody += escapeRegexCharacter(char);
+    }
+  }
+
+  return new RegExp(`^${regexBody}$`, "i");
+}
+
 export function toggleDropdown(isOpen) {
   const filtersDropdown = document.getElementById("filters-dropdown");
   filtersDropdown.classList.toggle("invisible", !isOpen);
@@ -162,6 +183,7 @@ export async function initializeFilters(filterData, selectedFilters = null) {
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
   const statusSelect = document.getElementById("status-filter");
+  const namePatternInput = document.getElementById("name-pattern");
 
   const minLaunchDate = filterData.min_launch_date || "1957-01-01";
   const maxLaunchDate = filterData.max_launch_date || "2025-12-31";
@@ -216,6 +238,10 @@ export async function initializeFilters(filterData, selectedFilters = null) {
     statusSelect.value = selectedStatus;
   } else {
     statusSelect.value = "";
+  }
+
+  if (namePatternInput) {
+    namePatternInput.value = selectedFilters?.["Name Pattern"] || "";
   }
 }
 
@@ -293,6 +319,7 @@ export function getFilterValues() {
   const launchSiteValue = document.getElementById("launch-site").value;
   const ownerValue = document.getElementById("owner").value;
   const statusValue = document.getElementById("status-filter").value;
+  const namePattern = document.getElementById("name-pattern").value.trim();
 
   filterValues["Launch Site"] = launchSiteValue || "Any";
   filterValues["Owner"] = ownerValue || "Any";
@@ -300,6 +327,12 @@ export function getFilterValues() {
     filterValues["Status"] = statusValue;
   } else {
     delete filterValues["Status"];
+  }
+
+  if (namePattern) {
+    filterValues["Name Pattern"] = namePattern;
+  } else {
+    delete filterValues["Name Pattern"];
   }
 
   return filterValues;
@@ -360,10 +393,12 @@ export function resetFiltersToDefault() {
   const launchSiteSelect = document.getElementById("launch-site");
   const ownerSelect = document.getElementById("owner");
   const statusSelect = document.getElementById("status-filter");
+  const namePatternInput = document.getElementById("name-pattern");
 
   if (launchSiteSelect) launchSiteSelect.value = "";
   if (ownerSelect) ownerSelect.value = "";
   if (statusSelect) statusSelect.value = "";
+  if (namePatternInput) namePatternInput.value = "";
 }
 
 export function isFiltered(selectedFilters, instanceId) {
@@ -412,9 +447,11 @@ export function isFiltered(selectedFilters, instanceId) {
   const owner = satellites.getOwner(instanceId);
   const launchSite = satellites.getLaunchSite(instanceId);
   const statusState = satellites.getStatusState(instanceId);
+  const name = satellites.getName(instanceId) || "";
 
   const satelliteLaunchDate = new Date(launchDate);
   const filterStatus = selectedFilters["Status"] || null;
+  const nameRegex = buildNameRegex(selectedFilters["Name Pattern"]);
   const isWithinFilters =
     speed >= speedRange[0] &&
     speed <= speedRange[1] &&
@@ -434,7 +471,8 @@ export function isFiltered(selectedFilters, instanceId) {
       owner === selectedFilters["Owner"]) &&
     (selectedFilters["Launch Site"] === "Any" ||
       launchSite === selectedFilters["Launch Site"]) &&
-    (!filterStatus || statusState === filterStatus);
+    (!filterStatus || statusState === filterStatus) &&
+    (!nameRegex || nameRegex.test(name));
 
   return !isWithinFilters;
 }
@@ -477,6 +515,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
       ]
     : [new Date(-8640000000000000), new Date(8640000000000000)];
 
+  const nameRegex = buildNameRegex(selectedFilters?.["Name Pattern"]);
+
   for (
     let instanceId = 0;
     instanceId < satellites.instanceCount;
@@ -504,6 +544,7 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
     const launchSite = satellites.getLaunchSite(instanceId);
     const statusState = satellites.getStatusState(instanceId);
     const filterStatus = selectedFilters["Status"] || null;
+    const name = satellites.getName(instanceId) || "";
 
     const satelliteLaunchDate = new Date(launchDate);
     const isWithinFilters =
@@ -525,7 +566,8 @@ export function getMatchedSatellites(selectedFilters, ignore_list) {
         owner === selectedFilters["Owner"]) &&
       (selectedFilters["Launch Site"] === "Any" ||
         launchSite === selectedFilters["Launch Site"]) &&
-      (!filterStatus || statusState === filterStatus);
+      (!filterStatus || statusState === filterStatus) &&
+      (!nameRegex || nameRegex.test(name));
 
     if (isWithinFilters) {
       matchedSatellites.push(instanceId);
