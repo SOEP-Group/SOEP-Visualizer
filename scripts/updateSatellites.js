@@ -303,6 +303,7 @@ function mergeMetadata(staticEntries, dynamicMap, satnogMap) {
       parsed.status_message = statusMessage || null;
     } else {
       parsed.name = parsed.name || dynamic?.name || null;
+      // Fallback order for owner: parsed.owner > dynamic?.owner > null (satnog not available here)
       parsed.owner = parsed.owner || dynamic?.owner || null;
       parsed.description = parsed.description || null;
       parsed.country_code = parsed.country_code || dynamic?.country_code || null;
