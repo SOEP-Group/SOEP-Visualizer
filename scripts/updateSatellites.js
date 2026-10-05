@@ -28,6 +28,15 @@ const DEFAULT_TLE_URL =
   process.env.CELESTRAK_TLE_URL ||
   `https://celestrak.org/NORAD/elements/gp.php?GROUP=${DEFAULT_GROUP}&FORMAT=tle`;
 const REQUEST_TIMEOUT_MS = Number(process.env.CELESTRAK_TIMEOUT_MS || 30000);
+// CelesTrak wants clients to identify themselves.
+const USER_AGENT =
+  "SOEP-Visualizer (+https://github.com/SOEP-Group/SOEP-Visualizer)";
+// Written when CelesTrak answers with anything but HTTP 200. While it exists
+// no run fetches, FORCE_SATELLITE_REFRESH included: their usage policy is to
+// stop and have a human look, and clients that keep retrying past errors get
+// blocked.
+// Lives next to the database so it survives container restarts.
+const HALT_PATH = path.join(path.dirname(db.databasePath), "celestrak-halt.json");
 const MAX_SATELLITES = Number(process.env.CELESTRAK_MAX_SATELLITES || 0);
 const METADATA_PATH =
   process.env.SATELLITE_METADATA_PATH ||
@@ -221,17 +230,43 @@ async function fetchSatnogsMetadata(ids) {
   return results;
 }
 
+function readHalt() {
+  try {
+    return JSON.parse(fs.readFileSync(HALT_PATH, "utf8"));
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    // An unreadable marker still means someone has to look.
+    return { reason: `unreadable halt marker: ${error.message}` };
+  }
+}
+
+// One request at a time, so a refusal on the first never sends the second.
+async function getCelestrak(url, responseType) {
+  try {
+    return await axios.get(url, {
+      timeout: REQUEST_TIMEOUT_MS,
+      responseType,
+      headers: { "User-Agent": USER_AGENT },
+      validateStatus: (status) => status === 200,
+    });
+  } catch (error) {
+    if (!error.response) throw error;
+    const halt = {
+      at: new Date().toISOString(),
+      url,
+      status: error.response.status,
+      body: String(error.response.data ?? "").slice(0, 500),
+    };
+    fs.writeFileSync(HALT_PATH, JSON.stringify(halt, null, 2));
+    throw new Error(
+      `Celestrak answered HTTP ${halt.status} for ${url}; fetching is halted until ${HALT_PATH} is removed`
+    );
+  }
+}
+
 async function fetchSatellites() {
-  const [jsonResponse, tleResponse] = await Promise.all([
-    axios.get(DEFAULT_URL, {
-      timeout: REQUEST_TIMEOUT_MS,
-      responseType: "json",
-    }),
-    axios.get(DEFAULT_TLE_URL, {
-      timeout: REQUEST_TIMEOUT_MS,
-      responseType: "text",
-    }),
-  ]);
+  const jsonResponse = await getCelestrak(DEFAULT_URL, "json");
+  const tleResponse = await getCelestrak(DEFAULT_TLE_URL, "text");
 
   if (!Array.isArray(jsonResponse.data)) {
     throw new Error("Unexpected response from Celestrak API");
@@ -608,6 +643,16 @@ async function main() {
   console.log(`[${startedAt}] Refreshing satellite catalogue from Celestrak...`);
 
   try {
+    const halt = readHalt();
+    if (halt) {
+      console.error(
+        `Celestrak fetching is HALTED since ${halt.at ?? "unknown"} (HTTP ${halt.status ?? "?"}: ${halt.reason ?? halt.body ?? ""}).\n` +
+          `Check https://celestrak.org/usage-policy.php, fix the cause, then delete ${HALT_PATH} to resume.`
+      );
+      process.exitCode = 1;
+      return;
+    }
+
     if (await shouldSkipUpdate()) {
       console.log(
         `Last update was performed less than ${REFRESH_INTERVAL_HOURS} hours ago. Skipping refresh.`
