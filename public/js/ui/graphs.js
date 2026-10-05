@@ -1,9 +1,9 @@
 import {
-  twoline2satrec,
+  json2satrec,
   propagate,
   gstime,
   eciToGeodetic,
-} from "../../libs/satellite.js/dist/satellite.es.js";
+} from "../../libs/satellite.js/dist/index.js";
 import { subscribe } from "../eventBuss.js";
 import { glState } from "../gl/index.js";
 import { satellites } from "../gl/scene.js";
@@ -23,10 +23,10 @@ function onGlStateChanged(prevState) {
     const clickedSatellite = glState.get("clickedSatellite");
 
     if (clickedSatellite) {
-      const tleData = satellites.getTLEData(clickedSatellite);
+      const omm = satellites.getOMM(clickedSatellite);
 
-      if (tleData && tleData.first && tleData.second) {
-        const simulation = generateFutureSimData(tleData.first, tleData.second);
+      if (omm) {
+        const simulation = generateFutureSimData(omm);
         if (simulation) {
           clearGraphs();
           // add satellite name here
@@ -65,7 +65,7 @@ function onGlStateChanged(prevState) {
         }
       } else {
         console.error(
-          "No valid TLE data found for clicked satellite:",
+          "No OMM found for clicked satellite:",
           clickedSatellite
         );
         clearGraphs();
@@ -185,10 +185,12 @@ function clearGraphs() {
   graphContainer.innerHTML = "";
 }
 
-function generateFutureSimData(tleLine1, tleLine2) {
-  const satrec = twoline2satrec(tleLine1, tleLine2);
-  if (!satrec) {
-    console.error("Failed to parse TLE.");
+function generateFutureSimData(omm) {
+  let satrec;
+  try {
+    satrec = json2satrec(omm);
+  } catch (error) {
+    console.error("Failed to parse OMM.", error);
     return null;
   }
 
@@ -233,7 +235,7 @@ function generateFutureSimData(tleLine1, tleLine2) {
     const displayTime = `${d} ${m} ${hh}:${mm}`;
     times.push(displayTime);
 
-    if (positionAndVelocity.position && positionAndVelocity.velocity) {
+    if (positionAndVelocity?.position && positionAndVelocity?.velocity) {
       const { x, y, z } = positionAndVelocity.position;
       const { x: vx, y: vy, z: vz } = positionAndVelocity.velocity;
 

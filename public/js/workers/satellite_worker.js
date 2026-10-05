@@ -1,17 +1,18 @@
 import {
   sgp4,
   propagate,
-  twoline2satrec,
+  json2satrec,
   gstime,
   eciToGeodetic,
   eciToEcf,
   degreesLat,
   degreesLong,
-} from "../../libs/satellite.js/dist/satellite.es.js";
+} from "../../libs/satellite.js/dist/index.js";
 
 import { geodeticToThree, scalePosition } from "../utils/utils.js";
 
-let tle_data = [];
+// Built once per catalogue, not per frame: parsing elements is the expensive part.
+let satrecs = [];
 
 const EARTH_RADIUS = 6378;
 
@@ -31,31 +32,16 @@ self.onmessage = async function (event) {
     const geogedicView = new Float32Array(longlatalt);
     const speedsView = new Float32Array(speeds);
 
-    for (let i = 0; i < tle_data.length; i++) {
+    for (let i = 0; i < satrecs.length; i++) {
       const idx = (startIndex + i) * 3;
 
-      const tle = tle_data[i];
-      if (!tle) {
-        console.warn(
-          `Missing TLE data for satellite at index ${startIndex + i}`
-        );
-        continue;
-      }
+      const satrec = satrecs[i];
+      if (!satrec) continue;
 
-      const { tle_line1, tle_line2 } = tle;
-
-      if (!tle_line1 || !tle_line2) {
-        console.warn(
-          `Incomplete TLE lines for satellite at index ${startIndex + i}`
-        );
-        continue;
-      }
-
-      const satrec = twoline2satrec(tle_line1, tle_line2);
       const now = new Date();
       const sgp4Result = propagate(satrec, now);
 
-      if (sgp4Result.position && sgp4Result.velocity) {
+      if (sgp4Result?.position && sgp4Result?.velocity) {
         let position = sgp4Result.position;
         const gmst = gstime(now);
         let velocity = sgp4Result.velocity;
@@ -84,9 +70,16 @@ self.onmessage = async function (event) {
       }
     }
     postMessage("Buffers updated!");
-  } else if (event.data.command === "update_tle") {
-    const { tleLines } = event.data;
-    tle_data = tleLines;
-    postMessage("Tle data updated!");
+  } else if (event.data.command === "update_omm") {
+    const { omms, startIndex } = event.data;
+    satrecs = omms.map((omm, i) => {
+      try {
+        return json2satrec(omm);
+      } catch (error) {
+        console.warn(`Unusable OMM for satellite at index ${startIndex + i}`, error);
+        return null;
+      }
+    });
+    postMessage("OMM data updated!");
   }
 };

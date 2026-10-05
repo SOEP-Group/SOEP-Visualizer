@@ -27,23 +27,13 @@ exports.getAllSatellites = async function (req, res) {
         s.description,
         s.country_code,
         s.image_url,
-        sd.tle_line1,
-        sd.tle_line2,
-        sd.epoch,
-        sd.mean_motion_dot,
-        sd.mean_motion_ddot,
-        sd.eccentricity,
-        sd.ra_of_asc_node,
-        sd.arg_of_pericenter,
-        sd.mean_anomaly,
-        sd.bstar,
-        sd.updated_at AS tle_updated_at
+        sd.omm
       FROM satellite_data sd
       JOIN satellites s ON s.satellite_id = sd.satellite_id
       ORDER BY s.name ASC;
     `;
     const result = await db.query(query);
-    res.json(result.rows);
+    res.json(result.rows.map((row) => ({ ...row, omm: JSON.parse(row.omm) })));
   } catch (err) {
     res.status(500).json({ error: err.stack });
   }

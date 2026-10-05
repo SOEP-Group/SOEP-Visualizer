@@ -24,9 +24,6 @@ const DEFAULT_GROUP = process.env.CELESTRAK_GROUP || "active";
 const DEFAULT_URL =
   process.env.CELESTRAK_URL ||
   `https://celestrak.org/NORAD/elements/gp.php?GROUP=${DEFAULT_GROUP}&FORMAT=json`;
-const DEFAULT_TLE_URL =
-  process.env.CELESTRAK_TLE_URL ||
-  `https://celestrak.org/NORAD/elements/gp.php?GROUP=${DEFAULT_GROUP}&FORMAT=tle`;
 const REQUEST_TIMEOUT_MS = Number(process.env.CELESTRAK_TIMEOUT_MS || 30000);
 // CelesTrak wants clients to identify themselves.
 const USER_AGENT =
@@ -133,67 +130,12 @@ function mapSatellite(raw) {
     launch_date: raw.LAUNCH_DATE || null,
     launch_site: raw.SITE || null,
     owner: coalesce(raw.COUNTRY_CODE, raw.OPERATOR),
-    tle_line1: raw.TLE_LINE1 || null,
-    tle_line2: raw.TLE_LINE2 || null,
-    epoch: raw.EPOCH || null,
-    mean_motion_dot: numberOrNull(raw.MEAN_MOTION_DOT),
-    mean_motion_ddot: numberOrNull(raw.MEAN_MOTION_DDOT),
-    eccentricity: numberOrNull(raw.ECCENTRICITY),
-    ra_of_asc_node: numberOrNull(raw.RA_OF_ASC_NODE),
-    arg_of_pericenter: numberOrNull(raw.ARG_OF_PERICENTER),
-    mean_anomaly: numberOrNull(raw.MEAN_ANOMALY),
-    bstar: numberOrNull(raw.BSTAR),
+    omm: raw,
     object_type: raw.OBJECT_TYPE || null,
     rcs: numberOrNull(raw.RCS_SIZE),
     country_code: raw.COUNTRY_CODE || null,
     object_id: raw.OBJECT_ID || null,
   };
-}
-
-function parseTleCatalog(text) {
-  const lines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length);
-
-  const catalog = new Map();
-
-  for (let i = 0; i < lines.length; ) {
-    let name = null;
-    let line1 = null;
-    let line2 = null;
-
-    const current = lines[i];
-
-    if (current.startsWith("1 ") || current.startsWith("2 ")) {
-      line1 = current;
-      line2 = lines[i + 1];
-      i += 2;
-    } else {
-      name = current;
-      line1 = lines[i + 1];
-      line2 = lines[i + 2];
-      i += 3;
-    }
-
-    if (!line1 || !line2 || !line1.startsWith("1 ") || !line2.startsWith("2 ")) {
-      continue;
-    }
-
-    const idSegment = line1.substring(2, 7).trim();
-    const satelliteId = Number.parseInt(idSegment, 10);
-    if (!Number.isFinite(satelliteId)) {
-      continue;
-    }
-
-    catalog.set(satelliteId, {
-      name,
-      line1,
-      line2,
-    });
-  }
-
-  return catalog;
 }
 
 async function fetchSatnogsMetadata(ids) {
@@ -240,7 +182,6 @@ function readHalt() {
   }
 }
 
-// One request at a time, so a refusal on the first never sends the second.
 async function getCelestrak(url, responseType) {
   try {
     return await axios.get(url, {
@@ -266,7 +207,6 @@ async function getCelestrak(url, responseType) {
 
 async function fetchSatellites() {
   const jsonResponse = await getCelestrak(DEFAULT_URL, "json");
-  const tleResponse = await getCelestrak(DEFAULT_TLE_URL, "text");
 
   if (!Array.isArray(jsonResponse.data)) {
     throw new Error("Unexpected response from Celestrak API");
@@ -277,23 +217,8 @@ async function fetchSatellites() {
       ? jsonResponse.data.slice(0, MAX_SATELLITES)
       : jsonResponse.data;
 
-  const tleCatalog = parseTleCatalog(tleResponse.data || "");
-
   return slice
-    .map((raw) => {
-      const record = mapSatellite(raw);
-      const tle = tleCatalog.get(record.satellite_id);
-
-      if (tle) {
-        record.tle_line1 = record.tle_line1 || tle.line1;
-        record.tle_line2 = record.tle_line2 || tle.line2;
-        if (!record.name && tle.name) {
-          record.name = tle.name;
-        }
-      }
-
-      return record;
-    })
+    .map(mapSatellite)
     .filter((record) => record.satellite_id !== null && record.name);
 }
 
@@ -552,7 +477,7 @@ async function persistMetadata(records) {
   }
 }
 
-async function persistTle(records) {
+async function persistOmm(records) {
   const database = db.getDatabase();
 
   try {
@@ -560,39 +485,16 @@ async function persistTle(records) {
     await runAsync(database, "DELETE FROM satellite_data");
 
     const insertSql = `
-      INSERT INTO satellite_data (
-        satellite_id,
-        tle_line1,
-        tle_line2,
-        epoch,
-        mean_motion_dot,
-        mean_motion_ddot,
-        eccentricity,
-        ra_of_asc_node,
-        arg_of_pericenter,
-        mean_anomaly,
-        bstar,
-        updated_at
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')
-      );
+      INSERT INTO satellite_data (satellite_id, omm, updated_at)
+      VALUES (?, ?, datetime('now'));
     `;
 
-    const tleRows = records.map((record) => [
+    const rows = records.map((record) => [
       record.satellite_id,
-      record.tle_line1,
-      record.tle_line2,
-      record.epoch,
-      record.mean_motion_dot,
-      record.mean_motion_ddot,
-      record.eccentricity,
-      record.ra_of_asc_node,
-      record.arg_of_pericenter,
-      record.mean_anomaly,
-      record.bstar,
+      JSON.stringify(record.omm),
     ]);
 
-    await runBatch(database, insertSql, tleRows);
+    await runBatch(database, insertSql, rows);
 
     await runAsync(database, "COMMIT");
   } catch (error) {
@@ -621,12 +523,12 @@ async function shouldSkipUpdate() {
     return false;
   }
 
-  const [satUpdated, tleUpdated] = await Promise.all([
+  const [satUpdated, elementsUpdated] = await Promise.all([
     getLastUpdatedAt("satellites"),
     getLastUpdatedAt("satellite_data"),
   ]);
 
-  const latest = [satUpdated, tleUpdated]
+  const latest = [satUpdated, elementsUpdated]
     .filter((date) => date instanceof Date)
     .sort((a, b) => b.getTime() - a.getTime())[0];
 
@@ -680,18 +582,15 @@ async function main() {
     );
     const mergedMetadata = mergeMetadata(staticMetadata, dynamicMap, satnogMap);
     await ensureImages(mergedMetadata, satnogMap);
-    const tleRecords = dynamicSatellites.filter(
-      (record) => record.tle_line1 && record.tle_line2
-    );
 
     console.log(`Persisting ${mergedMetadata.length} metadata records.`);
     await persistMetadata(mergedMetadata);
 
-    console.log(`Persisting ${tleRecords.length} TLE records.`);
-    await persistTle(tleRecords);
+    console.log(`Persisting ${dynamicSatellites.length} OMM records.`);
+    await persistOmm(dynamicSatellites);
 
     console.log(
-      `SQLite database updated at ${db.databasePath} with ${tleRecords.length} tracked satellites.`
+      `SQLite database updated at ${db.databasePath} with ${dynamicSatellites.length} tracked satellites.`
     );
   } catch (error) {
     console.error("Failed to refresh satellite data", error);

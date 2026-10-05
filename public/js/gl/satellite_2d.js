@@ -23,7 +23,7 @@ export class Satellites {
   positions_read;
   positions_write;
   positions_longlatalt;
-  tle_lines = [];
+  omms = [];
   ids;
   speeds;
   instanceIdToSatelliteIdMap = {};
@@ -62,8 +62,7 @@ export class Satellites {
         launch_site: satellite.launch_site,
         owner: satellite.owner,
         satellite_id: satellite.satellite_id,
-        tle_line1: satellite.tle_line1,
-        tle_line2: satellite.tle_line2,
+        omm: satellite.omm,
         status_state: statusInfo.state,
       };
     });
@@ -89,7 +88,7 @@ export class Satellites {
     this.positions_longlatalt = null;
     this.speeds = null;
     this.ids = null;
-    this.tle_lines = [];
+    this.omms = [];
     this.instanceIdToSatelliteIdMap = {};
   }
 
@@ -205,8 +204,8 @@ export class Satellites {
     this.points.geometry.attributes.color.needsUpdate = true;
   }
 
-  getTLEData(id) {
-    return this.tle_lines[id];
+  getOMM(id) {
+    return this.omms[id];
   }
 
   setHovered(id) {
@@ -258,16 +257,12 @@ export class Satellites {
     this.speeds = new Float32Array(speedsBuffer);
     this.ids = new Int32Array(idBuffer);
     data.forEach((satellite, index) => {
-      const tle_lines = {};
-      tle_lines.first = satellite.tle_line1;
-      tle_lines.second = satellite.tle_line2;
-
       this.positions_read.set([0, 0, 0], index * 3);
       this.positions_write.set([0, 0, 0], index * 3);
       this.speeds.set([0, 0, 0], index * 3);
       this.positions_longlatalt.set([0, 0, 0], index * 3);
       this.ids.set(satellite.satellite_id, index);
-      this.tle_lines.push(tle_lines);
+      this.omms.push(satellite.omm);
     });
 
     this.workers = [];
@@ -283,11 +278,9 @@ export class Satellites {
         console.error(`Worker ${i} encountered an error:`, error);
       };
       const worker_data = {
-        command: "update_tle",
-        tleLines: data.slice(startIndex, endIndex).map((satellite) => ({
-          tle_line1: satellite.tle_line1,
-          tle_line2: satellite.tle_line2,
-        })),
+        command: "update_omm",
+        startIndex,
+        omms: data.slice(startIndex, endIndex).map((satellite) => satellite.omm),
       };
 
       worker.postMessage(worker_data);

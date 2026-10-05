@@ -78,16 +78,8 @@ db.serialize(() => {
   runSilently(`
     CREATE TABLE IF NOT EXISTS satellite_data (
       satellite_id INTEGER PRIMARY KEY,
-      tle_line1 TEXT NOT NULL,
-      tle_line2 TEXT NOT NULL,
-      epoch TEXT,
-      mean_motion_dot REAL,
-      mean_motion_ddot REAL,
-      eccentricity REAL,
-      ra_of_asc_node REAL,
-      arg_of_pericenter REAL,
-      mean_anomaly REAL,
-      bstar REAL,
+      -- CelesTrak's OMM record as JSON; the browser propagates from it.
+      omm TEXT NOT NULL,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (satellite_id) REFERENCES satellites (satellite_id) ON DELETE CASCADE
     )
@@ -114,19 +106,6 @@ db.serialize(() => {
     "TEXT DEFAULT CURRENT_TIMESTAMP"
   );
 
-  addColumnIfMissing("satellite_data", "epoch", "TEXT");
-  addColumnIfMissing("satellite_data", "mean_motion_dot", "REAL");
-  addColumnIfMissing("satellite_data", "mean_motion_ddot", "REAL");
-  addColumnIfMissing("satellite_data", "eccentricity", "REAL");
-  addColumnIfMissing("satellite_data", "ra_of_asc_node", "REAL");
-  addColumnIfMissing("satellite_data", "arg_of_pericenter", "REAL");
-  addColumnIfMissing("satellite_data", "mean_anomaly", "REAL");
-  addColumnIfMissing("satellite_data", "bstar", "REAL");
-  addColumnIfMissing(
-    "satellite_data",
-    "updated_at",
-    "TEXT DEFAULT CURRENT_TIMESTAMP"
-  );
 });
 
 function query(sql, params = []) {

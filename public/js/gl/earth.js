@@ -18,7 +18,7 @@ import * as THREE from "three";
 
 import { camera, clock, controls } from "./renderer.js";
 import { glState, textureLoader } from "./index.js";
-import { gstime } from "../../libs/satellite.js/dist/satellite.es.js";
+import { gstime } from "../../libs/satellite.js/dist/index.js";
 
 export class Earth {
   group;
