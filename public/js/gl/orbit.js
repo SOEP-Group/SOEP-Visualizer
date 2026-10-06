@@ -4,8 +4,8 @@ import { subscribe } from "../eventBuss.js";
 import { satellites } from "../gl/scene.js";
 import {
   propagate,
-  twoline2satrec,
-} from "../../libs/satellite.js/dist/satellite.es.js";
+  json2satrec,
+} from "../../libs/satellite.js/dist/index.js";
 import { scalePosition } from "../utils/utils.js";
 
 export let currentOrbitLine = null;
@@ -45,17 +45,17 @@ export function displayOrbit(satellite) {
   const orbitVertices = []; // For the orbit path
   const dynamicLineGeometry = new THREE.BufferGeometry();
   const dynamicVertices = [0, 0, 0, 0, 0, 0]; // Earth center [0, 0, 0] + satellite dynamic position
-  const tle_lines = satellites.getTLEData(satellite);
-
-  // Validate TLE data
-  if (!tle_lines || !tle_lines.first || !tle_lines.second) {
-    console.error("Invalid TLE data:", tle_lines);
+  const omm = satellites.getOMM(satellite);
+  if (!omm) {
+    console.error("No OMM for satellite", satellite);
     return;
   }
 
-  const satrec = twoline2satrec(tle_lines.first, tle_lines.second);
-  if (!satrec) {
-    console.error("Failed to parse satellite record!", satrec.error);
+  let satrec;
+  try {
+    satrec = json2satrec(omm);
+  } catch (error) {
+    console.error("Failed to parse satellite record!", error);
     return;
   }
 
@@ -87,7 +87,7 @@ export function displayOrbit(satellite) {
     const time = new Date(startTime.getTime() + t * 60 * 1000); // Increment time by timeStep
     const positionAndVelocity = propagate(satrec, time);
 
-    if (!positionAndVelocity.position) {
+    if (!positionAndVelocity?.position) {
       console.warn(`Propagation failed at step ${t}`);
       continue;
     }
